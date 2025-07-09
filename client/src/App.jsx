@@ -9,16 +9,26 @@ import Inventory from "./Pages/Inventory/Inventory";
 import Service from "./Pages/Services/Service";
 import Register from "./Pages/auth/Register";
 import { Toaster } from "sonner";
+import ProtectedRoute from "./Routes/ProtectedRoute";
+import ForgetPassword from "./Pages/auth/ForgetPassword";
 
 function App() {
   return (
     <>
-      <Toaster />
+      <Toaster position="top-right" />
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<DashboardLayout />}>
+          <Route path="/forgot-password" element={<ForgetPassword />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute role="admin">
+                <DashboardLayout />
+              </ProtectedRoute>
+            }
+          >
             <Route index element={<Home />} />
             <Route path="rental" element={<Rental />} />
             <Route path="fleet" element={<Fleet />} />

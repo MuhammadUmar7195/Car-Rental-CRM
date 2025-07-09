@@ -1,7 +1,8 @@
-import express from "express";
 import connect from "./Config/connect.js";
-import env from "dotenv";
 import cookieParser from "cookie-parser";
+import express from "express";
+import env from "dotenv";
+import cors from "cors";
 const app = express();
 env.config();
 
@@ -9,6 +10,10 @@ env.config();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+}));
 
 const port = process.env.PORT || 9000;
 const database = process.env.MONGO_URI;

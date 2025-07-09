@@ -1,4 +1,3 @@
-import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   FaHome,
@@ -9,21 +8,26 @@ import {
   FaBell,
   FaSignOutAlt,
   FaTimes,
-  FaMoneyCheckAlt,
   FaUserTie,
   FaFileInvoiceDollar,
   FaCogs,
-  FaCalculator
+  FaCalculator,
 } from "react-icons/fa";
-import { Button } from "../ui/button"; 
+import { Button } from "../ui/button";
 import { FaCheckCircle } from "react-icons/fa";
+import { useDispatch } from "react-redux";
+import { logoutUser } from "@/store/Slices/auth.slice";
+import { toast } from "sonner";
 
 const DashboardSidebar = ({ toggleSidebar }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleLogout = () => {
     // Optional: Clear auth here
-    localStorage.removeItem("token");
+    localStorage.removeItem("userInfo");
+    dispatch(logoutUser());
+    toast.success("Logout successful!");
     navigate("/login");
   };
 
