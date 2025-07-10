@@ -7,9 +7,8 @@ import Fleet from "./Pages/Fleet/Fleet";
 import Customer from "./Pages/Customer/Customer";
 import Inventory from "./Pages/Inventory/Inventory";
 import Service from "./Pages/Services/Service";
-import Register from "./components/auth/Register";
-
 import { Toaster } from "sonner";
+import Register from "./components/auth/Register";
 import ProtectedRoute from "./Routes/ProtectedRoute";
 import ForgetPassword from "./components/auth/ForgetPassword";
 import Accounting from "./Pages/Accounting/Accounting";
@@ -17,6 +16,8 @@ import FleetOwner from "./Pages/FleetOwner/FleetOwner";
 import Payment from "./Pages/Payment/payment";
 import Setting from "./Pages/Setting/Setting";
 import Navbar from "./components/Common/Navbar";
+import SingleFleetDetail from "./Pages/Fleet/SingleFleetDetail";
+import EditFleetPage from "./Pages/Fleet/EditFleetPage";
 
 function App() {
   return (
@@ -62,6 +63,8 @@ function App() {
             <Route index element={<Home />} />
             <Route path="rental" element={<Rental />} />
             <Route path="fleet" element={<Fleet />} />
+            <Route path="fleet/:id" element={<SingleFleetDetail />} />
+            <Route path="fleet/edit/:id" element={<EditFleetPage />} />
             <Route path="customer" element={<Customer />} />
             <Route path="inventory" element={<Inventory />} />
             <Route path="accounting" element={<Accounting />} />

@@ -7,7 +7,6 @@ import { useSelector } from "react-redux";
 
 const Rental = () => {
   const {user}= useSelector((state) => state?.auth);
-  console.log(user);
   
   const [form, setForm] = useState({
     license: "",

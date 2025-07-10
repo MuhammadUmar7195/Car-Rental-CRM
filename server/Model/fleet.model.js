@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 const fleetSchema = new mongoose.Schema({
+    carName: { type: String, required: true },
     model: { type: String, required: true },
     year: { type: Date, required: true },
     registration: { type: String, required: true },

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import FleetCart from "./FleetCart";
 import FleetAddForm from "./FleetAddForm";
+import { PuffLoader } from "react-spinners";
 
 const Fleet = () => {
   const dispatch = useDispatch();
@@ -64,8 +65,8 @@ const Fleet = () => {
       {/* Car Cards */}
       <div className="w-full max-w-6xl mx-auto">
         {loading ? (
-          <div className="col-span-full text-center text-lg text-gray-500 py-10">
-            Loading cars...
+          <div className="flex flex-col items-center justify-center min-h-[40vh] w-full">
+            <PuffLoader color="#9333ea" size={80} speedMultiplier={1.2} />
           </div>
         ) : (
           <FleetCart filteredCars={filteredCars} />

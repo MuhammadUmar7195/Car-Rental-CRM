@@ -66,8 +66,9 @@ const FleetAddForm = ({ onAdd, onCancel }) => {
         </button>
 
         {[
+          { label: "Car Name", name: "carName", type: "text" },
           { label: "Model", name: "model", type: "text" },
-          { label: "Manufacturing Year", name: "year", type: "number", min: 1900, max: new Date().getFullYear() },
+          { label: "Manufacturing Year", name: "year", type: "date", min: 1900, max: new Date().getFullYear() },
           { label: "Registration Number", name: "registration", type: "text" },
           { label: "Fuel Type", name: "fuel", type: "text" },
           { label: "Insurance", name: "insurance", type: "text" },
