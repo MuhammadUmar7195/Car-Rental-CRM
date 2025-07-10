@@ -28,6 +28,12 @@ export const register = async (req, res, next) => {
             return next(new ErrorHandler("Admin already exists with this email or username", 400));
         }
 
+        // Check if the maximum number of admins (2)
+        const adminCount = await Admin.countDocuments();
+        if (adminCount >= 2) {
+            return next(new ErrorHandler("Maximum of 2 admins allowed", 400));
+        }
+
         const admin = new Admin({ username, email, password });
         await admin.save();
 

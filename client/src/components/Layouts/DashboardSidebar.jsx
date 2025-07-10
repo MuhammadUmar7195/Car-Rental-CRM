@@ -108,7 +108,7 @@ const DashboardSidebar = ({ toggleSidebar }) => {
           <span>Inventory</span>
         </NavLink>
         <NavLink
-          to="/dashboard/inventory"
+          to="/dashboard/accounting"
           className={navLinkClass}
           onClick={toggleSidebar}
         >
@@ -116,7 +116,7 @@ const DashboardSidebar = ({ toggleSidebar }) => {
           <span>Accounting</span>
         </NavLink>
         <NavLink
-          to="/dashboard/inventory"
+          to="/dashboard/fleet-owner"
           className={navLinkClass}
           onClick={toggleSidebar}
         >
@@ -124,7 +124,7 @@ const DashboardSidebar = ({ toggleSidebar }) => {
           <span>Fleet Owner</span>
         </NavLink>
         <NavLink
-          to="/dashboard/inventory"
+          to="/dashboard/payment-dues"
           className={navLinkClass}
           onClick={toggleSidebar}
         >
@@ -140,7 +140,7 @@ const DashboardSidebar = ({ toggleSidebar }) => {
           <span>Service</span>
         </NavLink>
         <NavLink
-          to="/dashboard/service"
+          to="/dashboard/setting"
           className={navLinkClass}
           onClick={toggleSidebar}
         >

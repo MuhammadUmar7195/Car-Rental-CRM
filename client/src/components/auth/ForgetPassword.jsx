@@ -13,7 +13,7 @@ import { Link } from "react-router-dom";
 
 const ForgetPassword = () => {
   const dispatch = useDispatch();
-  const { loading } = useSelector((state) => state.auth);
+  const { loading, error } = useSelector((state) => state.auth);
 
   const [step, setStep] = useState(1); // 1: email, 2: otp, 3: reset
   const [email, setEmail] = useState("");
@@ -103,9 +103,10 @@ const ForgetPassword = () => {
               onChange={(e) => setEmail(e.target.value)}
               required
             />
+            {error && <p className="text-red-500 text-center text-sm">{error}</p>}
             <Button
               type="submit"
-              className="bg-purple-700 text-white"
+              className="bg-purple-700 hover:bg-purple-800 text-white cursor-pointer"
               disabled={loading}
             >
               {loading ? "Sending..." : "Send OTP"}
@@ -138,9 +139,10 @@ const ForgetPassword = () => {
                 />
               ))}
             </div>
+            {error && <p className="text-red-500 text-center text-sm">{error}</p>}
             <Button
               type="submit"
-              className="bg-purple-700 text-white"
+              className="bg-purple-700 hover:bg-purple-800 text-white cursor-pointer"
               disabled={loading}
             >
               {loading ? "Verifying..." : "Verify OTP"}
@@ -169,9 +171,10 @@ const ForgetPassword = () => {
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
+            {error && <p className="text-red-500 text-center text-sm">{error}</p>}
             <Button
               type="submit"
-              className="bg-purple-700 text-white"
+              className="bg-purple-700 text-white hover:bg-purple-800 cursor-pointer"
               disabled={loading}
             >
               {loading ? "Resetting..." : "Reset Password"}

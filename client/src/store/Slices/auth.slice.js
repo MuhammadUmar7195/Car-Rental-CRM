@@ -111,7 +111,7 @@ export const logoutUser = createAsyncThunk(
     "auth/logoutUser",
     async (_, { rejectWithValue }) => {
         try {
-            await axios.post(
+            await axios.get(
                 `${import.meta.env.VITE_BACKEND_URL}/api/v1/admin/logout`,
                 {},
                 {
