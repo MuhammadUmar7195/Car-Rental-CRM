@@ -33,7 +33,10 @@ start();
 
 //custom api routes
 import adminRoutes from "./Routes/admin.route.js";
+import fleetRoutes from "./Routes/fleet.routes.js";
+
 app.use("/api/v1/admin", adminRoutes);
+app.use("/api/v1/fleet", fleetRoutes);
 
 //error handling middleware
 import errorMiddleware from "./Middleware/error.js";

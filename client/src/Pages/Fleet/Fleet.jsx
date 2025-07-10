@@ -1,80 +1,76 @@
-
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllFleets } from "@/store/Slices/fleet.slice";
+import { IoIosAdd } from "react-icons/io";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import FleetCart from "./FleetCart";
+import FleetAddForm from "./FleetAddForm";
 
 const Fleet = () => {
-  const [form, setForm] = useState({
-    carName: "",
-    model: "",
-    year: "",
-    registration: "",
-    insurance: "",
-    fuel: "",
-    owner: "",
-    engine: "",
-    color: "",
-    type: "",
-    vin: "",
-    odometer: "",
-    transmission: "",
-    regExpiry: "",
-    inspExpiry: "",
-    businessUse: "",
+  const dispatch = useDispatch();
+  const { fleets, loading } = useSelector((state) => state.fleet) || {};
+
+  const [search, setSearch] = useState("");
+  const [showForm, setShowForm] = useState(false);
+
+  useEffect(() => {
+    dispatch(getAllFleets());
+  }, [dispatch]);
+
+  const filteredCars = fleets.filter((car) => {
+    const query = search.toLowerCase();
+    return (
+      (car.carName && car.carName.toLowerCase().includes(query)) ||
+      (car.model && car.model.toLowerCase().includes(query)) ||
+      (car.registration && car.registration.toLowerCase().includes(query))
+    );
   });
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission logic here
-    console.log(form);
+  // Handler for cancelling add form
+  const handleCancel = () => {
+    setShowForm(false);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <form
-        className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl flex flex-col gap-5"
-        onSubmit={handleSubmit}
-      >
-        <h2 className="text-2xl font-bold text-purple-700 text-center mb-4">Add Car to Fleet</h2>
-        <Label htmlFor="carName">Car Name</Label>
-        <Input id="carName" name="carName" type="text" placeholder="Car Name" value={form.carName} onChange={handleChange} required />
-        <Label htmlFor="model">Model</Label>
-        <Input id="model" name="model" type="text" placeholder="Model" value={form.model} onChange={handleChange} required />
-        <Label htmlFor="year">Manufacturing Year</Label>
-        <Input id="year" name="year" type="number" placeholder="Year" value={form.year} onChange={handleChange} required />
-        <Label htmlFor="registration">Registration Number</Label>
-        <Input id="registration" name="registration" type="text" placeholder="Registration Number" value={form.registration} onChange={handleChange} required />
-        <Label htmlFor="insurance">Insurance</Label>
-        <Input id="insurance" name="insurance" type="text" placeholder="Insurance" value={form.insurance} onChange={handleChange} required />
-        <Label htmlFor="fuel">Fuel Type</Label>
-        <Input id="fuel" name="fuel" type="text" placeholder="Fuel Type" value={form.fuel} onChange={handleChange} required />
-        <Label htmlFor="owner">Owner</Label>
-        <Input id="owner" name="owner" type="text" placeholder="Owner" value={form.owner} onChange={handleChange} required />
-        <Label htmlFor="engine">Engine Number</Label>
-        <Input id="engine" name="engine" type="text" placeholder="Engine Number" value={form.engine} onChange={handleChange} required />
-        <Label htmlFor="color">Color</Label>
-        <Input id="color" name="color" type="text" placeholder="Color" value={form.color} onChange={handleChange} required />
-        <Label htmlFor="type">Type</Label>
-        <Input id="type" name="type" type="text" placeholder="Type (e.g. SUV, Sedan)" value={form.type} onChange={handleChange} required />
-        <Label htmlFor="vin">VIN Number</Label>
-        <Input id="vin" name="vin" type="text" placeholder="VIN Number" value={form.vin} onChange={handleChange} required />
-        <Label htmlFor="odometer">Odometer</Label>
-        <Input id="odometer" name="odometer" type="number" placeholder="Odometer" value={form.odometer} onChange={handleChange} required />
-        <Label htmlFor="transmission">Transmission</Label>
-        <Input id="transmission" name="transmission" type="text" placeholder="Transmission" value={form.transmission} onChange={handleChange} required />
-        <Label htmlFor="regExpiry">Expiry Date of Registration</Label>
-        <Input id="regExpiry" name="regExpiry" type="date" value={form.regExpiry} onChange={handleChange} required />
-        <Label htmlFor="inspExpiry">Vehicle Inspection Report Expiry Date</Label>
-        <Input id="inspExpiry" name="inspExpiry" type="date" value={form.inspExpiry} onChange={handleChange} required />
-        <Label htmlFor="businessUse">Business Use</Label>
-        <Input id="businessUse" name="businessUse" type="text" placeholder="Business Use" value={form.businessUse} onChange={handleChange} required />
-        <Button type="submit" className="bg-purple-700 text-white rounded px-4 py-2 font-semibold hover:bg-purple-800 transition-colors cursor-pointer">Add Car</Button>
-      </form>
+    <div className="min-h-screen flex flex-col items-start px-2 py-8">
+      {/* Top Controls */}
+      <div className="w-full max-w-5xl flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
+        <Input
+          type="text"
+          placeholder="Search vehicle"
+          className="border border-orange-400 w-full md:w-1/2 max-w-md mx-auto"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <Button
+          className="bg-purple-700 hover:bg-purple-800 text-white font-semibold cursor-pointer flex items-center gap-2 px-6 py-3 rounded-lg shadow-md"
+          onClick={() => setShowForm(true)}
+        >
+          <IoIosAdd size={22} />
+          Add Car
+        </Button>
+      </div>
+
+      {/* Add Car Form */}
+      {showForm && (
+        <div className="w-full flex justify-center mb-8">
+          <div className="w-full max-w-6xl px-4">
+            <FleetAddForm onCancel={handleCancel} />
+          </div>
+        </div>
+      )}
+
+      {/* Car Cards */}
+      <div className="w-full max-w-6xl mx-auto">
+        {loading ? (
+          <div className="col-span-full text-center text-lg text-gray-500 py-10">
+            Loading cars...
+          </div>
+        ) : (
+          <FleetCart filteredCars={filteredCars} />
+        )}
+      </div>
     </div>
   );
 };
