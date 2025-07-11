@@ -22,7 +22,6 @@ const SingleCustomerDetail = () => {
     useSelector((state) => state.customer) || {};
 
   useEffect(() => {
-    console.log("Dispatching getSingleCustomer with ID:", id);
     if (!singleCustomer || singleCustomer._id !== id) {
       dispatch(getSingleCustomer(id));
     }

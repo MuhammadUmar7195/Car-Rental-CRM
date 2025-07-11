@@ -6,9 +6,6 @@ import { useNavigate } from "react-router-dom";
 
 const CustomerCart = ({ filteredCustomers }) => {
   const navigate = useNavigate();
-  console.log(filteredCustomers);
-  
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-8 w-full px-2 md:px-4">
       {filteredCustomers.map((customer, index) => (

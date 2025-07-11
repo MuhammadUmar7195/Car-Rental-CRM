@@ -2,7 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import DashboardLayout from "./components/Layouts/DashboardLayout";
 import Login from "./components/auth/Login";
 import Home from "./Pages/Home/Home";
-import Rental from "./Pages/Rental/Rental";
+import Rental from "./Pages/Rental/RentalCarStatus";
 import Fleet from "./Pages/Fleet/Fleet";
 import Customer from "./Pages/Customer/Customer";
 import Inventory from "./Pages/Inventory/Inventory";

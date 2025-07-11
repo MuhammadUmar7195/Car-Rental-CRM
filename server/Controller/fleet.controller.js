@@ -137,3 +137,22 @@ export const updateFleet = async (req, res, next) => {
         next(error);
     }
 }
+
+//get cars name according to status
+export const getCarsByStatus = async (req, res, next) => {
+    try {
+        const { businessUse } = req.query; 
+        if (!businessUse) {
+            return next(new ErrorHandler("Status query parameter is required", 400));
+        }
+
+        const fleets = await Fleet.find({ businessUse });
+        if (!fleets || fleets.length === 0) {
+            return next(new ErrorHandler("No fleets found for the given status", 404));
+        }
+
+        res.status(200).json({ fleets });
+    } catch (error) {
+        next(error);
+    }
+};
