@@ -1,8 +1,7 @@
 import React, { useEffect } from "react";
-import { IoChevronBackSharp } from "react-icons/io5";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getSingleFleet } from "../../store/Slices/fleet.slice";
+import { getSingleCustomer } from "../../store/Slices/customer.slice";
 import {
   Card,
   CardHeader,
@@ -13,19 +12,21 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PuffLoader } from "react-spinners";
+import { IoChevronBackSharp } from "react-icons/io5";
 
-const SingleFleetDetail = () => {
+const SingleCustomerDetail = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { singleFleet, loading, error } =
-    useSelector((state) => state.fleet) || {};
+  const { singleCustomer, loading, error } =
+    useSelector((state) => state.customer) || {};
 
   useEffect(() => {
-    if (!singleFleet || singleFleet._id !== id) {
-      dispatch(getSingleFleet(id));
+    console.log("Dispatching getSingleCustomer with ID:", id);
+    if (!singleCustomer || singleCustomer._id !== id) {
+      dispatch(getSingleCustomer(id));
     }
-  }, [dispatch, id, singleFleet]);
+  }, [dispatch, id, singleCustomer]);
 
   if (loading) {
     return (
@@ -46,10 +47,10 @@ const SingleFleetDetail = () => {
     );
   }
 
-  if (!singleFleet) {
+  if (!singleCustomer) {
     return (
       <div className="text-center py-10 text-lg text-gray-500">
-        Car not found.{" "}
+        Customer not found.{" "}
         <Button variant="link" onClick={() => navigate(-1)}>
           Go Back
         </Button>
@@ -57,13 +58,13 @@ const SingleFleetDetail = () => {
     );
   }
 
-  const car = singleFleet;
-  const isRented = car.status?.toLowerCase() === "rented";
+  const customer = singleCustomer;
+  const isExpired = new Date(customer.expiryDate) < new Date();
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-2 py-8 bg-muted">
-      <Card className="w-full max-w-5xl shadow-xl rounded-3xl bg-white p-4 md:p-6">
-        <CardHeader className="flex flex-col items-center text-center relative">
+      <Card className="w-full max-w-5xl shadow-xl rounded-3xl bg-white p-4 md:p-6 relative">
+        <CardHeader className="flex flex-col items-center text-center">
           <Button
             onClick={() => navigate(`/dashboard/customer`)}
             className="absolute left-4 top-4 px-3 py-2 font-semibold bg-purple-700 text-white hover:bg-purple-800 cursor-pointer rounded-full"
@@ -71,17 +72,17 @@ const SingleFleetDetail = () => {
             <IoChevronBackSharp />
           </Button>
           <CardTitle className="text-3xl font-bold text-purple-800 mb-2 uppercase">
-            {car.carName || "N/A"}
+            {customer.name || "N/A"}
           </CardTitle>
           <CardDescription>
             <Badge
               className={`px-4 py-1 rounded-full text-sm font-medium ${
-                isRented
+                isExpired
                   ? "bg-red-100 text-red-700 border border-red-300"
                   : "bg-green-100 text-green-700 border border-green-300"
               }`}
             >
-              {car.businessUse || "Available"}
+              {isExpired ? "License Expired" : "Active License"}
             </Badge>
           </CardDescription>
         </CardHeader>
@@ -90,42 +91,26 @@ const SingleFleetDetail = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Left Section */}
             <div className="space-y-2 text-sm text-gray-700">
-              <Info label="Model" value={car.model} />
+              <Info label="License Number" value={customer.licenseNo} />
               <Info
-                label="Year"
+                label="License Expiry"
                 value={
-                  car.year ? new Date(car.year).toLocaleDateString("en-GB") : ""
+                  customer.expiryDate
+                    ? new Date(customer.expiryDate).toLocaleDateString("en-GB")
+                    : ""
                 }
               />
-              <Info label="Registration" value={car.registration || "N/A"} />
-              <Info label="Color" value={car.color || "N/A"} />
-              <Info label="Fuel" value={car.fuel || "N/A"} />
-              <Info label="Type" value={car.type || "N/A"} />
-              <Info label="Owner" value={car.owner || "N/A"} />
+              <Info label="Phone" value={customer.phone || "N/A"} />
+              <Info label="Email" value={customer.email || "N/A"} />
+              <Info label="DC Number" value={customer.dcNumber || "N/A"} />
             </div>
 
             {/* Right Section */}
             <div className="space-y-2 text-sm text-gray-700">
-              <Info label="VIN" value={car.vin || "N/A"} />
-              <Info label="Engine" value={car.engine || "N/A"} />
-              <Info label="Odometer" value={car.odometer || "N/A"} />
-              <Info label="Transmission" value={car.transmission || "N/A"} />
-              <Info
-                label="Reg Expiry"
-                value={
-                  car.regExpiry
-                    ? new Date(car.regExpiry).toLocaleDateString("en-GB")
-                    : ""
-                }
-              />
-              <Info
-                label="Inspection Expiry"
-                value={
-                  car.inspExpiry
-                    ? new Date(car.inspExpiry).toLocaleDateString("en-GB")
-                    : ""
-                }
-              />
+              <Info label="Suburb" value={customer.suburb || "N/A"} />
+              <Info label="State" value={customer.state || "N/A"} />
+              <Info label="Postal Code" value={customer.postalCode || "N/A"} />
+              <Info label="Address" value={customer.address || "N/A"} />
             </div>
           </div>
 
@@ -133,16 +118,20 @@ const SingleFleetDetail = () => {
             <Button
               variant="outline"
               className="px-6 py-2 font-semibold border-green-600 text-green-700 hover:bg-green-50 hover:border-green-700 cursor-pointer"
-              onClick={() => navigate(`#`)}
+              onClick={() =>
+                navigate(`/dashboard/rental?customerId=${customer._id}`)
+              }
             >
-              Rental
+              Create Rental
             </Button>
             <Button
               variant="outline"
               className="px-6 py-2 font-semibold border-blue-600 text-blue-700 hover:bg-blue-50 hover:border-blue-700 cursor-pointer"
-              onClick={() => navigate(`#`)}
+              onClick={() =>
+                navigate(`/dashboard/customer/edit/${customer._id}`)
+              }
             >
-              Service
+              Edit Customer
             </Button>
           </div>
         </CardContent>
@@ -159,4 +148,4 @@ const Info = ({ label, value }) => (
   </div>
 );
 
-export default SingleFleetDetail;
+export default SingleCustomerDetail;

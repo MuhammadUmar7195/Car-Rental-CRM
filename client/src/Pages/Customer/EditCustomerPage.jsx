@@ -1,44 +1,42 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getSingleFleet, updateFleet } from "../../store/Slices/fleet.slice";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PuffLoader } from "react-spinners";
+import {
+  getSingleCustomer,
+  updateCustomer,
+} from "@/store/Slices/customer.slice";
 import { toast } from "sonner";
 
-// Utility to format date
-const formatDate = (dateStr) => {
-  if (!dateStr) return "";
-  return new Date(dateStr).toISOString().split("T")[0];
-};
-
-const EditFleetPage = () => {
+const EditCustomerPage = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { singleFleet, loading, error } = useSelector(
-    (state) => state.fleet || {}
+  const { singleCustomer, loading, error } = useSelector(
+    (state) => state.customer || {}
   );
+
   const [form, setForm] = useState(null);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [submitError, setSubmitError] = useState("");
 
   useEffect(() => {
-    if (!singleFleet || singleFleet._id !== id) {
-      dispatch(getSingleFleet(id));
+    if (!singleCustomer || singleCustomer._id !== id) {
+      dispatch(getSingleCustomer(id));
     } else {
-      setForm({ ...singleFleet });
+      setForm({ ...singleCustomer });
     }
-  }, [dispatch, id, singleFleet]);
+  }, [dispatch, id, singleCustomer]);
 
   useEffect(() => {
-    if (singleFleet && singleFleet._id === id) {
-      setForm({ ...singleFleet });
+    if (singleCustomer && singleCustomer._id === id) {
+      setForm({ ...singleCustomer });
     }
-  }, [singleFleet, id]);
+  }, [singleCustomer, id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -51,8 +49,10 @@ const EditFleetPage = () => {
     setSubmitError("");
 
     try {
-      await dispatch(updateFleet({ fleetId: id, fleetData: form })).unwrap();
-      toast.success("Fleet updated successfully!");
+      await dispatch(
+        updateCustomer({ customerId: id, customerData: form })
+      ).unwrap();
+      toast.success("Customer updated successfully!");
       navigate(-1);
     } catch (err) {
       setSubmitError(err?.message || "Update failed");
@@ -84,32 +84,26 @@ const EditFleetPage = () => {
     <div className="min-h-screen flex items-center justify-center px-4 py-10 bg-muted">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-5xl bg-white p-8 rounded-2xl shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6"
+        className="w-full max-w-3xl bg-white p-8 rounded-2xl shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6"
       >
         <h2 className="text-3xl font-bold text-purple-700 col-span-full text-center mb-2">
-          Edit Fleet Details
+          Edit Customer Details
         </h2>
 
         {[
-          { label: "Car Name", name: "carName", type: "text" },
-          { label: "Model", name: "model", type: "text" },
-          { label: "Manufacturing Year", name: "year", type: "date" },
-          { label: "Registration Number", name: "registration", type: "text" },
-          { label: "Fuel Type", name: "fuel", type: "text" },
-          { label: "Insurance", name: "insurance", type: "text" },
-          { label: "Owner", name: "owner", type: "text" },
-          { label: "VIN Number", name: "vin", type: "text" },
-          { label: "Engine Number", name: "engine", type: "text" },
-          { label: "Color", name: "color", type: "text" },
-          { label: "Type", name: "type", type: "text" },
-          { label: "Odometer", name: "odometer", type: "number", min: 0 },
-          { label: "Transmission", name: "transmission", type: "text" },
-          { label: "Registration Expiry", name: "regExpiry", type: "date" },
-          { label: "Inspection Expiry", name: "inspExpiry", type: "date" },
-          { label: "Business Use", name: "businessUse", type: "text" },
+          { label: "Full Name", name: "name", type: "text" },
+          { label: "License Number", name: "licenseNo", type: "text" },
+          { label: "License Expiry", name: "licenseExpiry", type: "date" },
+          { label: "Phone Number", name: "phone", type: "text" },
+          { label: "Email", name: "email", type: "email" },
+          { label: "DC Number", name: "dcNumber", type: "text" },
+          { label: "Suburb", name: "suburb", type: "text" },
+          { label: "State", name: "state", type: "text" },
+          { label: "Address", name: "address", type: "text" },
+          { label: "Postal Code", name: "postalCode", type: "text" },
         ].map(({ label, name, type, ...rest }) => (
           <div key={name}>
-            <Label htmlFor={name} className={`mb-2`}>
+            <Label htmlFor={name} className="mb-2">
               {label}
             </Label>
             <Input
@@ -118,7 +112,9 @@ const EditFleetPage = () => {
               type={type}
               placeholder={label}
               value={
-                type === "date" ? formatDate(form[name]) : form[name] || ""
+                type === "date" && form[name]
+                  ? new Date(form[name]).toISOString().split("T")[0]
+                  : form[name] || ""
               }
               onChange={handleChange}
               disabled={submitLoading}
@@ -137,7 +133,7 @@ const EditFleetPage = () => {
           <Button
             type="button"
             variant="outline"
-            className={`cursor-pointer`}
+            className="cursor-pointer"
             onClick={() => navigate(-1)}
             disabled={submitLoading}
           >
@@ -148,7 +144,7 @@ const EditFleetPage = () => {
             className="bg-purple-700 text-white hover:bg-purple-800 cursor-pointer"
             disabled={submitLoading}
           >
-            {submitLoading ? "Updating..." : "Update Fleet"}
+            {submitLoading ? "Updating..." : "Update Customer"}
           </Button>
         </div>
       </form>
@@ -156,4 +152,4 @@ const EditFleetPage = () => {
   );
 };
 
-export default EditFleetPage;
+export default EditCustomerPage;

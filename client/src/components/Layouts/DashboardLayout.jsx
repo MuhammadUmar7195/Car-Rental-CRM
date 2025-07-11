@@ -16,7 +16,7 @@ const DashboardLayout = () => {
       <div className="flex md:hidden items-center p-4 bg-white shadow z-40 sticky top-0 left-0 w-full">
         <button
           onClick={toggleSidebar}
-          className="p-2 rounded-md text-gray-700 hover:bg-gray-100 transition"
+          className="p-2 rounded-md text-gray-700 hover:bg-gray-100 transition cursor-pointer"
         >
           <FaBars size={20} />
         </button>

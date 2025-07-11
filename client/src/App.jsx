@@ -18,6 +18,8 @@ import Setting from "./Pages/Setting/Setting";
 import Navbar from "./components/Common/Navbar";
 import SingleFleetDetail from "./Pages/Fleet/SingleFleetDetail";
 import EditFleetPage from "./Pages/Fleet/EditFleetPage";
+import EditCustomerPage from "./Pages/Customer/EditCustomerPage";
+import SingleCustomerDetail from "./Pages/Customer/SingleCustomerDetail";
 
 function App() {
   return (
@@ -62,10 +64,17 @@ function App() {
           >
             <Route index element={<Home />} />
             <Route path="rental" element={<Rental />} />
+            
+            //All Fleet Routes
             <Route path="fleet" element={<Fleet />} />
             <Route path="fleet/:id" element={<SingleFleetDetail />} />
             <Route path="fleet/edit/:id" element={<EditFleetPage />} />
+
+            //All Customer Routes
             <Route path="customer" element={<Customer />} />
+            <Route path="customer/:id" element={<SingleCustomerDetail />} />
+            <Route path="customer/edit/:id" element={<EditCustomerPage />} />
+
             <Route path="inventory" element={<Inventory />} />
             <Route path="accounting" element={<Accounting />} />
             <Route path="fleet-owner" element={<FleetOwner />} />
@@ -74,7 +83,15 @@ function App() {
             <Route path="setting" element={<Setting />} />
           </Route>
           {/* Global catch-all route to redirect to login */}
-          <Route path="*" element={<Login />} />
+          <Route
+            path="*"
+            element={
+              <>
+                <Navbar />
+                <Login />
+              </>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </>

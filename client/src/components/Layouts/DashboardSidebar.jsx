@@ -46,7 +46,7 @@ const DashboardSidebar = ({ toggleSidebar }) => {
           className="rounded-full bg-white/10 hover:bg-white/30 transition p-2 shadow-md border border-white/20 cursor-pointer"
           style={{ outline: "none" }}
         >
-          <FaTimes size={16} className="text-white" />
+          <FaTimes size={16} className="text-black" />
         </button>
       </div>
 
