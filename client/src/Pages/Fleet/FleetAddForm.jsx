@@ -59,7 +59,7 @@ const FleetAddForm = ({ onAdd, onCancel }) => {
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded-2xl shadow-lg grid grid-cols-1 md:grid-cols-2 gap-6"
       >
-        <h2 className="text-2xl font-bold text-purple-700 col-span-full text-center">
+        <h2 className="text-2xl font-bold text-purple-700 col-span-full text-center uppercase">
           Add Car to Fleet
         </h2>
         <button

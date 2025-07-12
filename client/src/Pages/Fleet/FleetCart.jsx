@@ -7,7 +7,7 @@ import { MdModeEditOutline } from "react-icons/md";
 
 const FleetCart = ({ filteredCars }) => {
   const navigate = useNavigate();
-console.log(filteredCars);
+console.log(filteredCars[0]?.status);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-8 w-full px-2 md:px-4">
@@ -105,7 +105,7 @@ console.log(filteredCars);
                   variant={car.status?.toLowerCase() === 'Rented' ? 'destructive' : 'success'}
                   className="text-xs px-4 py-1 rounded-full font-semibold shadow-sm"
                 >
-                  {car.status?.toLowerCase() === 'Available' ? 'Rented' : 'Available'}
+                  {car.status === 'Rented' ? 'Rented' : 'Available'}
                 </Badge>              
               </div>
               <Button

@@ -86,7 +86,7 @@ const EditCustomerPage = () => {
         onSubmit={handleSubmit}
         className="w-full max-w-3xl bg-white p-8 rounded-2xl shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6"
       >
-        <h2 className="text-3xl font-bold text-purple-700 col-span-full text-center mb-2">
+        <h2 className="text-3xl font-bold text-purple-700 col-span-full text-center mb-2 uppercase">
           Edit Customer Details
         </h2>
 
