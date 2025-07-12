@@ -1,7 +1,7 @@
 import express from 'express';
 import {
     getAllCustomers,
-    getCustomersWithLicense,
+    getCustomerByLicenseNo,
     getSingleCustomer,
     postCustomer,
     updateCustomer
@@ -10,7 +10,7 @@ import {
 const router = express.Router();
 
 //Get customers who have a license
-router.get('/with-license', getCustomersWithLicense);
+router.get('/license/:licenseNo', getCustomerByLicenseNo);
 
 //other routes for crud operations
 router.post('/add', postCustomer);

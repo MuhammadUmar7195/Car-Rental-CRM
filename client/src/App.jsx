@@ -2,7 +2,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import DashboardLayout from "./components/Layouts/DashboardLayout";
 import Login from "./components/auth/Login";
 import Home from "./Pages/Home/Home";
-import Rental from "./Pages/Rental/RentalCarStatus";
 import Fleet from "./Pages/Fleet/Fleet";
 import Customer from "./Pages/Customer/Customer";
 import Inventory from "./Pages/Inventory/Inventory";
@@ -20,6 +19,7 @@ import SingleFleetDetail from "./Pages/Fleet/SingleFleetDetail";
 import EditFleetPage from "./Pages/Fleet/EditFleetPage";
 import EditCustomerPage from "./Pages/Customer/EditCustomerPage";
 import SingleCustomerDetail from "./Pages/Customer/SingleCustomerDetail";
+import RentalFlow from "./Pages/Rental/RentalFlow";
 
 function App() {
   return (
@@ -63,7 +63,8 @@ function App() {
             }
           >
             <Route index element={<Home />} />
-            <Route path="rental" element={<Rental />} />
+            //All rental routes
+            <Route path="rental" element={<RentalFlow />} />
             
             //All Fleet Routes
             <Route path="fleet" element={<Fleet />} />
