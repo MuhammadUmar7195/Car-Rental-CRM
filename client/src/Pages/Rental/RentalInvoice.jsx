@@ -1,0 +1,160 @@
+import React from "react";
+import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
+
+const styles = StyleSheet.create({
+  page: {
+    padding: 30,
+    fontFamily: "Helvetica",
+    backgroundColor: "#fff",
+  },
+  heading: {
+    fontSize: 24,
+    marginBottom: 20,
+    textAlign: "center",
+    color: "#2563eb", // blue
+    fontWeight: "bold",
+    letterSpacing: 2,
+    paddingBottom: 10,
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 20,
+    gap: 12,
+  },
+  box: {
+    padding: 12,
+    width: "48%",
+    backgroundColor: "#f8fafc", // very light gray
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: "bold",
+    marginBottom: 8,
+    color: "#2563eb", // blue
+    letterSpacing: 1,
+  },
+  label: {
+    fontSize: 12,
+    fontWeight: "bold",
+    color: "#222", // black
+  },
+  value: {
+    fontSize: 12,
+    marginBottom: 5,
+    color: "#444", // dark gray
+  },
+  invoiceBox: {
+    padding: 18,
+    backgroundColor: "#e0e7ff", // light blue
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  invoiceTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 10,
+    color: "#2563eb", // blue
+    textAlign: "center",
+    letterSpacing: 1,
+    paddingBottom: 6,
+  },
+  invoiceRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 6,
+  },
+  totalLabel: {
+    fontSize: 13,
+    fontWeight: "bold",
+    color: "#2563eb", // blue
+  },
+  totalValue: {
+    fontSize: 13,
+    fontWeight: "bold",
+    color: "#2563eb", // blue
+  },
+  footer: {
+    marginTop: 30,
+    textAlign: "center",
+    fontSize: 11,
+    color: "#222",
+    paddingTop: 10,
+    fontStyle: "italic",
+  },
+});
+
+const RentalInvoice = ({ selectedCar, selectedCustomer, rentalData }) => {
+  const remainingAmount =
+    (parseFloat(rentalData.setPrice) || 0) - (parseFloat(rentalData.advanceRent) || 0);
+
+  return (
+    <Document>
+      <Page size="A4" style={styles.page}>
+        <Text style={styles.heading}>Rental Invoice</Text>
+
+        {/* Customer & Car Details Side by Side */}
+        <View style={styles.row}>
+          <View style={styles.box}>
+            <Text style={styles.sectionTitle}>Customer Details</Text>
+            <Text style={styles.label}>Name:</Text>
+            <Text style={styles.value}>{selectedCustomer.name}</Text>
+            <Text style={styles.label}>License No:</Text>
+            <Text style={styles.value}>{selectedCustomer.licenseNo}</Text>
+            <Text style={styles.label}>Phone:</Text>
+            <Text style={styles.value}>{selectedCustomer.phone}</Text>
+            <Text style={styles.label}>Email:</Text>
+            <Text style={styles.value}>{selectedCustomer.email}</Text>
+          </View>
+          <View style={styles.box}>
+            <Text style={styles.sectionTitle}>Car Details</Text>
+            <Text style={styles.label}>Car Name:</Text>
+            <Text style={styles.value}>{selectedCar.carName}</Text>
+            <Text style={styles.label}>Model:</Text>
+            <Text style={styles.value}>{selectedCar.model}</Text>
+            <Text style={styles.label}>Registration:</Text>
+            <Text style={styles.value}>{selectedCar.registration}</Text>
+            <Text style={styles.label}>Color:</Text>
+            <Text style={styles.value}>{selectedCar.color}</Text>
+          </View>
+        </View>
+
+        {/* Rental Data Box */}
+        <View style={styles.invoiceBox}>
+          <Text style={styles.invoiceTitle}>Rental Details</Text>
+          <View style={styles.invoiceRow}>
+            <Text style={styles.label}>Rental Date:</Text>
+            <Text style={styles.value}>{rentalData.rentalDate}</Text>
+          </View>
+          <View style={styles.invoiceRow}>
+            <Text style={styles.label}>Purpose:</Text>
+            <Text style={styles.value}>{rentalData.purpose}</Text>
+          </View>
+          <View style={styles.invoiceRow}>
+            <Text style={styles.label}>Set Price:</Text>
+            <Text style={styles.value}>Rs. {rentalData.setPrice}</Text>
+          </View>
+          <View style={styles.invoiceRow}>
+            <Text style={styles.label}>Bond:</Text>
+            <Text style={styles.value}>Rs. {rentalData.bond || 0}</Text>
+          </View>
+          <View style={styles.invoiceRow}>
+            <Text style={styles.label}>Advance Rent:</Text>
+            <Text style={styles.value}>Rs. {rentalData.advanceRent || 0}</Text>
+          </View>
+          <View style={styles.invoiceRow}>
+            <Text style={styles.totalLabel}>Remaining Amount:</Text>
+            <Text style={styles.totalValue}>Rs. {remainingAmount}</Text>
+          </View>
+        </View>
+
+        {/* Footer Paragraph */}
+        <Text style={styles.footer}>
+          This is a computer generated invoice and does not require a physical signature. All details are auto-generated by the system for your records.
+        </Text>
+      </Page>
+    </Document>
+  );
+};
+
+export default RentalInvoice;

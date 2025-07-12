@@ -9,7 +9,9 @@ import { FaFileAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { downloadCSV } from "@/Helpers/csv.helper";
+import RentalInvoice from "./RentalInvoice";
+import { PDFDownloadLink, pdf } from "@react-pdf/renderer";
+import { saveAs } from "file-saver";
 
 const RentalForm = ({ selectedCar, selectedCustomer }) => {
   const [formData, setFormData] = useState({
@@ -20,7 +22,7 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
     advanceRent: "",
   });
   const [loading, setLoading] = useState(false);
-  const [setError] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -52,7 +54,7 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
         fleetId: selectedCar._id,
         rentalData: {
           ...formData,
-          bond: parseFloat(formData.bond), // for example: parseFloat(3.15 degree) => ouput: 3.15
+          bond: parseFloat(formData.bond),
           advanceRent: parseFloat(formData.advanceRent),
           setPrice: parseFloat(formData.setPrice),
         },
@@ -66,21 +68,16 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
 
       if (response?.data?.success) {
         toast.success("Rental created successfully!");
-        // Prepare rental data to download
-        const csvData = {
-          Car: `${selectedCar?.carName} (${selectedCar?.registration})`,
-          Customer: `${selectedCustomer?.name} (${selectedCustomer?.licenseNo})`,
-          RentalDate: formData.rentalDate,
-          Purpose: formData.purpose,
-          SetPrice: formData.setPrice,
-          Bond: formData.bond,
-          AdvanceRent: formData.advanceRent,
-          CreatedAt: new Date().toLocaleString(),
-        };
-        
-        // Trigger CSV download
-        downloadCSV("rental-details.csv", csvData);
+        const rentalDoc = (
+          <RentalInvoice
+            selectedCar={selectedCar}
+            selectedCustomer={selectedCustomer}
+            rentalData={rentalData.rentalData}
+          />
+        );
 
+        const blob = await pdf(rentalDoc).toBlob();
+        saveAs(blob, "RentalInvoice.pdf");
         navigate("/dashboard");
       }
     } catch (err) {
@@ -101,6 +98,9 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        {error && (
+          <div className="text-red-500 text-sm text-center">{error}</div>
+        )}
         <div>
           <Label className="block text-sm font-medium mb-1">
             Selected Car <span className="text-xs text-gray-500">(fixed)</span>

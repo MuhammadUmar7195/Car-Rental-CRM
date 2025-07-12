@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getSingleCustomer } from "../../store/Slices/customer.slice";
@@ -13,6 +13,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PuffLoader } from "react-spinners";
 import { IoChevronBackSharp } from "react-icons/io5";
+import { IoCopyOutline } from "react-icons/io5";
+import { IoIosCheckmark } from "react-icons/io";
 
 const SingleCustomerDetail = () => {
   const { id } = useParams();
@@ -20,6 +22,8 @@ const SingleCustomerDetail = () => {
   const navigate = useNavigate();
   const { singleCustomer, loading, error } =
     useSelector((state) => state.customer) || {};
+
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (!singleCustomer || singleCustomer._id !== id) {
@@ -90,7 +94,21 @@ const SingleCustomerDetail = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Left Section */}
             <div className="space-y-2 text-sm text-gray-700">
-              <Info label="License Number" value={customer.licenseNo} />
+              <div className="flex items-center gap-2">
+                <Info label="License Number" value={customer.licenseNo} />
+                <button
+                  type="button"
+                  className="cursor-pointer"
+                  onClick={() => {
+                    navigator.clipboard.writeText(customer.licenseNo || "");
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 1200);
+                  }}
+                >
+                 
+                  {copied ? <IoIosCheckmark size={15}/> : <IoCopyOutline />}
+                </button>
+              </div>
               <Info
                 label="License Expiry"
                 value={
