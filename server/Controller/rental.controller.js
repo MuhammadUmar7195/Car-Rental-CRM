@@ -5,38 +5,54 @@ import ErrorHandler from '../Utils/ErrorHandler.js';
 
 export const createRentalOrder = async (req, res, next) => {
     try {
-        const { customerId, vehicleId, rentalData } = req.body;
+        const { customerId, fleetId, rentalData } = req.body;
+
+        // Validate required fields based on new schema
+        if (!customerId || !fleetId || !rentalData?.rentalDate || !rentalData?.purpose || 
+            !rentalData?.setPrice || !rentalData?.bond || !rentalData?.advanceRent) {
+            return next(new ErrorHandler('Missing required rental data', 400));
+        }
 
         const customer = await Customer.findById(customerId);
-        const fleet = await Fleet.findById(vehicleId);
+        const fleet = await Fleet.findById(fleetId);
 
         if (!customer || !fleet) {
             return next(new ErrorHandler('Customer or vehicle not found', 404));
         }
 
-        if (!fleet.isAvailable) {
+        // Check if vehicle is available for rental
+        if (fleet.status === "Rented") {
             return next(new ErrorHandler('Vehicle is not available for rental', 400));
         }
 
-        const startDate = new Date(rentalData.startDate);
-        const endDate = new Date(rentalData.endDate);
-        const days = Math.max(1, Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)));
-        const totalPrice = days * fleet.dailyRate;
+        const remainingAmount = rentalData.setPrice - (rentalData.advanceRent || 0);
 
         const rentalOrder = new RentalOrder({
             customer: customerId,
-            fleet: vehicleId,
-            startDate,
-            endDate,
-            totalPrice,
-            ...rentalData
+            fleet: fleetId,
+            bookingDate: new Date(), 
+            rentalDate: new Date(rentalData.rentalDate),
+            purpose: rentalData.purpose,
+            setPrice: rentalData.setPrice,
+            overdue: rentalData.overdue || 0,
+            bond: rentalData.bond,
+            advanceRent: rentalData.advanceRent,
+            totalBill: rentalData.setPrice, 
+            amountPaid: rentalData.advanceRent || 0,
+            remainingAmount: remainingAmount,
+            status: 'reserved', 
+            paymentStatus: rentalData.advanceRent > 0 ? 'partial' : 'pending'
         });
-        await rentalOrder.save();
 
-        fleet.isAvailable = false;
+        await rentalOrder.save();
+        fleet.status = "Rented";
         await fleet.save();
 
-        return res.status(201).json({ success: true, message: "Rental order created successfully", rentalOrder });
+        return res.status(201).json({ 
+            success: true, 
+            message: "Rental order created successfully", 
+            data: rentalOrder 
+        });
     } catch (error) {
         next(error);
     }

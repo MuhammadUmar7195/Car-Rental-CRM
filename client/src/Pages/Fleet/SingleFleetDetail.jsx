@@ -20,6 +20,7 @@ const SingleFleetDetail = () => {
   const navigate = useNavigate();
   const { singleFleet, loading, error } =
     useSelector((state) => state.fleet) || {};
+console.log(singleFleet);
 
   useEffect(() => {
     if (!singleFleet || singleFleet._id !== id) {
@@ -65,7 +66,7 @@ const SingleFleetDetail = () => {
       <Card className="w-full max-w-5xl shadow-xl rounded-3xl bg-white p-4 md:p-6">
         <CardHeader className="flex flex-col items-center text-center relative">
           <Button
-            onClick={() => navigate(`/dashboard/customer`)}
+            onClick={() => navigate(`/dashboard/fleet`)}
             className="absolute left-4 top-4 px-3 py-2 font-semibold bg-purple-700 text-white hover:bg-purple-800 cursor-pointer rounded-full"
           >
             <IoChevronBackSharp />
@@ -81,7 +82,7 @@ const SingleFleetDetail = () => {
                   : "bg-green-100 text-green-700 border border-green-300"
               }`}
             >
-              {car.businessUse || "Available"}
+              {car?.status || "N/A"}
             </Badge>
           </CardDescription>
         </CardHeader>
@@ -110,6 +111,7 @@ const SingleFleetDetail = () => {
               <Info label="Engine" value={car.engine || "N/A"} />
               <Info label="Odometer" value={car.odometer || "N/A"} />
               <Info label="Transmission" value={car.transmission || "N/A"} />
+              <Info label="Business Use" value={car.businessUse || "N/A"} />
               <Info
                 label="Reg Expiry"
                 value={

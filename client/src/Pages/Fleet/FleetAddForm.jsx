@@ -5,6 +5,12 @@ import { postFleet } from "@/store/Slices/fleet.slice";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
 
 const FleetAddForm = ({ onAdd, onCancel }) => {
   const dispatch = useDispatch();
@@ -65,42 +71,77 @@ const FleetAddForm = ({ onAdd, onCancel }) => {
           <IoMdClose size={24} />
         </button>
 
-        {[
-          { label: "Car Name", name: "carName", type: "text" },
-          { label: "Model", name: "model", type: "text" },
-          { label: "Manufacturing Year", name: "year", type: "date", min: 1900, max: new Date().getFullYear() },
-          { label: "Registration Number", name: "registration", type: "text" },
-          { label: "Fuel Type", name: "fuel", type: "text" },
-          { label: "Insurance", name: "insurance", type: "text" },
-          { label: "Owner", name: "owner", type: "text" },
-          { label: "VIN Number", name: "vin", type: "text" },
-          { label: "Engine Number", name: "engine", type: "text" },
-          { label: "Color", name: "color", type: "text" },
-          { label: "Type", name: "type", type: "text" },
-          { label: "Odometer", name: "odometer", type: "number", min: 0 },
-          { label: "Transmission", name: "transmission", type: "text" },
-          { label: "Expiry Date", name: "regExpiry", type: "date" },
-          {
-            label: "Inspection Report Expiry Date",
-            name: "inspExpiry",
-            type: "date",
-          },
-          { label: "Business Use", name: "businessUse", type: "text" },
-        ].map(({ label, name, type, ...rest }) => (
-          <div key={name}>
-            <Label htmlFor={name} className="mb-2 inline-block">{label}</Label>
-            <Input
-              id={name}
-              name={name}
-              type={type}
-              placeholder={label}
-              value={form[name]}
-              onChange={handleChange}
-              required
-              {...rest}
-            />
-          </div>
-        ))}
+        {/* ...existing fields... */}
+        {["carName","model","year","registration","fuel","insurance","owner","vin","engine","color","type","odometer","transmission","regExpiry","inspExpiry","businessUse"].map((name) => {
+          const labelMap = {
+            carName: "Car Name",
+            model: "Model",
+            year: "Manufacturing Year",
+            registration: "Registration Number",
+            fuel: "Fuel Type",
+            insurance: "Insurance",
+            owner: "Owner",
+            vin: "VIN Number",
+            engine: "Engine Number",
+            color: "Color",
+            type: "Type",
+            odometer: "Odometer",
+            transmission: "Transmission",
+            regExpiry: "Expiry Date",
+            inspExpiry: "Inspection Report Expiry Date",
+            businessUse: "Business Use"
+          };
+          const typeMap = {
+            year: "date",
+            regExpiry: "date",
+            inspExpiry: "date",
+            odometer: "number"
+          };
+          return (
+            <div key={name}>
+              <Label htmlFor={name} className="mb-2 inline-block">{labelMap[name]}</Label>
+              <Input
+                id={name}
+                name={name}
+                type={typeMap[name] || "text"}
+                placeholder={labelMap[name]}
+                value={form[name]}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          );
+        })}
+
+        {/* Status Accordion */}
+        <div className="col-span-full">
+          <Label className="mb-2 inline-block">Status</Label>
+          <Accordion type="single" collapsible>
+            <AccordionItem value="status">
+              <AccordionTrigger className="bg-white text-purple-700 px-4 py-3 rounded-xl font-semibold">
+                {form.status ? `Selected: ${form.status}` : "Select Status"}
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="flex flex-col gap-2 px-2 py-2">
+                  <button
+                    type="button"
+                    className={`w-full px-3 py-2 rounded-lg border ${form.status === "Available" ? "bg-purple-100 border-purple-400 text-purple-700" : "bg-white border-gray-300 text-gray-700 cursor-pointer"}`}
+                    onClick={() => setForm({ ...form, status: "Available" })}
+                  >
+                    Available
+                  </button>
+                  <button
+                    type="button"
+                    className={`w-full px-3 py-2 rounded-lg border ${form.status === "Rented" ? "bg-purple-100 border-purple-400 text-purple-700" : "bg-white border-gray-300 text-gray-700 cursor-pointer"}`}
+                    onClick={() => setForm({ ...form, status: "Rented" })}
+                  >
+                    Rented
+                  </button>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
 
         <div className="col-span-full flex justify-end gap-3 mt-4">
           <Button

@@ -81,3 +81,16 @@ export const updateCustomer = async (req, res, next) => {
         next(error);
     }
 };
+
+// Get customers who have a license
+export const getCustomersWithLicense = async (req, res, next) => {
+    try {
+        const customers = await Customer.find({ licenseNo: { $ne: null, $ne: "" } });
+        if( customers.length === 0) {
+            return next(new ErrorHandler("No customers with licenses found", 404));
+        }
+        res.status(200).json({ customers });
+    } catch (error) {
+        next(error);
+    }
+};

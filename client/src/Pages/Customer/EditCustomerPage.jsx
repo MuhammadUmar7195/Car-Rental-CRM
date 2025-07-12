@@ -93,7 +93,7 @@ const EditCustomerPage = () => {
         {[
           { label: "Full Name", name: "name", type: "text" },
           { label: "License Number", name: "licenseNo", type: "text" },
-          { label: "License Expiry", name: "licenseExpiry", type: "date" },
+          { label: "License Expiry", name: "expiryDate", type: "date" },
           { label: "Phone Number", name: "phone", type: "text" },
           { label: "Email", name: "email", type: "email" },
           { label: "DC Number", name: "dcNumber", type: "text" },

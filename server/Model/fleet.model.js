@@ -17,6 +17,7 @@ const fleetSchema = new mongoose.Schema({
     regExpiry: { type: Date, required: true },
     inspExpiry: { type: Date, required: true },
     businessUse: { type: String, required: true },
+    status: { type: String, enum: ['Available', 'Rented'], default: 'Available' },
 }, { timestamps: true });
 
 const Fleet = mongoose.model('Fleet', fleetSchema);

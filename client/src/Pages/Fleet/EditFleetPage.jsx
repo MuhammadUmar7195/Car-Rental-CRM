@@ -7,6 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PuffLoader } from "react-spinners";
 import { toast } from "sonner";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
 
 // Utility to format date
 const formatDate = (dateStr) => {
@@ -126,6 +132,44 @@ const EditFleetPage = () => {
             />
           </div>
         ))}
+
+        {/* Status Accordion */}
+        <div className="col-span-full">
+          <Label className="mb-2 inline-block">Status</Label>
+          <Accordion type="single" collapsible>
+            <AccordionItem value="status">
+              <AccordionTrigger className="bg-white text-purple-700 px-4 py-3 rounded-xl font-semibold">
+                {form.status ? `Selected: ${form.status}` : "Select Status"}
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="flex flex-col gap-2 px-2 py-2">
+                  <button
+                    type="button"
+                    className={`w-full px-3 py-2 rounded-lg border ${
+                      form.status === "Available"
+                        ? "bg-purple-100 border-purple-400 text-purple-700"
+                        : "bg-white border-gray-300 text-gray-700"
+                    }`}
+                    onClick={() => setForm({ ...form, status: "Available" })}
+                  >
+                    Available
+                  </button>
+                  <button
+                    type="button"
+                    className={`w-full px-3 py-2 rounded-lg border ${
+                      form.status === "Rented"
+                        ? "bg-purple-100 border-purple-400 text-purple-700"
+                        : "bg-white border-gray-300 text-gray-700"
+                    }`}
+                    onClick={() => setForm({ ...form, status: "Rented" })}
+                  >
+                    Rented
+                  </button>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
 
         {submitError && (
           <div className="col-span-full text-center text-red-600">

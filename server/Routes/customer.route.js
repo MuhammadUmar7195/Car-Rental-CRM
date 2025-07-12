@@ -1,6 +1,7 @@
 import express from 'express';
 import {
     getAllCustomers,
+    getCustomersWithLicense,
     getSingleCustomer,
     postCustomer,
     updateCustomer
@@ -8,6 +9,10 @@ import {
 
 const router = express.Router();
 
+//Get customers who have a license
+router.get('/with-license', getCustomersWithLicense);
+
+//other routes for crud operations
 router.post('/add', postCustomer);
 router.get('/all', getAllCustomers);
 router.get('/:id', getSingleCustomer);

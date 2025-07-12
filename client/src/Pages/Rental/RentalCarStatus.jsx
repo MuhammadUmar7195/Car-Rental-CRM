@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import {
   Accordion,
   AccordionContent,
@@ -10,7 +9,7 @@ import {
 } from "@/components/ui/accordion";
 import { FaCar } from "react-icons/fa";
 import { PuffLoader } from "react-spinners";
-import { ChevronDown } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const RentalCarStatus = () => {
   const [cars, setCars] = useState([]);
@@ -24,6 +23,8 @@ const RentalCarStatus = () => {
           `${import.meta.env.VITE_BACKEND_URL}/api/v1/fleet/get-car-status?businessUse=Available`,
           { withCredentials: true }
         );
+        console.log(response.data.fleets);
+        
         setCars(response.data.fleets || []);
       } catch (err) {
         console.error(err);
@@ -50,10 +51,6 @@ const RentalCarStatus = () => {
           <AccordionItem value="car-list">
             <AccordionTrigger className="flex items-center justify-between w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-2 rounded-full transition">
               <span>Select available vehicle</span>
-              <ChevronDown
-                className="h-5 w-5 transition-transform duration-300 cursor-pointer"
-                data-state="closed"
-              />
             </AccordionTrigger>
             <AccordionContent className="mt-6 ml-4">
               {loading ? (

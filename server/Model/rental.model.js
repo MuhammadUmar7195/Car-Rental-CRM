@@ -6,29 +6,51 @@ const rentalOrderSchema = new mongoose.Schema({
     ref: 'Customer',
     required: true
   },
-  vehicle: {
+  fleet: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Vehicle',
+    ref: 'Fleet',
     required: true
   },
-  startDate: {
+  bookingDate: {
     type: Date,
     required: true,
     default: Date.now
   },
-  endDate: {
+  rentalDate: {
     type: Date,
     required: true
   },
-  totalPrice: {
+  purpose: {
+    type: String,
+    required: true
+  },
+  setPrice: {
     type: Number,
-    required: true,
+    required: true
+  },
+  overdue: {
+    type: Number,
     default: 0
   },
-  remainingBalance: {
+  bond: {
     type: Number,
-    required: true,
+    required: true
+  },
+  advanceRent: {
+    type: Number,
+    required: true
+  },
+  totalBill: {
+    type: Number,
+    required: true
+  },
+  amountPaid: {
+    type: Number,
     default: 0
+  },
+  remainingAmount: {
+    type: Number,
+    required: true
   },
   status: {
     type: String,
@@ -37,15 +59,20 @@ const rentalOrderSchema = new mongoose.Schema({
   },
   paymentStatus: {
     type: String,
-    enum: ['pending', 'paid', 'refunded', 'failed'],
+    enum: ['pending', 'paid', 'partial', 'refunded', 'failed'],
     default: 'pending'
   }
 }, { timestamps: true });
 
-//This logic prevents overbooking cars and check status first
+// Prevent overbooking
 rentalOrderSchema.index(
-  { vehicle: 1, status: 1 }, 
-  { unique: true, partialFilterExpression: { status: { $in: ['reserved', 'active'] } } }
+  { fleet: 1, status: 1 },
+  {
+    unique: true,
+    partialFilterExpression: {
+      status: { $in: ['reserved', 'active'] }
+    }
+  }
 );
 
 const Rental = mongoose.model('RentalOrder', rentalOrderSchema);

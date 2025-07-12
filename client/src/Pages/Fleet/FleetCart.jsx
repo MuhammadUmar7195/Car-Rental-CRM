@@ -7,6 +7,7 @@ import { MdModeEditOutline } from "react-icons/md";
 
 const FleetCart = ({ filteredCars }) => {
   const navigate = useNavigate();
+console.log(filteredCars);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-8 w-full px-2 md:px-4">
@@ -66,6 +67,9 @@ const FleetCart = ({ filteredCars }) => {
               <span className="bg-gray-100 px-2 py-1 rounded">
                 Owner: {car.owner || "N/A"}
               </span>
+              <span className="bg-gray-100 px-2 py-1 rounded">
+                Business Use: {car.businessUse || "N/A"}
+              </span>
             </div>
             <div className="flex flex-wrap gap-2 mb-2 text-xs text-gray-600">
               <span className="bg-gray-100 px-2 py-1 rounded">
@@ -98,10 +102,10 @@ const FleetCart = ({ filteredCars }) => {
             <div className="mt-auto flex justify-between items-end pt-4">
               <div className="flex items-center gap-2">
                 <Badge
-                  variant={car.businessUse?.toLowerCase() === 'rented' ? 'destructive' : 'success'}
+                  variant={car.status?.toLowerCase() === 'Rented' ? 'destructive' : 'success'}
                   className="text-xs px-4 py-1 rounded-full font-semibold shadow-sm"
                 >
-                  {car.businessUse?.toLowerCase() === 'rented' ? 'Rented' : 'Available'}
+                  {car.status?.toLowerCase() === 'Available' ? 'Rented' : 'Available'}
                 </Badge>              
               </div>
               <Button
