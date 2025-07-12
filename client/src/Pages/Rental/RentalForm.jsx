@@ -8,6 +8,8 @@ import { PuffLoader } from "react-spinners";
 import { FaFileAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { downloadCSV } from "@/Helpers/csv.helper";
 
 const RentalForm = ({ selectedCar, selectedCustomer }) => {
   const [formData, setFormData] = useState({
@@ -18,7 +20,7 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
     advanceRent: "",
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [setError] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -50,23 +52,39 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
         fleetId: selectedCar._id,
         rentalData: {
           ...formData,
-          bond: parseFloat(formData.bond),
+          bond: parseFloat(formData.bond), // for example: parseFloat(3.15 degree) => ouput: 3.15
           advanceRent: parseFloat(formData.advanceRent),
           setPrice: parseFloat(formData.setPrice),
         },
       };
 
       const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/v1/rental/create-rental`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/rental/add`,
         rentalData,
         { withCredentials: true }
       );
 
-      if (response.data.success) {
-        navigate("/rental-success"); // Redirect to success page
+      if (response?.data?.success) {
+        toast.success("Rental created successfully!");
+        // Prepare rental data to download
+        const csvData = {
+          Car: `${selectedCar?.carName} (${selectedCar?.registration})`,
+          Customer: `${selectedCustomer?.name} (${selectedCustomer?.licenseNo})`,
+          RentalDate: formData.rentalDate,
+          Purpose: formData.purpose,
+          SetPrice: formData.setPrice,
+          Bond: formData.bond,
+          AdvanceRent: formData.advanceRent,
+          CreatedAt: new Date().toLocaleString(),
+        };
+        
+        // Trigger CSV download
+        downloadCSV("rental-details.csv", csvData);
+
+        navigate("/dashboard");
       }
     } catch (err) {
-      console.error(err);
+      toast.error(err.response?.data?.message || "Failed to create rental");
       setError(err.response?.data?.message || "Failed to create rental");
     } finally {
       setLoading(false);
@@ -83,14 +101,14 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {error && <p className="text-red-500 text-sm">{error}</p>}
-
         <div>
-          <Label className="block text-sm font-medium mb-1">Selected Car</Label>
+          <Label className="block text-sm font-medium mb-1">
+            Selected Car <span className="text-xs text-gray-500">(fixed)</span>
+          </Label>
           <Input
             value={
               selectedCar
-                ? `${selectedCar.carName} (${selectedCar.registration})`
+                ? `${selectedCar?.carName} (${selectedCar?.registration})`
                 : "None selected"
             }
             readOnly
@@ -98,11 +116,13 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
         </div>
 
         <div>
-          <Label className="block text-sm font-medium mb-1">Customer</Label>
+          <Label className="block text-sm font-medium mb-1">
+            Customer <span className="text-xs text-gray-500">(fixed)</span>
+          </Label>
           <Input
             value={
               selectedCustomer
-                ? `${selectedCustomer.name} (${selectedCustomer.licenseNumber})`
+                ? `${selectedCustomer.name} (${selectedCustomer.licenseNo})`
                 : "None selected"
             }
             readOnly
@@ -167,7 +187,11 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
           />
         </div>
 
-        <Button type="submit" className="w-full" disabled={loading}>
+        <Button
+          type="submit"
+          className="w-full bg-purple-600 hover:bg-purple-700 cursor-pointer"
+          disabled={loading}
+        >
           {loading ? <PuffLoader size={20} color="#ffffff" /> : "Create Rental"}
         </Button>
       </form>

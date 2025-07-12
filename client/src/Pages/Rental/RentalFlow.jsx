@@ -10,7 +10,7 @@ const RentalFlow = () => {
   return (
     <div className="min-h-screen bg-gray-100 py-12 px-4">
       <div className="max-w-4xl mx-auto space-y-6">
-        <h1 className="text-3xl font-bold text-center mb-8">Car Rental Process</h1>
+        <h1 className="text-3xl font-bold text-center mb-8 uppercase">Car Rental Process</h1>
         
         <div className="grid md:grid-cols-2 gap-6">
           <RentalCarStatus onCarSelect={setSelectedCar} />

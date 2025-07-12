@@ -54,6 +54,10 @@ export const createRentalOrder = async (req, res, next) => {
             data: rentalOrder 
         });
     } catch (error) {
+        // Handle MongoDB duplicate key error
+        if (error.code === 11000) {
+            return next(new ErrorHandler("Duplicate rental order: This vehicle already has a reserved rental.", 409));
+        }
         next(error);
     }
 }
