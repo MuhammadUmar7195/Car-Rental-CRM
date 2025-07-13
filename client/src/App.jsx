@@ -20,6 +20,7 @@ import EditFleetPage from "./Pages/Fleet/EditFleetPage";
 import EditCustomerPage from "./Pages/Customer/EditCustomerPage";
 import SingleCustomerDetail from "./Pages/Customer/SingleCustomerDetail";
 import RentalFlow from "./Pages/Rental/RentalFlow";
+import RentalHistory from "./Pages/Rental/RentalHistory";
 
 function App() {
   return (
@@ -65,6 +66,7 @@ function App() {
             <Route index element={<Home />} />
             //All rental routes
             <Route path="rental" element={<RentalFlow />} />
+            <Route path="rental-history" element={<RentalHistory />} />
             
             //All Fleet Routes
             <Route path="fleet" element={<Fleet />} />

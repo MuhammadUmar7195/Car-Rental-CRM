@@ -54,6 +54,7 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
         fleetId: selectedCar._id,
         rentalData: {
           ...formData,
+          // for example parseFloat(3.15 rupees) => output: willbe 3.15
           bond: parseFloat(formData.bond),
           advanceRent: parseFloat(formData.advanceRent),
           setPrice: parseFloat(formData.setPrice),
@@ -67,7 +68,6 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
       );
 
       if (response?.data?.success) {
-        toast.success("Rental created successfully!");
         const rentalDoc = (
           <RentalInvoice
             selectedCar={selectedCar}
@@ -77,7 +77,24 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
         );
 
         const blob = await pdf(rentalDoc).toBlob();
-        saveAs(blob, "RentalInvoice.pdf");
+        saveAs(blob, "RentalInvoice.pdf"); 
+
+        // Convert blob to base64
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+          const base64pdf = reader.result.split(",")[1]; // strip data:application/pdf;base64,
+
+          await axios.post(
+            `${import.meta.env.VITE_BACKEND_URL}/api/v1/rental/send-invoice`,
+            {
+              email: selectedCustomer.email,
+              pdfBase64: base64pdf,
+            },
+            { withCredentials: true }
+          );
+        };
+        reader.readAsDataURL(blob);
+        toast.success("Rental created and send on customer email successfully!");
         navigate("/dashboard");
       }
     } catch (err) {

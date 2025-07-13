@@ -23,8 +23,8 @@ const RentalCarStatus = ({ onCarSelect }) => {
           { withCredentials: true }
         );
         setCars(response.data.fleets || []);
+      // eslint-disable-next-line no-unused-vars
       } catch (err) {
-        console.error(err);
         setCars([]);
       } finally {
         setLoading(false);
