@@ -126,3 +126,20 @@ export const getSingleRental = async (req, res, next) => {
         next(error);
     }
 };
+//Delete the rental order
+export const deleteRental = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const rental = await RentalOrder.findById(id)
+            .populate("customer")
+            .populate("fleet");
+        if (!rental) {
+            return next(new ErrorHandler("Rental order not found", 404));
+        }
+        // Missing: Actually deleting the rental order!
+        await RentalOrder.findByIdAndDelete(id);
+        res.status(200).json({ success: true, message: "Rental order deleted successfully" });
+    } catch (error) {
+        next(error);
+    }
+};

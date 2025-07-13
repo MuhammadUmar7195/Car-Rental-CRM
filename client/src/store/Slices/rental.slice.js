@@ -40,6 +40,22 @@ export const getSingleRental = createAsyncThunk(
     }
 );
 
+//Async thunk to delete a rental by ID
+export const deleteRental = createAsyncThunk(
+    "rental/deleteRental",
+    async (rentalId, { rejectWithValue }) => {
+        try {
+            const response = await axios.delete(
+                `${import.meta.env.VITE_BACKEND_URL}/api/v1/rental/${rentalId}`,
+                { withCredentials: true }
+            );
+            return response.data.message;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || "Something went wrong");
+        }
+    }
+);
+
 const rentalSlice = createSlice({
     name: "rental",
     initialState,
@@ -82,6 +98,22 @@ const rentalSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
                 state.singleRental = null;
+            })
+            //delete Rental
+            .addCase(deleteRental.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(deleteRental.fulfilled, (state, action) => {
+                state.loading = false;
+                state.error = null;
+                state.rentals = state.rentals.filter(
+                    (rental) => rental._id !== action.meta.arg
+                );
+            })
+            .addCase(deleteRental.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
             });
     },
 });

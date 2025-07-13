@@ -3,10 +3,22 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { MdModeEditOutline } from "react-icons/md";
+import { MdModeEditOutline, MdDeleteOutline } from "react-icons/md";
+// eslint-disable-next-line no-unused-vars
+import { motion } from "framer-motion";
+import { useDispatch } from "react-redux";
+import { deleteFleet } from "@/store/Slices/fleet.slice";
 
 const FleetCart = ({ filteredCars }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this car?")) {
+      dispatch(deleteFleet(id));
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-8 w-full px-2 md:px-4">
       {filteredCars.map((car, index) => (
@@ -35,7 +47,8 @@ const FleetCart = ({ filteredCars }) => {
                 </div>
                 <div className="flex sm:flex-row gap-1 sm:gap-3 text-gray-500 text-sm">
                   <span className="font-semibold">
-                    Model: <span className="font-normal">{car.model || "N/A"}</span>
+                    Model:{" "}
+                    <span className="font-normal">{car.model || "N/A"}</span>
                   </span>
                   <span className="hidden sm:inline">|</span>
                   <span className="font-semibold">
@@ -100,19 +113,40 @@ const FleetCart = ({ filteredCars }) => {
             <div className="mt-auto flex justify-between items-end pt-4">
               <div className="flex items-center gap-2">
                 <Badge
-                  variant={car.status?.toLowerCase() === 'Rented' ? 'destructive' : 'success'}
+                  variant={
+                    car.status?.toLowerCase() === "rented"
+                      ? "destructive"
+                      : "success"
+                  }
                   className="text-xs px-4 py-1 rounded-full font-semibold shadow-sm"
                 >
-                  {car.status === 'Rented' ? 'Rented' : 'Available'}
-                </Badge>              
+                  {car.status === "Rented" ? "Rented" : "Available"}
+                </Badge>
               </div>
-              <Button
-                className="px-4 py-1 rounded-lg bg-purple-600 text-white text-xs font-semibold shadow hover:bg-purple-700 transition-colors cursor-pointer"
-                type="button"
-                onClick={() => navigate(`/dashboard/fleet/${car._id}`)}
-              >
-                Details
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="ghost"
+                  onClick={() => handleDelete(car._id)}
+                  className="flex items-center gap-1 px-3 py-1 text-xs font-semibold text-red-500 hover:text-red-600 rounded-full cursor-pointer"
+                  type="button"
+                >
+                  <motion.div
+                    whileHover={{ rotate: -20 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                    className="text-base"
+                  >
+                    <MdDeleteOutline />
+                  </motion.div>
+                </Button>
+                <Button
+                  className="px-4 py-1 rounded-lg bg-purple-600 text-white text-xs font-semibold shadow hover:bg-purple-700 transition-colors cursor-pointer flex items-center gap-2"
+                  type="button"
+                  onClick={() => navigate(`/dashboard/fleet/${car._id}`)}
+                >
+                  Details
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>

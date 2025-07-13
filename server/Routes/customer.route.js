@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+    deleteCustomer,
     getAllCustomers,
     getCustomerByLicenseNo,
     getSingleCustomer,
@@ -16,6 +17,7 @@ router.get('/license/:licenseNo', getCustomerByLicenseNo);
 router.post('/add', postCustomer);
 router.get('/all', getAllCustomers);
 router.get('/:id', getSingleCustomer);
+router.delete('/:id', deleteCustomer);
 router.put('/edit/:id', updateCustomer);
 
 export default router;

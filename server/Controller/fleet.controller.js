@@ -20,7 +20,7 @@ export const postFleet = async (req, res, next) => {
             transmission,
             regExpiry,
             inspExpiry,
-            businessUse, 
+            businessUse,
             status
         } = req.body;
 
@@ -79,6 +79,20 @@ export const getSingleFleet = async (req, res, next) => {
             return next(new ErrorHandler("Fleet not found", 404));
         }
         res.status(200).json({ fleet });
+    } catch (error) {
+        next(error);
+    }
+};
+
+//delete Fleet
+export const deleteFleet = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const deletedFleet = await Fleet.findByIdAndDelete(id);
+        if (!deletedFleet) {
+            return next(new ErrorHandler("Fleet not found", 404));
+        }
+        res.status(200).json({ message: "Fleet deleted successfully" });
     } catch (error) {
         next(error);
     }
@@ -145,7 +159,7 @@ export const updateFleet = async (req, res, next) => {
 //get cars name according to status
 export const getCarsByStatus = async (req, res, next) => {
     try {
-        const { status } = req.query; 
+        const { status } = req.query;
         if (!status) {
             return next(new ErrorHandler("Status query parameter is required", 400));
         }

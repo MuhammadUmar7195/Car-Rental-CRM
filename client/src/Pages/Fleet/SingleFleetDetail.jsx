@@ -20,7 +20,6 @@ const SingleFleetDetail = () => {
   const navigate = useNavigate();
   const { singleFleet, loading, error } =
     useSelector((state) => state.fleet) || {};
-console.log(singleFleet);
 
   useEffect(() => {
     if (!singleFleet || singleFleet._id !== id) {

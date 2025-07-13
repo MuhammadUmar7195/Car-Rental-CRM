@@ -60,6 +60,22 @@ export const getSingleFleet = createAsyncThunk(
     }
 );
 
+// Delete the customer
+export const deleteFleet = createAsyncThunk(
+    "fleet/deleteFleet",
+    async (fleetId, { rejectWithValue }) => {
+        try {
+            const response = await axios.delete(
+                `${import.meta.env.VITE_BACKEND_URL}/api/v1/fleet/${fleetId}`,
+                { withCredentials: true }
+            );
+            return response.data.message;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || "Something went wrong");
+        }
+    }
+);
+
 //Async thunk to update a fleet by ID
 export const updateFleet = createAsyncThunk(
     "fleet/updateFleet",
@@ -144,6 +160,23 @@ const fleetSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
                 state.singleFleet = null;
+            })
+            //delete Fleet
+            .addCase(deleteFleet.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(deleteFleet.fulfilled, (state, action) => {
+                state.loading = false;
+                state.error = null;
+                state.fleets = state.fleets.filter(fleet => fleet._id !== action.meta.arg);
+                if (state.singleFleet && state.singleFleet._id === action.meta.arg) {
+                    state.singleFleet = null;
+                }
+            })
+            .addCase(deleteFleet.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
             })
             // Update Fleet
             .addCase(updateFleet.pending, (state) => {

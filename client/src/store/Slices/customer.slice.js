@@ -36,7 +36,7 @@ export const getAllCustomers = createAsyncThunk(
             const response = await axios.get(
                 `${import.meta.env.VITE_BACKEND_URL}/api/v1/customer/all`,
                 { withCredentials: true }
-            );         
+            );
             return response.data.customers;
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || "Something went wrong");
@@ -52,8 +52,24 @@ export const getSingleCustomer = createAsyncThunk(
             const response = await axios.get(
                 `${import.meta.env.VITE_BACKEND_URL}/api/v1/customer/${customerId}`,
                 { withCredentials: true }
-            );            
+            );
             return response.data.customer;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || "Something went wrong");
+        }
+    }
+);
+
+// Delete the customer
+export const deleteCustomer = createAsyncThunk(
+    "customer/deleteCustomer",
+    async (customerId, { rejectWithValue }) => {
+        try {
+            const response = await axios.delete(
+                `${import.meta.env.VITE_BACKEND_URL}/api/v1/customer/${customerId}`,
+                { withCredentials: true }
+            );
+            return response.data.message;
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || "Something went wrong");
         }
@@ -142,7 +158,22 @@ const customerSlice = createSlice({
                 state.error = action.payload;
                 state.singleCustomer = null;
             })
-
+            //delete customer
+            .addCase(deleteCustomer.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(deleteCustomer.fulfilled, (state, action) => {
+                state.loading = false;
+                state.customers = state.customers.filter(c => c._id !== action.meta.arg);
+                if (state.singleCustomer && state.singleCustomer._id === action.meta.arg) {
+                    state.singleCustomer = null;
+                }
+            })
+            .addCase(deleteCustomer.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
             // Update customer
             .addCase(updateCustomer.pending, (state) => {
                 state.loading = true;

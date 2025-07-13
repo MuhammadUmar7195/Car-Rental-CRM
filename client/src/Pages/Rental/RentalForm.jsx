@@ -95,7 +95,7 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
         };
         reader.readAsDataURL(blob);
         toast.success("Rental created and send on customer email successfully!");
-        navigate("/dashboard");
+        navigate("/dashboard/rental-history");
       }
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to create rental");
