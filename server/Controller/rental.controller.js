@@ -126,6 +126,7 @@ export const getSingleRental = async (req, res, next) => {
         next(error);
     }
 };
+
 //Delete the rental order
 export const deleteRental = async (req, res, next) => {
     try {

@@ -174,3 +174,19 @@ export const getCarsByStatus = async (req, res, next) => {
         next(error);
     }
 };
+
+//get total car count and aviable status cars 
+export const getTotalCarCount = async (req, res, next) => {
+    try {
+        const totalCars = await Fleet.countDocuments();
+        const availableCars = await Fleet.countDocuments({ status: 'Available' });
+
+        res.status(200).json({
+            success: true,
+            totalCars,
+            availableCars
+        });
+    } catch (error) {
+        next(error);
+    }
+};
