@@ -1,4 +1,6 @@
 import React, { useEffect } from "react";
+import { IoChevronBackSharp } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { PuffLoader } from "react-spinners";
 import { toast } from "sonner";
@@ -11,12 +13,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card } from "@/components/ui/card";
-import { clearRentalError, deleteRental, getAllRental } from "@/store/Slices/rental.slice";
+import {
+  clearRentalError,
+  deleteRental,
+  getAllRental,
+} from "@/store/Slices/rental.slice";
 import { Badge } from "@/components/ui/badge";
 import { MdDeleteOutline } from "react-icons/md";
 import { Button } from "@/components/ui/button";
 
 const RentalHistory = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { rentals, loading, error } = useSelector(
     (state) => state?.rental || {}
@@ -43,11 +50,19 @@ const RentalHistory = () => {
   };
 
   return (
-    <div className="py-10 lg:px-30 md:px-10 min-h-screen">
+    <div className="py-10 lg:px-30 md:px-10 min-h-screen relative">
       <Card className="p-8 rounded-2xl shadow-lg bg-white">
-        <h2 className="text-2xl font-bold text-purple-600 mb-6 text-center uppercase tracking-wide">
-          Rental History
-        </h2>
+        <div className="flex items-center mb-6">
+          <Button
+            onClick={() => navigate("/dashboard/rental")}
+            className="mr-4 px-3 py-2 font-semibold bg-purple-700 text-white hover:bg-purple-800 cursor-pointer rounded-full"
+          >
+            <IoChevronBackSharp size={20} />
+          </Button>
+          <h2 className="text-2xl font-bold text-purple-600 text-center uppercase tracking-wide flex-1 lg:mr-30">
+            Rental History
+          </h2>
+        </div>
 
         {loading ? (
           <div className="flex justify-center items-center h-40">
