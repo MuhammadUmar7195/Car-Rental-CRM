@@ -124,7 +124,7 @@ const CustomerCart = ({ filteredCustomers }) => {
                 <Button
                   className="px-4 py-1 rounded-lg bg-purple-600 text-white text-xs font-semibold shadow hover:bg-purple-700 transition-colors cursor-pointer flex items-center gap-2"
                   type="button"
-                  onClick={() => navigate(`/dashboard/fleet/${customer._id}`)}
+                  onClick={() => navigate(`/dashboard/customer/${customer._id}`)}
                 >
                   Details
                 </Button>
