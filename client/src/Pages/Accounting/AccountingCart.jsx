@@ -1,6 +1,3 @@
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getAllAccountingData } from "@/store/Slices/accouting.slice";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
@@ -13,18 +10,16 @@ import {
 import { PuffLoader } from "react-spinners";
 import { Button } from "@/components/ui/button";
 
-const AccountingCart = () => {
-  const dispatch = useDispatch();
-  const { accountingData, loading, error } =
-    useSelector((state) => state?.accounting) || {};
-  console.log(accountingData);
-
-  useEffect(() => {
-    dispatch(getAllAccountingData());
-  }, [dispatch]);
-
+const AccountingCart = ({ accountingData, loading, error }) => {
   return (
     <div className="p-6">
+      <div className="mb-4">
+        <p className="text-xs sm:text-sm text-black bg-yellow-50 border border-purple-200 rounded px-3 py-2">
+          <span className="font-extrabold">Note:</span> Please use{" "}
+          <span className="font-semibold animate-pulse uppercase">date, amount, description</span>{" "}
+          columns in order when uploading your CSV file.😊
+        </p>
+      </div>
       {loading ? (
         <div className="flex justify-center items-center py-16">
           <PuffLoader color="#7e22ce" size={48} />
@@ -51,23 +46,23 @@ const AccountingCart = () => {
                 </TableHeader>
                 <TableBody>
                   <TableRow>
-                    <TableCell>{row.date}</TableCell>
-                    <TableCell>{row.description}</TableCell>
+                    <TableCell>{row?.date}</TableCell>
+                    <TableCell>{row?.description}</TableCell>
                     <TableCell className="text-green-600 font-medium">
-                      {row.amount}
+                      {row?.amount}
                     </TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
 
-              <div className="flex gap-4">
-                <Button className="bg-purple-600 text-white text-xs px-4 py-1 rounded">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+                <Button className="bg-purple-600 hover:bg-purple-700 cursor-pointer text-white text-xs px-4 py-1 rounded">
                   Rental Expense
                 </Button>
-                <Button className="bg-purple-600 text-white text-xs px-4 py-1 rounded">
+                <Button className="bg-purple-600 hover:bg-purple-700 cursor-pointer text-white text-xs px-4 py-1 rounded">
                   Workshop Expense
                 </Button>
-                <Button className="bg-purple-600 text-white text-xs px-4 py-1 rounded">
+                <Button className="bg-purple-600 hover:bg-purple-700 cursor-pointer text-white text-xs px-4 py-1 rounded">
                   Assign Customer
                 </Button>
               </div>
