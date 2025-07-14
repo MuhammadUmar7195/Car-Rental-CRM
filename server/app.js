@@ -36,11 +36,13 @@ import adminRoutes from "./Routes/admin.route.js";
 import fleetRoutes from "./Routes/fleet.routes.js";
 import customerRoutes from "./Routes/customer.route.js";
 import RentalRoutes from "./Routes/rental.route.js";
+import AccountingRoutes from "./Routes/accounting.route.js";
 
 app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/fleet", fleetRoutes);
 app.use("/api/v1/customer", customerRoutes);
 app.use("/api/v1/rental", RentalRoutes);
+app.use("/api/v1/accounting", AccountingRoutes);
 
 //error handling middleware
 import errorMiddleware from "./Middleware/error.js";

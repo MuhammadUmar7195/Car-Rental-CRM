@@ -3,6 +3,7 @@ import authReducer from './Slices/auth.slice.js';
 import fleetReducer from './Slices/fleet.slice.js';
 import customerReducer from './Slices/customer.slice.js';
 import rentalReducer from './Slices/rental.slice.js';
+import AccountingReducer from './Slices/accouting.slice.js';
 
 // Configure the Redux store with the slices
 export const store = configureStore({
@@ -11,5 +12,6 @@ export const store = configureStore({
     fleet: fleetReducer,
     customer: customerReducer,
     rental: rentalReducer,
+    accounting: AccountingReducer,
   },
 })

@@ -9,7 +9,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
-import { useRef } from "react";
+import { useState, useRef } from "react";
+import axios from "axios";
+import Papa from "papaparse";
+import { toast } from "sonner";
+import AccountingCart from "./AccountingCart";
+import { FiRefreshCw } from "react-icons/fi";
 
 const Accounting = () => {
   const fileInputRef = useRef(null);
@@ -20,20 +25,53 @@ const Accounting = () => {
     }
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Handle file upload logic here
-      console.log("File selected:", file);
+      Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        complete: async (results) => {
+          // parse data on csv file is really confusing description amount ma ja rha ha or amount descripton.
+          const parsed = results.data.map((row) => ({
+            date: row.date || row.Date || "",
+            description: row.amount || row.Amount || "",
+            amount: row.description || row.Description || "",
+          }));
+
+          // we upload data form csv file by parsing it and sending to backend
+          try {
+            const response = await axios.post(
+              `${import.meta.env.VITE_BACKEND_URL}/api/v1/accounting/upload`,
+              { transactions: parsed },
+              { withCredentials: true }
+            );
+            if (response.data.success) {
+              toast.success(
+                response?.data?.message || "Data uploaded successfully!"
+              );
+            }
+          } catch (err) {
+            toast.error(
+              err?.response?.data?.message || "Failed to upload data"
+            );
+          }
+        },
+      });
     }
   };
+
+  // Add a refresh handler
+  const handleRefresh = () => {
+    window.location.reload();
+  };
+
   return (
     <div className="p-6 space-y-6">
       <h1 className="text-3xl font-semibold text-center uppercase">
         Customer Details
       </h1>
-
-      <div className="flex justify-start">
+      <div className="flex justify-between">
         <Button
           className="bg-purple-600 hover:bg-purple-700 text-white uppercase cursor-pointer"
           onClick={handleUploadClick}
@@ -47,80 +85,17 @@ const Accounting = () => {
           onChange={handleFileChange}
           style={{ display: "none" }}
         />
+        <Button
+          variant="outline"
+          className="lg:mr-10 sm:ml-3 cursor-pointer"
+          onClick={handleRefresh}
+        >
+          <FiRefreshCw className="text-purple-600" size={18} />
+        </Button>
       </div>
-
       <Separator />
-
       <div>
-        <h2 className="text-2xl font-medium mb-4">Transaction History</h2>
-
-        {/* Table 1 */}
-        <Card className="mb-4">
-          <CardContent className="p-4">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[100px]">Date</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow>
-                  <TableCell>20-03-25</TableCell>
-                  <TableCell>
-                    Description
-                    <br />
-                    CAR RENT PAYMENT
-                  </TableCell>
-                  <TableCell className="text-right text-green-600 font-medium">
-                    +500
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-
-            <div className="flex gap-4 mt-4">
-              <Button className="bg-purple-600 text-white text-xs px-4 py-1">
-                Rental Expense
-              </Button>
-              <Button className="bg-purple-600 text-white text-xs px-4 py-1">
-                Workshop Expense
-              </Button>
-              <Button className="bg-purple-600 text-white text-xs px-4 py-1">
-                Assign Customer
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Table 2 - highlighted entry */}
-        <Card className="bg-lime-100">
-          <CardContent className="p-4">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[100px]">Date</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow>
-                  <TableCell>20-03-25</TableCell>
-                  <TableCell>
-                    Description
-                    <br />
-                    CAR RENT PAYMENT
-                  </TableCell>
-                  <TableCell className="text-right text-green-600 font-medium">
-                    +500
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+        <AccountingCart />
       </div>
     </div>
   );
