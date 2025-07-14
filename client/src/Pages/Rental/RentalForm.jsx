@@ -9,9 +9,6 @@ import { FaFileAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import RentalInvoice from "./RentalInvoice";
-import { PDFDownloadLink, pdf } from "@react-pdf/renderer";
-import { saveAs } from "file-saver";
 
 const RentalForm = ({ selectedCar, selectedCustomer }) => {
   const [formData, setFormData] = useState({
@@ -54,7 +51,6 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
         fleetId: selectedCar._id,
         rentalData: {
           ...formData,
-          // for example parseFloat(3.15 rupees) => output: willbe 3.15
           bond: parseFloat(formData.bond),
           advanceRent: parseFloat(formData.advanceRent),
           setPrice: parseFloat(formData.setPrice),
@@ -68,33 +64,7 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
       );
 
       if (response?.data?.success) {
-        const rentalDoc = (
-          <RentalInvoice
-            selectedCar={selectedCar}
-            selectedCustomer={selectedCustomer}
-            rentalData={rentalData.rentalData}
-          />
-        );
-
-        const blob = await pdf(rentalDoc).toBlob();
-        saveAs(blob, "RentalInvoice.pdf"); 
-
-        // Convert blob to base64
-        const reader = new FileReader();
-        reader.onloadend = async () => {
-          const base64pdf = reader.result.split(",")[1]; // strip data:application/pdf;base64,
-
-          await axios.post(
-            `${import.meta.env.VITE_BACKEND_URL}/api/v1/rental/send-invoice`,
-            {
-              email: selectedCustomer.email,
-              pdfBase64: base64pdf,
-            },
-            { withCredentials: true }
-          );
-        };
-        reader.readAsDataURL(blob);
-        toast.success("Rental created and send on customer email successfully!");
+        toast.success("Rental created successfully!");
         navigate("/dashboard/rental-history");
       }
     } catch (err) {

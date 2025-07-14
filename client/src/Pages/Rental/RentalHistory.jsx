@@ -17,10 +17,14 @@ import {
   clearRentalError,
   deleteRental,
   getAllRental,
+  getSingleRental,
 } from "@/store/Slices/rental.slice";
 import { Badge } from "@/components/ui/badge";
 import { MdDeleteOutline } from "react-icons/md";
 import { Button } from "@/components/ui/button";
+import { saveAs } from "file-saver";
+import { pdf } from "@react-pdf/renderer";
+import RentalInvoice from "./RentalInvoice";
 
 const RentalHistory = () => {
   const navigate = useNavigate();
@@ -46,6 +50,40 @@ const RentalHistory = () => {
         dispatch(getAllRental());
         toast.success("Rental order deleted successfully!");
       });
+    }
+  };
+
+  const handleDownload = async (rentalId) => {
+    try {
+      // Dispatch to get single rental
+      const rentalData = await dispatch(getSingleRental(rentalId)).unwrap();
+
+      const {
+        customer,
+        fleet,
+        rentalDate,
+        purpose,
+        setPrice,
+        bond,
+        advanceRent,
+      } = rentalData;
+
+      // Build invoice component props
+      const invoiceComponent = (
+        <RentalInvoice
+          selectedCustomer={customer}
+          selectedCar={fleet}
+          rentalData={{ rentalDate, purpose, setPrice, bond, advanceRent }}
+        />
+      );
+
+      const blob = await pdf(invoiceComponent).toBlob();
+      saveAs(blob, `RentalInvoice_${rentalId}.pdf`);
+    } catch (error) {
+      console.log(
+        error?.response?.data?.message || "Failed to generate invoice"
+      );
+      toast.error("Failed to generate invoice");
     }
   };
 
@@ -160,13 +198,29 @@ const RentalHistory = () => {
                         </Badge>
                       </TableCell>
                       <TableCell className="px-4 py-3">
-                        <Button
-                          variant={"destructive"}
-                          onClick={() => handleDelete(rental._id)}
-                          className="text-white hover:opacity-80 px-3 py-1 rounded transition font-semibold text-xs cursor-pointer"
-                        >
-                          <MdDeleteOutline size={19} />
-                        </Button>
+                        <div className="flex flex-col gap-2 flex-wrap">
+                          <Button
+                            variant={"destructive"}
+                            onClick={() => handleDelete(rental._id)}
+                            className="text-white hover:opacity-80 px-3 py-1 rounded transition font-semibold text-xs cursor-pointer"
+                          >
+                            <MdDeleteOutline size={19} />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            className="px-3 py-1 rounded transition font-semibold text-xs cursor-pointer"
+                            onClick={() => navigate(`#`)}
+                          >
+                            View
+                          </Button>
+                          <Button
+                            variant="secondary"
+                            className="px-3 py-1 rounded transition font-semibold text-xs cursor-pointer"
+                            onClick={() => handleDownload(rental._id)}
+                          >
+                            Download
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))
