@@ -15,16 +15,16 @@ import {
 } from "react-icons/fa";
 import { Button } from "../ui/button";
 import { FaCheckCircle } from "react-icons/fa";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "@/store/Slices/auth.slice";
 import { toast } from "sonner";
 
 const DashboardSidebar = ({ toggleSidebar }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const { user } = useSelector((state) => state?.auth);
+  
   const handleLogout = () => {
-    // Optional: Clear auth here
     localStorage.removeItem("userInfo");
     dispatch(logoutUser());
     toast.success("Logout successful!");
@@ -139,18 +139,19 @@ const DashboardSidebar = ({ toggleSidebar }) => {
           <FaBell />
           <span>Service</span>
         </NavLink>
-        <NavLink
-          to="/dashboard/setting"
-          className={navLinkClass}
-          onClick={toggleSidebar}
-        >
-          <FaCogs />
-          <span>Setting</span>
-        </NavLink>
       </nav>
 
-      {/* Logout */}
+      {/* Logout & User Info */}
       <div className="mt-auto pt-8 sticky bottom-0 bg-white">
+        {/* Admin Info */}
+        <div className="flex flex-col items-center mb-4">
+          <span className="text-sm font-semibold text-purple-700 truncate max-w-[140px]">
+            {user?.username || "User"}
+          </span>
+          <span className="text-xs text-gray-500 font-medium truncate max-w-[140px]">
+            {user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : ""}
+          </span>
+        </div>
         <Button
           variant="outline"
           onClick={handleLogout}

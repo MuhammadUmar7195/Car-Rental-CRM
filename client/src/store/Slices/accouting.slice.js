@@ -15,8 +15,7 @@ export const getAllAccountingData = createAsyncThunk(
             const response = await axios.get(
                 `${import.meta.env.VITE_BACKEND_URL}/api/v1/accounting/all`,
                 { withCredentials: true }
-            );
-            console.log(response.data?.accounting);           
+            );           
             return response.data.accounting;
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || "Something went wrong");

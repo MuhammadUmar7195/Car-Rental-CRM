@@ -13,7 +13,6 @@ import ForgetPassword from "./components/auth/ForgetPassword";
 import Accounting from "./Pages/Accounting/Accounting";
 import FleetOwner from "./Pages/FleetOwner/FleetOwner";
 import Payment from "./Pages/Payment/payment";
-import Setting from "./Pages/Setting/Setting";
 import Navbar from "./components/Common/Navbar";
 import SingleFleetDetail from "./Pages/Fleet/SingleFleetDetail";
 import EditFleetPage from "./Pages/Fleet/EditFleetPage";
@@ -83,7 +82,6 @@ function App() {
             <Route path="fleet-owner" element={<FleetOwner />} />
             <Route path="payment-dues" element={<Payment />} />
             <Route path="service" element={<Service />} />
-            <Route path="setting" element={<Setting />} />
           </Route>
           {/* Global catch-all route to redirect to login */}
           <Route

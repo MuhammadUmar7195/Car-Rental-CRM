@@ -49,5 +49,5 @@ import errorMiddleware from "./Middleware/error.js";
 app.use(errorMiddleware);
 
 app.get("/", (req, res) => {
-  res.send(`<center>Server is running ${port}</center>`);
+  res.send(`<center>Welcome to KonceptNext Car Management</center>`);
 });

@@ -7,6 +7,7 @@ import {
     postCustomer,
     updateCustomer
 } from '../Controller/customer.controller.js';
+import { authMiddleware } from '../Middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -14,10 +15,10 @@ const router = express.Router();
 router.get('/license/:licenseNo', getCustomerByLicenseNo);
 
 //other routes for crud operations
-router.post('/add', postCustomer);
+router.post('/add', authMiddleware, postCustomer);
 router.get('/all', getAllCustomers);
 router.get('/:id', getSingleCustomer);
-router.delete('/:id', deleteCustomer);
-router.put('/edit/:id', updateCustomer);
+router.delete('/:id', authMiddleware, deleteCustomer);
+router.put('/edit/:id', authMiddleware, updateCustomer);
 
 export default router;
