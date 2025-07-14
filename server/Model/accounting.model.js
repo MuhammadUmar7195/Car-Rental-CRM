@@ -6,5 +6,5 @@ const AccountingSchema = new mongoose.Schema({
   amount: Number, 
 });
 
-const Accounting = mongoose.model("Accouting", AccountingSchema);
+const Accounting = mongoose.model("Accounting", AccountingSchema);
 export default Accounting;

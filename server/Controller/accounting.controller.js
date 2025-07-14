@@ -24,7 +24,7 @@ export const uploadAccountingFile = async (req, res, next) => {
       message: "Data uploaded and saved to DB",
     });
   } catch (error) {
-    next(error); 
+    next(error);
   }
 };
 
@@ -40,3 +40,19 @@ export const getAllAccountingData = async (req, res, next) => {
     next(error);
   }
 };
+
+//now delete accounting data by id
+export const deleteSingleAccountingData = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const accountingData = await Accounting.findByIdAndDelete(id);
+
+    if (!accountingData) {
+      return res.status(404).json({ message: "Accounting data not found" });
+    }
+
+    res.status(200).json({ message: "Accounting data deleted successfully" });
+  } catch (error) {
+    next(error);
+  }
+}

@@ -3,6 +3,7 @@ import { IoChevronBackSharp } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { PuffLoader } from "react-spinners";
+import { VscOpenPreview } from "react-icons/vsc";
 import { toast } from "sonner";
 import {
   Table,
@@ -25,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import { saveAs } from "file-saver";
 import { pdf } from "@react-pdf/renderer";
 import RentalInvoice from "./RentalInvoice";
+import { IoMdDownload } from "react-icons/io";
 
 const RentalHistory = () => {
   const navigate = useNavigate();
@@ -80,10 +82,40 @@ const RentalHistory = () => {
       const blob = await pdf(invoiceComponent).toBlob();
       saveAs(blob, `RentalInvoice_${rentalId}.pdf`);
     } catch (error) {
-      console.log(
-        error?.response?.data?.message || "Failed to generate invoice"
+      toast.error(error?.response?.data?.message || "Failed to generate invoice");
+    }
+  };
+
+  const handleViewInvoice = async (rentalId) => {
+    try {
+      const rentalData = await dispatch(getSingleRental(rentalId)).unwrap();
+
+      const {
+        customer,
+        fleet,
+        rentalDate,
+        purpose,
+        setPrice,
+        bond,
+        advanceRent,
+      } = rentalData;
+
+      const invoiceComponent = (
+        <RentalInvoice
+          selectedCustomer={customer}
+          selectedCar={fleet}
+          rentalData={{ rentalDate, purpose, setPrice, bond, advanceRent }}
+        />
       );
-      toast.error("Failed to generate invoice");
+
+      // Generate PDF blob
+      const blob = await pdf(invoiceComponent).toBlob();
+      // Create a URL for the blob
+      const url = URL.createObjectURL(blob);
+      // Open in new tab for viewing
+      window.open(url, "_blank");
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to generate invoice");
     }
   };
 
@@ -126,7 +158,7 @@ const RentalHistory = () => {
                   <TableHead className="px-4 py-3">Remaining</TableHead>
                   <TableHead className="px-4 py-3">Status</TableHead>
                   <TableHead className="px-4 py-3">Payment</TableHead>
-                  <TableHead className="px-4 py-3">Action</TableHead>
+                  <TableHead className="text-center">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -198,7 +230,7 @@ const RentalHistory = () => {
                         </Badge>
                       </TableCell>
                       <TableCell className="px-4 py-3">
-                        <div className="flex flex-col gap-2 flex-wrap">
+                        <div className="flex gap-2">
                           <Button
                             variant={"destructive"}
                             onClick={() => handleDelete(rental._id)}
@@ -209,16 +241,16 @@ const RentalHistory = () => {
                           <Button
                             variant="outline"
                             className="px-3 py-1 rounded transition font-semibold text-xs cursor-pointer"
-                            onClick={() => navigate(`#`)}
+                            onClick={() => handleViewInvoice(rental._id)}
                           >
-                            View
+                            <VscOpenPreview/>
                           </Button>
                           <Button
                             variant="secondary"
                             className="px-3 py-1 rounded transition font-semibold text-xs cursor-pointer"
                             onClick={() => handleDownload(rental._id)}
                           >
-                            Download
+                            <IoMdDownload className="fill-purple-500"/>
                           </Button>
                         </div>
                       </TableCell>

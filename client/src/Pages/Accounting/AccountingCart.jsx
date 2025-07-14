@@ -9,14 +9,26 @@ import {
 } from "@/components/ui/table";
 import { PuffLoader } from "react-spinners";
 import { Button } from "@/components/ui/button";
+import { MdDeleteOutline } from "react-icons/md";
+import { useDispatch } from "react-redux";
+import { deleteAccountingEntry } from "@/store/Slices/accouting.slice";
+import { toast } from "sonner";
 
 const AccountingCart = ({ accountingData, loading, error }) => {
+  const dispatch = useDispatch();
+
+  const handleDelete = (id) => {
+    dispatch(deleteAccountingEntry(id));
+    toast.success("Accounting entry deleted successfully!");
+  };
   return (
     <div className="p-6">
       <div className="mb-4">
         <p className="text-xs sm:text-sm text-black bg-yellow-50 border border-purple-200 rounded px-3 py-2">
           <span className="font-extrabold">Note:</span> Please use{" "}
-          <span className="font-semibold animate-pulse uppercase">date, amount, description</span>{" "}
+          <span className="font-semibold animate-pulse uppercase">
+            date, amount, description
+          </span>{" "}
           columns in order when uploading your CSV file.😊
         </p>
       </div>
@@ -42,6 +54,7 @@ const AccountingCart = ({ accountingData, loading, error }) => {
                     <TableHead>Date</TableHead>
                     <TableHead>Description</TableHead>
                     <TableHead>Amount</TableHead>
+                    <TableHead>Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -50,6 +63,13 @@ const AccountingCart = ({ accountingData, loading, error }) => {
                     <TableCell>{row?.description}</TableCell>
                     <TableCell className="text-green-600 font-medium">
                       {row?.amount}
+                    </TableCell>
+                    <TableCell>
+                      <MdDeleteOutline
+                        onClick={() => handleDelete(row._id)}
+                        className="fill-red-500 hover:animate-pulse cursor-pointer"
+                        size={19}
+                      />
                     </TableCell>
                   </TableRow>
                 </TableBody>

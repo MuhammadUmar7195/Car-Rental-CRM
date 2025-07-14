@@ -24,6 +24,22 @@ export const getAllAccountingData = createAsyncThunk(
     }
 );
 
+//Delete a specific accounting entry
+export const deleteAccountingEntry = createAsyncThunk(
+    "accounting/deleteAccountingEntry",
+    async (entryId, { rejectWithValue }) => {
+        try {
+            const response = await axios.delete(
+                `${import.meta.env.VITE_BACKEND_URL}/api/v1/accounting/${entryId}`,
+                { withCredentials: true }
+            );
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || "Something went wrong");
+        }
+    }
+);
+
 
 const accountingSlice = createSlice({
     name: "accounting",
@@ -47,6 +63,21 @@ const accountingSlice = createSlice({
                 state.accountingData = action.payload;
             })
             .addCase(getAllAccountingData.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            // Delete Accounting Entry
+            .addCase(deleteAccountingEntry.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(deleteAccountingEntry.fulfilled, (state, action) => {
+                state.loading = false;
+                state.accountingData = state.accountingData.filter(
+                    (entry) => entry._id !== action.meta.arg
+                );
+            })
+            .addCase(deleteAccountingEntry.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });
