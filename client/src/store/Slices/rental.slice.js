@@ -56,6 +56,22 @@ export const deleteRental = createAsyncThunk(
     }
 );
 
+//Aync thunk to get rentals by fleetId
+export const getRentalsByFleetId = createAsyncThunk(
+    "rental/getRentalsByFleetId",
+    async (fleetId, { rejectWithValue }) => {
+        try {
+            const response = await axios.get(
+                `${import.meta.env.VITE_BACKEND_URL}/api/v1/rental/fleet/${fleetId}`,
+                { withCredentials: true }
+            );
+            return response.data.rentals;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || "Something went wrong");
+        }
+    }
+);
+
 //Aysnc thunk to update the status of rental because of prevent overbooking error or create new rental order
 export const updateRentalStatus = createAsyncThunk(
     "rental/updateRentalStatus",
@@ -115,6 +131,20 @@ const rentalSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
                 state.singleRental = null;
+            })
+            // Get Rentals by Fleet ID
+            .addCase(getRentalsByFleetId.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getRentalsByFleetId.fulfilled, (state, action) => {
+                state.loading = false;
+                state.error = null;
+                state.rentals = action.payload;
+            })
+            .addCase(getRentalsByFleetId.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
             })
             //delete Rental
             .addCase(deleteRental.pending, (state) => {

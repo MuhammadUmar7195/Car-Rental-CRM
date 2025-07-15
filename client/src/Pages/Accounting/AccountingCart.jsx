@@ -13,6 +13,7 @@ import { MdDeleteOutline } from "react-icons/md";
 import { useDispatch } from "react-redux";
 import { deleteAccountingEntry } from "@/store/Slices/accouting.slice";
 import { toast } from "sonner";
+import { FiRefreshCw } from "react-icons/fi";
 
 const AccountingCart = ({ accountingData, loading, error }) => {
   const dispatch = useDispatch();
@@ -92,9 +93,9 @@ const AccountingCart = ({ accountingData, loading, error }) => {
       ) : (
         <Card>
           <CardContent>
-            <p className="text-center text-gray-500 py-6">
-              No accounting records found.
-            </p>
+            <div className="flex items-center justify-center gap-2 text-gray-500 py-6">
+              No Records Found. Refresh it <FiRefreshCw className="animate-spin"/>
+            </div>
           </CardContent>
         </Card>
       )}

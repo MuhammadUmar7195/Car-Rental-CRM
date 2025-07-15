@@ -72,9 +72,9 @@ const Accounting = () => {
         Customer Details
         <CiViewList className="text-purple-600" size={32} />
       </h1>
-      <div className="flex justify-between">
+      <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0">
         <Button
-          className="bg-purple-600 hover:bg-purple-700 text-white uppercase cursor-pointer"
+          className="bg-purple-600 hover:bg-purple-700 text-white uppercase cursor-pointer w-full sm:w-auto"
           onClick={handleUploadClick}
         >
           + Upload Bank Statement
@@ -88,7 +88,7 @@ const Accounting = () => {
         />
         <Button
           variant="outline"
-          className="lg:mr-10 sm:ml-3 cursor-pointer flex items-center gap-2"
+          className="w-full sm:w-auto lg:mr-10 sm:ml-3 cursor-pointer flex items-center gap-2"
           onClick={handleRefresh}
           disabled={refreshing}
         >

@@ -127,6 +127,24 @@ export const getSingleRental = async (req, res, next) => {
     }
 };
 
+//Get all rental orders for a specific fleetId
+export const getRentalsByFleetId = async (req, res, next) => {
+    try {
+        const { fleetId } = req.params;
+        if (!fleetId) {
+            return next(new ErrorHandler("Missing fleetId parameter", 400));
+        }
+        const rentals = await RentalOrder.find({ fleet: fleetId })
+            .sort({ bookingDate: -1 }) // newest first
+            .limit(1) // just the last one
+            .populate("customer")
+            .populate("fleet");
+        res.status(200).json({ success: true, rentals });
+    } catch (error) {
+        next(error);
+    }
+};
+
 //Delete the rental order
 export const deleteRental = async (req, res, next) => {
     try {
@@ -170,10 +188,10 @@ export const updateRentalStatus = async (req, res, next) => {
                 await rental.fleet.save();
             }
         }
-        
+
         //If it is reserved or active status will be Rental on fleets
-        if(status === "reserved" || status === "active"){
-            if(rental.fleet){
+        if (status === "reserved" || status === "active") {
+            if (rental.fleet) {
                 rental.fleet.status = "Rented";
                 await rental.fleet.save();
             }

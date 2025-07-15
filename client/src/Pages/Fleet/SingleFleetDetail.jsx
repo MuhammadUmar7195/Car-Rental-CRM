@@ -13,6 +13,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PuffLoader } from "react-spinners";
+import FleetHistory from "./FleetHistory";
 
 const SingleFleetDetail = () => {
   const { id } = useParams();
@@ -148,6 +149,7 @@ const SingleFleetDetail = () => {
           </div>
         </CardContent>
       </Card>
+      <FleetHistory fleetId={id}/>
     </div>
   );
 };
