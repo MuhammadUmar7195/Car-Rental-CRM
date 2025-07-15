@@ -1,5 +1,5 @@
 import express from 'express';
-import { createRentalOrder, deleteRental, getAllRentals, getSingleRental, sendRentalInvoice } from '../Controller/rental.controller.js';
+import { createRentalOrder, deleteRental, getAllRentals, getSingleRental, sendRentalInvoice, updateRentalStatus } from '../Controller/rental.controller.js';
 import { authMiddleware } from '../Middleware/authMiddleware.js';
 const router = express.Router();
 
@@ -10,5 +10,6 @@ router.post('/send-invoice', sendRentalInvoice);
 router.get('/all', getAllRentals);
 router.get('/:id', getSingleRental);
 router.delete('/:id', authMiddleware, deleteRental);
+router.put('/edit/:id', authMiddleware, updateRentalStatus);
 
 export default router;

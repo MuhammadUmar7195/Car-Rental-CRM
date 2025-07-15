@@ -144,3 +144,49 @@ export const deleteRental = async (req, res, next) => {
         next(error);
     }
 };
+
+// Update rental status and fleet status for prevent overbooking error or create new rental order
+export const updateRentalStatus = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        if (!status || !['reserved', 'active', 'completed', 'cancelled'].includes(status)) {
+            return next(new ErrorHandler("Invalid or missing rental status", 400));
+        }
+
+        const rental = await RentalOrder.findById(id).populate("fleet");
+        if (!rental) {
+            return next(new ErrorHandler("Rental order not found", 404));
+        }
+
+        // Update rental status
+        rental.status = status;
+
+        // If completed or cancelled, set fleet status to "Available"
+        if (status === "completed" || status === "cancelled") {
+            if (rental.fleet) {
+                rental.fleet.status = "Available";
+                await rental.fleet.save();
+            }
+        }
+        
+        //If it is reserved or active status will be Rental on fleets
+        if(status === "reserved" || status === "active"){
+            if(rental.fleet){
+                rental.fleet.status = "Rented";
+                await rental.fleet.save();
+            }
+        }
+
+        await rental.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Rental status updated successfully",
+            rental,
+        });
+    } catch (error) {
+        next(error);
+    }
+};

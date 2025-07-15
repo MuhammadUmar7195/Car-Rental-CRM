@@ -43,13 +43,30 @@ export const getSingleRental = createAsyncThunk(
 //Async thunk to delete a rental by ID
 export const deleteRental = createAsyncThunk(
     "rental/deleteRental",
-    async (rentalId, { rejectWithValue }) => {
+    async ({ rentalId }, { rejectWithValue }) => {
         try {
             const response = await axios.delete(
                 `${import.meta.env.VITE_BACKEND_URL}/api/v1/rental/${rentalId}`,
                 { withCredentials: true }
             );
             return response.data.message;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || "Something went wrong");
+        }
+    }
+);
+
+//Aysnc thunk to update the status of rental because of prevent overbooking error or create new rental order
+export const updateRentalStatus = createAsyncThunk(
+    "rental/updateRentalStatus",
+    async ({ rentalId, status }, { rejectWithValue }) => {
+        try {
+            const response = await axios.put(
+                `${import.meta.env.VITE_BACKEND_URL}/api/v1/rental/edit/${rentalId}`,
+                { status },
+                { withCredentials: true }
+            );
+            return response.data.rental;
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || "Something went wrong");
         }
@@ -112,6 +129,25 @@ const rentalSlice = createSlice({
                 );
             })
             .addCase(deleteRental.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            //update the status 
+            .addCase(updateRentalStatus.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(updateRentalStatus.fulfilled, (state, action) => {
+                state.loading = false;
+                state.error = null;
+                const index = state.rentals.findIndex(
+                    (rental) => rental._id === action.payload._id
+                );
+                if (index !== -1) {
+                    state.rentals[index] = action.payload;
+                }
+            })
+            .addCase(updateRentalStatus.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });

@@ -19,6 +19,7 @@ import {
   deleteRental,
   getAllRental,
   getSingleRental,
+  updateRentalStatus,
 } from "@/store/Slices/rental.slice";
 import { Badge } from "@/components/ui/badge";
 import { MdDeleteOutline } from "react-icons/md";
@@ -27,6 +28,11 @@ import { saveAs } from "file-saver";
 import { pdf } from "@react-pdf/renderer";
 import RentalInvoice from "./RentalInvoice";
 import { IoMdDownload } from "react-icons/io";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
 
 const RentalHistory = () => {
   const navigate = useNavigate();
@@ -48,7 +54,7 @@ const RentalHistory = () => {
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this rental order?")) {
-      dispatch(deleteRental(id)).then(() => {
+      dispatch(deleteRental({ rentalId: id })).then(() => {
         dispatch(getAllRental());
         toast.success("Rental order deleted successfully!");
       });
@@ -82,7 +88,9 @@ const RentalHistory = () => {
       const blob = await pdf(invoiceComponent).toBlob();
       saveAs(blob, `RentalInvoice_${rentalId}.pdf`);
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Failed to generate invoice");
+      toast.error(
+        error?.response?.data?.message || "Failed to generate invoice"
+      );
     }
   };
 
@@ -115,8 +123,25 @@ const RentalHistory = () => {
       // Open in new tab for viewing
       window.open(url, "_blank");
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Failed to generate invoice");
+      toast.error(
+        error?.response?.data?.message || "Failed to generate invoice"
+      );
     }
+  };
+
+  const [statusLoading, setStatusLoading] = React.useState(false);
+
+  const handleStatusUpdate = async (id, status) => {
+    setStatusLoading(true);
+
+    try {
+      await dispatch(updateRentalStatus({ rentalId: id, status })).unwrap();
+      toast.success("Rental status updated!");
+      dispatch(getAllRental());
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to update status");
+    }
+    setStatusLoading(false);
   };
 
   return (
@@ -133,7 +158,17 @@ const RentalHistory = () => {
             Rental History
           </h2>
         </div>
-
+        <div>
+          <p className="text-xs sm:text-sm text-black bg-yellow-50 border border-purple-200 rounded px-3 py-2">
+            <span className="font-extrabold">Reminder:</span> To maintain
+            accurate fleet availability, please update the rental status to{" "}
+            <span className="font-semibold animate-pulse uppercase">
+              (completed)
+            </span>{" "}
+            before deleting the rental order. This helps prevent accidental
+            overbooking. 
+          </p>
+        </div>
         {loading ? (
           <div className="flex justify-center items-center h-40">
             <PuffLoader color="#7e22ce" />
@@ -156,69 +191,106 @@ const RentalHistory = () => {
                   <TableHead className="px-4 py-3">Advance</TableHead>
                   <TableHead className="px-4 py-3">Bond</TableHead>
                   <TableHead className="px-4 py-3">Remaining</TableHead>
-                  <TableHead className="px-4 py-3">Status</TableHead>
-                  <TableHead className="px-4 py-3">Payment</TableHead>
+                  <TableHead className="text-center">Status</TableHead>
+                  <TableHead className="text-center">Payment</TableHead>
                   <TableHead className="text-center">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {rentals.length > 0 ? (
-                  // eslint-disable-next-line no-unused-vars
-                  rentals.map((rental, index) => (
+                  rentals.map((rental) => (
                     <TableRow key={rental?._id}>
                       <TableCell className="px-4 py-3">{rental?._id}</TableCell>
                       <TableCell className="px-4 py-3">
-                        {rental.customer?.name}
+                        {rental.customer?.name || "N/A"}
                       </TableCell>
                       <TableCell className="px-4 py-3">
-                        {rental.customer?.licenseNo}
+                        {rental.customer?.licenseNo || "N/A"}
                       </TableCell>
                       <TableCell className="px-4 py-3">
-                        {rental.customer?.phone}
+                        {rental.customer?.phone || "N/A"}
                       </TableCell>
                       <TableCell className="px-4 py-3">
-                        {rental.fleet?.carName}
+                        {rental.fleet?.carName || "N/A"}
                       </TableCell>
                       <TableCell className="px-4 py-3">
-                        {rental.fleet?.model}
+                        {rental.fleet?.model || "N/A"}
                       </TableCell>
                       <TableCell className="px-4 py-3">
-                        {rental.fleet?.registration}
+                        {rental.fleet?.registration || "N/A"}
                       </TableCell>
                       <TableCell className="px-4 py-3">
-                        {new Date(rental.rentalDate).toLocaleDateString()}
+                        {new Date(rental?.rentalDate).toLocaleDateString()}
                       </TableCell>
                       <TableCell className="px-4 py-3">
-                        {rental.purpose}
+                        {rental?.purpose || "N/A"}
                       </TableCell>
                       <TableCell className="px-4 py-3">
-                        Rs {rental.setPrice}
+                        Rs {rental?.setPrice || "N/A"}
                       </TableCell>
                       <TableCell className="px-4 py-3">
-                        Rs {rental.advanceRent}
+                        Rs {rental?.advanceRent || "N/A"}
                       </TableCell>
                       <TableCell className="px-4 py-3">
-                        Rs {rental.bond}
+                        Rs {rental?.bond || "N/A"}
                       </TableCell>
                       <TableCell className="px-4 py-3">
-                        Rs {rental.remainingAmount}
+                        Rs {rental?.remainingAmount || "N/A"}
+                      </TableCell>
+                      <TableCell className="px-4 py-3">
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Badge
+                              className={`px-2 py-1 text-xs font-medium rounded-full cursor-pointer uppercase ${
+                                rental.status === "reserved"
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : rental.status === "completed"
+                                  ? "bg-green-100 text-green-800"
+                                  : rental.status === "cancelled"
+                                  ? "bg-red-100 text-red-800"
+                                  : rental.status === "active"
+                                  ? "bg-blue-100 text-blue-800"
+                                  : "bg-gray-100 text-gray-800"
+                              }`}
+                            >
+                              {rental?.status}
+                            </Badge>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-40 p-2">
+                            <div className="flex flex-col gap-2">
+                              {[
+                                "reserved",
+                                "active",
+                                "completed",
+                                "cancelled",
+                              ].map((status) => (
+                                <Button
+                                  key={status}
+                                  size="sm"
+                                  variant={
+                                    rental.status === status
+                                      ? "secondary"
+                                      : "outline"
+                                  }
+                                  disabled={
+                                    statusLoading || rental.status === status
+                                  }
+                                  onClick={() =>
+                                    handleStatusUpdate(rental?._id, status)
+                                  }
+                                  className="w-full cursor-pointer"
+                                >
+                                  {status.charAt(0).toUpperCase() +
+                                    status.slice(1)}
+                                </Button>
+                              ))}
+                            </div>
+                          </PopoverContent>
+                        </Popover>
                       </TableCell>
                       <TableCell className="px-4 py-3">
                         <Badge
-                          className={`px-2 py-1 text-xs font-medium rounded-full ${
-                            rental.status === "reserved"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : rental.status === "completed"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-gray-100 text-gray-800"
-                          }`}
-                        >
-                          {rental.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="px-4 py-3">
-                        <Badge
-                          className={`px-2 py-1 text-xs font-medium rounded-full ${
+                          className={`px-2 py-1 text-xs font-medium rounded-full uppercase ${
                             rental.paymentStatus === "partial"
                               ? "bg-blue-100 text-blue-800"
                               : rental.paymentStatus === "pending"
@@ -243,14 +315,14 @@ const RentalHistory = () => {
                             className="px-3 py-1 rounded transition font-semibold text-xs cursor-pointer"
                             onClick={() => handleViewInvoice(rental._id)}
                           >
-                            <VscOpenPreview/>
+                            <VscOpenPreview />
                           </Button>
                           <Button
                             variant="secondary"
                             className="px-3 py-1 rounded transition font-semibold text-xs cursor-pointer"
                             onClick={() => handleDownload(rental._id)}
                           >
-                            <IoMdDownload className="fill-purple-500"/>
+                            <IoMdDownload className="fill-purple-500" />
                           </Button>
                         </div>
                       </TableCell>
