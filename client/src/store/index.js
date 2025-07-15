@@ -4,6 +4,7 @@ import fleetReducer from './Slices/fleet.slice.js';
 import customerReducer from './Slices/customer.slice.js';
 import rentalReducer from './Slices/rental.slice.js';
 import AccountingReducer from './Slices/accouting.slice.js';
+import InventoryReducer from './Slices/inventory.slice.js';
 
 // Configure the Redux store with the slices
 export const store = configureStore({
@@ -13,5 +14,6 @@ export const store = configureStore({
     customer: customerReducer,
     rental: rentalReducer,
     accounting: AccountingReducer,
+    inventory: InventoryReducer,
   },
 })

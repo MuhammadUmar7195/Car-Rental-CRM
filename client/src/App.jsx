@@ -20,6 +20,8 @@ import EditCustomerPage from "./Pages/Customer/EditCustomerPage";
 import SingleCustomerDetail from "./Pages/Customer/SingleCustomerDetail";
 import RentalFlow from "./Pages/Rental/RentalFlow";
 import RentalHistory from "./Pages/Rental/RentalHistory";
+import SingleInventoryDetail from "./Pages/Inventory/SingleInventoryDetail";
+import EditInventory from "./Pages/Inventory/EditInventory";
 
 function App() {
   return (
@@ -77,7 +79,11 @@ function App() {
             <Route path="customer/:id" element={<SingleCustomerDetail />} />
             <Route path="customer/edit/:id" element={<EditCustomerPage />} />
 
+            //All Inventory Routes
             <Route path="inventory" element={<Inventory />} />
+            <Route path="inventory/:id" element={<SingleInventoryDetail />} />
+            <Route path="inventory/edit/:id" element={<EditInventory />} />
+
             <Route path="accounting" element={<Accounting />} />
             <Route path="fleet-owner" element={<FleetOwner />} />
             <Route path="payment-dues" element={<Payment />} />
