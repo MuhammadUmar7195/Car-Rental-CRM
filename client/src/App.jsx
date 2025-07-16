@@ -22,6 +22,7 @@ import RentalFlow from "./Pages/Rental/RentalFlow";
 import RentalHistory from "./Pages/Rental/RentalHistory";
 import SingleInventoryDetail from "./Pages/Inventory/SingleInventoryDetail";
 import EditInventory from "./Pages/Inventory/EditInventory";
+import POS from "./Pages/POS/POS";
 
 function App() {
   return (
@@ -83,6 +84,9 @@ function App() {
             <Route path="inventory" element={<Inventory />} />
             <Route path="inventory/:id" element={<SingleInventoryDetail />} />
             <Route path="inventory/edit/:id" element={<EditInventory />} />
+
+            //POS routes
+            <Route path="pos" element={<POS />} />
 
             <Route path="accounting" element={<Accounting />} />
             <Route path="fleet-owner" element={<FleetOwner />} />

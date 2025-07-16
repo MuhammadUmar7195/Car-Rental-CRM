@@ -12,6 +12,7 @@ import {
   FaFileInvoiceDollar,
   FaCogs,
   FaCalculator,
+  FaCashRegister, // Added for POS
 } from "react-icons/fa";
 import { Button } from "../ui/button";
 import { FaCheckCircle } from "react-icons/fa";
@@ -106,6 +107,14 @@ const DashboardSidebar = ({ toggleSidebar }) => {
         >
           <FaToolbox />
           <span>Inventory</span>
+        </NavLink>
+        <NavLink
+          to="/dashboard/pos"
+          className={navLinkClass}
+          onClick={toggleSidebar}
+        >
+          <FaCashRegister />
+          <span>Point of Sale</span>
         </NavLink>
         <NavLink
           to="/dashboard/accounting"
