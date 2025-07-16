@@ -22,6 +22,7 @@ const AccountingCart = ({ accountingData, loading, error }) => {
     dispatch(deleteAccountingEntry(id));
     toast.success("Accounting entry deleted successfully!");
   };
+  
   return (
     <div className="p-6">
       <div className="mb-4">

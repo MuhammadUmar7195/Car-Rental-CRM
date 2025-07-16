@@ -54,7 +54,6 @@ export const getSingleInventory = createAsyncThunk(
                 `${import.meta.env.VITE_BACKEND_URL}/api/v1/inventory/get/${id}`,
                 { withCredentials: true }
             );
-            console.log(response?.data?.inventoryItem);
             return response.data.inventoryItem;
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || "Something went wrong");

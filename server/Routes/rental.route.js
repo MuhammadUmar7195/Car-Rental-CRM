@@ -1,5 +1,15 @@
 import express from 'express';
-import { createRentalOrder, deleteRental, getAllRentals, getRentalsByFleetId, getSingleRental, sendRentalInvoice, updateRentalStatus } from '../Controller/rental.controller.js';
+import {
+    createRentalOrder,
+    deleteRental,
+    getAllRentals,
+    getRentalsByCustomerId,
+    getRentalsByFleetId,
+    getSingleRental,
+    sendRentalInvoice,
+    updateInspectionNameByFleetId,
+    updateRentalStatus
+} from '../Controller/rental.controller.js';
 import { authMiddleware } from '../Middleware/authMiddleware.js';
 const router = express.Router();
 
@@ -14,5 +24,7 @@ router.put('/edit/:id', authMiddleware, updateRentalStatus);
 
 //get data on the basis of fleetId
 router.get('/fleet/:fleetId', getRentalsByFleetId);
+router.get('/customer/:customerId', getRentalsByCustomerId);
+router.put('/inspection/:fleetId', updateInspectionNameByFleetId);
 
 export default router;

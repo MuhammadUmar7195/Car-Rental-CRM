@@ -18,7 +18,6 @@ const rentalOrderSchema = new mongoose.Schema({
   },
   rentalDate: {
     type: Date,
-    required: true
   },
   purpose: {
     type: String,
@@ -61,6 +60,10 @@ const rentalOrderSchema = new mongoose.Schema({
     type: String,
     enum: ['pending', 'paid', 'partial', 'refunded', 'failed'],
     default: 'pending'
+  },
+  inspectionName: {
+    type: String,
+    trim: true,
   }
 }, { timestamps: true });
 

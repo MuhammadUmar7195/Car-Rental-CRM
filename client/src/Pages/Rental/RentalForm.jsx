@@ -49,6 +49,7 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
       const rentalData = {
         customerId: selectedCustomer._id,
         fleetId: selectedCar._id,
+        bookingDate: new Date(), 
         rentalData: {
           ...formData,
           bond: parseFloat(formData.bond),

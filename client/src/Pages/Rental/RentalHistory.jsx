@@ -40,6 +40,8 @@ const RentalHistory = () => {
   const { rentals, loading, error } = useSelector(
     (state) => state?.rental || {}
   );
+  console.log(rentals);
+  
 
   useEffect(() => {
     dispatch(getAllRental());
@@ -178,22 +180,24 @@ const RentalHistory = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="px-4 py-3">Rental ID</TableHead>
-                  <TableHead className="px-4 py-3">Customer</TableHead>
-                  <TableHead className="px-4 py-3">License No</TableHead>
-                  <TableHead className="px-4 py-3">Phone</TableHead>
-                  <TableHead className="px-4 py-3">Car</TableHead>
-                  <TableHead className="px-4 py-3">Model</TableHead>
-                  <TableHead className="px-4 py-3">Registration</TableHead>
-                  <TableHead className="px-4 py-3">Rental Date</TableHead>
-                  <TableHead className="px-4 py-3">Purpose</TableHead>
-                  <TableHead className="px-4 py-3">Set Price</TableHead>
-                  <TableHead className="px-4 py-3">Advance</TableHead>
-                  <TableHead className="px-4 py-3">Bond</TableHead>
-                  <TableHead className="px-4 py-3">Remaining</TableHead>
+                  <TableHead className="text-center">Rental ID</TableHead>
+                  <TableHead className="text-center">Customer</TableHead>
+                  <TableHead className="text-center">License No</TableHead>
+                  <TableHead className="text-center">Phone</TableHead>
+                  <TableHead className="text-center">Car</TableHead>
+                  <TableHead className="text-center">Model</TableHead>
+                  <TableHead className="text-center">Registration</TableHead>
+                  <TableHead className="text-center">Booking Date</TableHead> 
+                  <TableHead className="text-center">Rental Date</TableHead>
+                  <TableHead className="text-center">Purpose</TableHead>
+                  <TableHead className="text-center">Set Price</TableHead>
+                  <TableHead className="text-center">Advance</TableHead>
+                  <TableHead className="text-center">Bond</TableHead>
+                  <TableHead className="text-center">Remaining</TableHead>
                   <TableHead className="text-center">Status</TableHead>
                   <TableHead className="text-center">Payment</TableHead>
                   <TableHead className="text-center">Action</TableHead>
+                  <TableHead className="text-center">Inspection Name</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -218,6 +222,9 @@ const RentalHistory = () => {
                       </TableCell>
                       <TableCell className="px-4 py-3">
                         {rental.fleet?.registration || "N/A"}
+                      </TableCell>
+                      <TableCell className="px-4 py-3">
+                        {new Date(rental?.bookingDate).toLocaleDateString()} {/* Updated */}
                       </TableCell>
                       <TableCell className="px-4 py-3">
                         {new Date(rental?.rentalDate).toLocaleDateString()}
@@ -325,6 +332,9 @@ const RentalHistory = () => {
                             <IoMdDownload className="fill-purple-500" />
                           </Button>
                         </div>
+                      </TableCell>
+                      <TableCell className="px-4 py-3">
+                        {rental?.inspectionName ? rental.inspectionName : <span className="text-gray-400">—</span>}
                       </TableCell>
                     </TableRow>
                   ))

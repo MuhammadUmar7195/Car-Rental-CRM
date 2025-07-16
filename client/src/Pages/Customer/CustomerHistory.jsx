@@ -1,27 +1,20 @@
-import React, { useEffect } from "react";
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { PuffLoader } from "react-spinners";
-import { useDispatch, useSelector } from "react-redux";
-import { getRentalsByFleetId } from "../../store/Slices/rental.slice";
-import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-} from "@/components/ui/table";
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { getRentalsByCustomerId } from '@/store/Slices/rental.slice';
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+import { PuffLoader } from 'react-spinners';
 
-const FleetHistory = ({ fleetId }) => {
+const CustomerHistory = ({ customerId }) => {
   const dispatch = useDispatch();
   const { rentals, loading, error } = useSelector((state) => state.rental);
 
   useEffect(() => {
-    if (fleetId) {
-      dispatch(getRentalsByFleetId(fleetId));
+    if (customerId) {
+      dispatch(getRentalsByCustomerId(customerId));
     }
-  }, [dispatch, fleetId]);
+  }, [dispatch, customerId]);
 
   if (loading) {
     return (
@@ -43,42 +36,51 @@ const FleetHistory = ({ fleetId }) => {
     <Card className="w-full shadow-xl rounded-3xl bg-white p-4 md:p-6 mt-8">
       <CardHeader className="flex flex-col items-center text-center">
         <CardTitle className="text-2xl font-bold text-purple-800 mb-2 uppercase">
-          Fleet Rental History
+          Customer Rental History
         </CardTitle>
         <CardDescription>
           <span className="text-gray-500 text-sm">
-            All rental records for this vehicle
+            All rental records for this customer
           </span>
         </CardDescription>
       </CardHeader>
       <CardContent>
         {(!rentals || rentals.length === 0) ? (
           <div className="text-center py-6 text-lg text-gray-500">
-            No rental history found for this fleet.
+            No rental history found for this customer.
           </div>
         ) : (
           <div className="overflow-x-auto w-full">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Rental ID</TableHead>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Rental Date</TableHead>
-                  <TableHead>Purpose</TableHead>
-                  <TableHead>Set Price</TableHead>
-                  <TableHead>Advance</TableHead>
-                  <TableHead>Bond</TableHead>
-                  <TableHead>Remaining</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Payment</TableHead>
-                  <TableHead>Inspection Name</TableHead>
+                  <TableHead className="text-center">Rental ID</TableHead>
+                  <TableHead className="text-center">Vehicle</TableHead>
+                  <TableHead className="text-center">Model</TableHead>
+                  <TableHead className="text-center">Registration</TableHead>
+                  <TableHead className="text-center">Booking Date</TableHead>
+                  <TableHead className="text-center">Rental Date</TableHead>
+                  <TableHead className="text-center">Purpose</TableHead>
+                  <TableHead className="text-center">Set Price</TableHead>
+                  <TableHead className="text-center">Advance</TableHead>
+                  <TableHead className="text-center">Bond</TableHead>
+                  <TableHead className="text-center">Remaining</TableHead>
+                  <TableHead className="text-center">Status</TableHead>
+                  <TableHead className="text-center">Payment</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {rentals.map((rental) => (
                   <TableRow key={rental._id} className="hover:bg-purple-50 transition">
                     <TableCell>{rental._id}</TableCell>
-                    <TableCell>{rental.customer?.name || "N/A"}</TableCell>
+                    <TableCell>{rental.fleet?.carName || "N/A"}</TableCell>
+                    <TableCell>{rental.fleet?.model || "N/A"}</TableCell>
+                    <TableCell>{rental.fleet?.registration || "N/A"}</TableCell>
+                    <TableCell>
+                      {rental.bookingDate
+                        ? new Date(rental.bookingDate).toLocaleDateString()
+                        : "N/A"}
+                    </TableCell>
                     <TableCell>
                       {rental.rentalDate
                         ? new Date(rental.rentalDate).toLocaleDateString()
@@ -119,11 +121,6 @@ const FleetHistory = ({ fleetId }) => {
                         {rental.paymentStatus}
                       </Badge>
                     </TableCell>
-                    <TableCell>
-                      {rental.inspectionName || (
-                        <span className="text-gray-400">—</span>
-                      )}
-                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -133,6 +130,6 @@ const FleetHistory = ({ fleetId }) => {
       </CardContent>
     </Card>
   );
-};
+}
 
-export default FleetHistory;
+export default CustomerHistory;

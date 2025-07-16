@@ -4,11 +4,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { Button } from "@/components/ui/button";
 import AccountingCart from "./AccountingCart";
 import { FiRefreshCw } from "react-icons/fi";
-import { useRef, useState } from "react";
+import { CiViewList } from "react-icons/ci";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import Papa from "papaparse";
 import axios from "axios";
-import { CiViewList } from "react-icons/ci";
 
 const Accounting = () => {
   const fileInputRef = useRef(null);
@@ -18,15 +18,20 @@ const Accounting = () => {
   const { accountingData, loading, error } =
     useSelector((state) => state?.accounting) || {};
 
+  useEffect(() => {
+    dispatch(getAllAccountingData());
+  }, [dispatch]);
+
   const handleUploadClick = () => {
     if (fileInputRef.current) {
+      fileInputRef.current.value = ""; // clear previous file
       fileInputRef.current.click();
     }
   };
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    dispatch(getAllAccountingData());
+    await dispatch(getAllAccountingData());
     setRefreshing(false);
   };
 
@@ -53,7 +58,6 @@ const Accounting = () => {
               toast.success(
                 response?.data?.message || "Data uploaded successfully!"
               );
-              // Refresh data after upload
               await dispatch(getAllAccountingData());
             }
           } catch (err) {

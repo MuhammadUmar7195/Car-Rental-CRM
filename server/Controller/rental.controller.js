@@ -8,7 +8,7 @@ import { Buffer } from "buffer";
 // Cerate a new rental order
 export const createRentalOrder = async (req, res, next) => {
     try {
-        const { customerId, fleetId, rentalData } = req.body;
+        const { customerId, fleetId, bookingDate, rentalData } = req.body;
 
         // Validate required fields based on new schema
         if (!customerId || !fleetId || !rentalData?.rentalDate || !rentalData?.purpose ||
@@ -33,7 +33,7 @@ export const createRentalOrder = async (req, res, next) => {
         const rentalOrder = new RentalOrder({
             customer: customerId,
             fleet: fleetId,
-            bookingDate: new Date(),
+            bookingDate: bookingDate ? new Date(bookingDate) : new Date(), 
             rentalDate: new Date(rentalData.rentalDate),
             purpose: rentalData.purpose,
             setPrice: rentalData.setPrice,
@@ -44,7 +44,8 @@ export const createRentalOrder = async (req, res, next) => {
             amountPaid: rentalData.advanceRent || 0,
             remainingAmount: remainingAmount,
             status: 'reserved',
-            paymentStatus: rentalData.advanceRent > 0 ? 'partial' : 'pending'
+            paymentStatus: rentalData.advanceRent > 0 ? 'partial' : 'pending',
+            inspectionName: rentalData.inspectionName || "", // <-- Add inspectionName if provided
         });
 
         await rentalOrder.save();
@@ -145,6 +146,23 @@ export const getRentalsByFleetId = async (req, res, next) => {
     }
 };
 
+//Get all rental orders for a specific customerId
+export const getRentalsByCustomerId = async (req, res, next) => {
+    try {
+        const { customerId } = req.params;
+        if (!customerId) {
+            return next(new ErrorHandler("Missing customerId parameter", 400));
+        }
+        const rentals = await RentalOrder.find({ customer: customerId })
+            .sort({ bookingDate: -1 }) // newest first
+            .populate("customer")
+            .populate("fleet");
+        res.status(200).json({ success: true, rentals });
+    } catch (error) {
+        next(error);
+    }
+};
+
 //Delete the rental order
 export const deleteRental = async (req, res, next) => {
     try {
@@ -203,6 +221,47 @@ export const updateRentalStatus = async (req, res, next) => {
             success: true,
             message: "Rental status updated successfully",
             rental,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Update inspection name and finalize rental by fleet ID
+export const updateInspectionNameByFleetId = async (req, res, next) => {
+    try {
+        const { fleetId } = req.params;
+        const { inspectionName } = req.body;
+
+        if (!inspectionName || inspectionName.trim() === "") {
+            return next(new ErrorHandler("Inspection name is required", 400));
+        }
+
+        // Find the latest active/reserved rental for this fleet
+        const rental = await RentalOrder.findOne({
+            fleet: fleetId,
+            status: { $in: ["reserved", "active"] }
+        }).populate("fleet");
+
+        if (!rental) {
+            return next(new ErrorHandler("Active rental order not found for this fleet", 404));
+        }
+
+        rental.inspectionName = inspectionName;
+        rental.paymentStatus = "paid";
+        rental.status = "completed";
+
+        // Set fleet status to Available
+        if (rental.fleet) {
+            rental.fleet.status = "Available";
+            await rental.fleet.save();
+        }
+
+        await rental.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Inspection name updated, rental finalized",
         });
     } catch (error) {
         next(error);

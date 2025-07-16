@@ -15,6 +15,7 @@ import { PuffLoader } from "react-spinners";
 import { IoChevronBackSharp } from "react-icons/io5";
 import { IoCopyOutline } from "react-icons/io5";
 import { IoIosCheckmark } from "react-icons/io";
+import CustomerHistory from "./CustomerHistory";
 
 const SingleCustomerDetail = () => {
   const { id } = useParams();
@@ -105,8 +106,7 @@ const SingleCustomerDetail = () => {
                     setTimeout(() => setCopied(false), 1200);
                   }}
                 >
-                 
-                  {copied ? <IoIosCheckmark size={15}/> : <IoCopyOutline />}
+                  {copied ? <IoIosCheckmark size={15} /> : <IoCopyOutline />}
                 </button>
               </div>
               <Info
@@ -153,6 +153,9 @@ const SingleCustomerDetail = () => {
           </div>
         </CardContent>
       </Card>
+      <div className="w-full max-w-5xl">
+        <CustomerHistory customerId={id} />
+      </div>
     </div>
   );
 };
