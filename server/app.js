@@ -38,11 +38,13 @@ import customerRoutes from "./Routes/customer.route.js";
 import RentalRoutes from "./Routes/rental.route.js";
 import AccountingRoutes from "./Routes/accounting.route.js";
 import InventoryRoutes from "./Routes/inventory.route.js";
+import ServiceRoutes from "./Routes/service.route.js";
 
 app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/fleet", fleetRoutes);
 app.use("/api/v1/customer", customerRoutes);
 app.use("/api/v1/rental", RentalRoutes);
+app.use("/api/v1/service", ServiceRoutes);
 app.use("/api/v1/accounting", AccountingRoutes);
 app.use("/api/v1/inventory", InventoryRoutes);
 

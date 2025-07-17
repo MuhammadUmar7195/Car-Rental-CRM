@@ -6,7 +6,7 @@ export const uploadAccountingFile = async (req, res, next) => {
     const { transactions } = req.body;
 
     if (!transactions || !Array.isArray(transactions)) {
-      return res.status(400).json({ message: "Invalid or missing transactions array" });
+      return next(new ErrorHandler("Invalid or missing transactions array", 400));
     }
 
     // Add optional: Validate each transaction 
@@ -48,7 +48,7 @@ export const deleteSingleAccountingData = async (req, res, next) => {
     const accountingData = await Accounting.findByIdAndDelete(id);
 
     if (!accountingData) {
-      return res.status(404).json({ message: "Accounting data not found" });
+      return next(new ErrorHandler("Accounting data not found", 404));
     }
 
     res.status(200).json({ message: "Accounting data deleted successfully" });
