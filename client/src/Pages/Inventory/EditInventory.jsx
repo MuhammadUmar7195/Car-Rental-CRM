@@ -88,15 +88,15 @@ const EditInventory = () => {
         </h2>
 
         {[
-          { label: "Car Name", name: "carName", type: "text" },
-          { label: "Car Model", name: "carModel", type: "text" },
+          { label: "Name", name: "carName", type: "text" },
+          { label: "Model", name: "carModel", type: "text" },
           { label: "Quantity", name: "quantity", type: "number", min: 0 },
           { label: "Cost Price", name: "costPrice", type: "number", min: 0 },
           { label: "Selling Price", name: "sellingPrice", type: "number", min: 0 },
         ].map(({ label, name, type, ...rest }) => (
           <div key={name}>
             <Label htmlFor={name} className="mb-2">
-              {label}
+              {label} <span className="text-red-500">*</span>
             </Label>
             <Input
               id={name}
