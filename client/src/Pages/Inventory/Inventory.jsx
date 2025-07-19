@@ -74,7 +74,7 @@ const Inventory = () => {
             <PuffLoader color="#9333ea" size={80} speedMultiplier={1.2} />
           </div>
         ) : (
-          <InventoryCart filteredCars={filteredInventory} />
+          <InventoryCart filteredInventory={filteredInventory} />
         )}
       </div>
     </div>

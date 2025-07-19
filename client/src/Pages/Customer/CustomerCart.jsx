@@ -7,15 +7,21 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useDispatch } from "react-redux";
 import { deleteCustomer } from "@/store/Slices/customer.slice";
+import { toast } from "sonner";
+import DeleteDialog from "@/components/Common/DeleteDialog";
 
 const CustomerCart = ({ filteredCustomers }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this customer?")) {
-      dispatch(deleteCustomer(id));
-    }
+    dispatch(deleteCustomer(id))
+      .then(() => {
+        toast.success("Customer deleted successfully");
+      })
+      .catch((error) => {
+        toast.error(`Failed to delete customer: ${error.message}`);
+      });
   };
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-8 w-full px-2 md:px-4">
@@ -106,25 +112,31 @@ const CustomerCart = ({ filteredCustomers }) => {
                 </Badge>
               </div>
               <div className="flex gap-2">
-                <Button
-                  variant="ghost"
-                  onClick={() => handleDelete(customer._id)}
-                  className="flex items-center gap-1 px-3 py-1 text-xs font-semibold text-red-500 hover:text-red-600 rounded-full cursor-pointer"
-                  type="button"
-                >
-                  <motion.div
-                    whileHover={{ rotate: -20 }}
-                    whileTap={{ scale: 0.95 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                    className="text-base"
-                  >
-                    <MdDeleteOutline />
-                  </motion.div>
-                </Button>
+                <DeleteDialog
+                  triggerButton={
+                    <Button
+                      variant="ghost"
+                      className="flex items-center gap-1 px-3 py-1 text-xs font-semibold text-red-500 hover:text-red-600 rounded-full cursor-pointer"
+                      type="button"
+                    >
+                      <motion.div
+                        whileHover={{ rotate: -20 }}
+                        whileTap={{ scale: 0.95 }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                        className="text-base"
+                      >
+                        <MdDeleteOutline />
+                      </motion.div>
+                    </Button>
+                  }
+                  onConfirm={() => handleDelete(customer._id)}
+                />
                 <Button
                   className="px-4 py-1 rounded-lg bg-purple-600 text-white text-xs font-semibold shadow hover:bg-purple-700 transition-colors cursor-pointer flex items-center gap-2"
                   type="button"
-                  onClick={() => navigate(`/dashboard/customer/${customer._id}`)}
+                  onClick={() =>
+                    navigate(`/dashboard/customer/${customer._id}`)
+                  }
                 >
                   Details
                 </Button>

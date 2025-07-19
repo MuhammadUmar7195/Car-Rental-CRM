@@ -27,6 +27,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { PuffLoader } from "react-spinners";
 import { toast } from "sonner";
+import DeleteDialog from "@/components/Common/DeleteDialog";
 
 const POSHistory = () => {
   const navigate = useNavigate();
@@ -53,15 +54,13 @@ const POSHistory = () => {
       return;
     }
 
-    if (window.confirm("Are you sure you want to delete this service order?")) {
-      try {
-        dispatch(deleteServiceOrder(id)).then(() => {
-          dispatch(getAllServices());
-          toast.success("Service order deleted successfully!");
-        });
-      } catch (error) {
-        toast.error(error?.message || "Failed to delete service order");
-      }
+    try {
+      dispatch(deleteServiceOrder(id)).then(() => {
+        dispatch(getAllServices());
+        toast.success("Service order deleted successfully!");
+      });
+    } catch (error) {
+      toast.error(error?.message || "Failed to delete service order");
     }
   };
 
@@ -100,6 +99,7 @@ const POSHistory = () => {
           </h2>
         </div>
 
+        {/* Warning Paragraph */}
         <div className="mb-6">
           <p className="text-xs sm:text-sm text-black bg-yellow-50 border border-purple-200 rounded px-3 py-2">
             <span className="font-extrabold">Reminder:</span> Track all service
@@ -258,13 +258,17 @@ const POSHistory = () => {
                       </TableCell>
                       <TableCell className="px-4 py-3">
                         <div className="flex gap-2">
-                          <Button
-                            variant="destructive"
-                            onClick={() => handleDelete(service._id)}
-                            className="text-white hover:opacity-80 px-3 py-1 rounded transition font-semibold text-xs cursor-pointer"
-                          >
-                            <MdDeleteOutline size={19} />
-                          </Button>
+                          <DeleteDialog
+                            triggerButton={
+                              <Button
+                                variant="destructive"
+                                className="text-white hover:opacity-80 px-3 py-1 rounded transition font-semibold text-xs cursor-pointer"
+                              >
+                                <MdDeleteOutline size={19} />
+                              </Button>
+                            }
+                            onConfirm={() => handleDelete(service._id)}
+                          />
                         </div>
                       </TableCell>
                     </TableRow>

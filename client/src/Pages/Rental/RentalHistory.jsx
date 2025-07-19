@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { IoChevronBackSharp } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -33,6 +33,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
+import DeleteDialog from "@/components/Common/DeleteDialog";
 
 const RentalHistory = () => {
   const navigate = useNavigate();
@@ -53,12 +54,10 @@ const RentalHistory = () => {
   }, [error, dispatch]);
 
   const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this rental order?")) {
-      dispatch(deleteRental({ rentalId: id })).then(() => {
-        dispatch(getAllRental());
-        toast.success("Rental order deleted successfully!");
-      });
-    }
+    dispatch(deleteRental({ rentalId: id })).then(() => {
+      dispatch(getAllRental());
+      toast.success("Rental order deleted successfully!");
+    });
   };
 
   const handleDownload = async (rentalId) => {
@@ -129,7 +128,7 @@ const RentalHistory = () => {
     }
   };
 
-  const [statusLoading, setStatusLoading] = React.useState(false);
+  const [statusLoading, setStatusLoading] = useState(false);
 
   const handleStatusUpdate = async (id, status) => {
     setStatusLoading(true);
@@ -158,6 +157,8 @@ const RentalHistory = () => {
             Rental History
           </h2>
         </div>
+
+        {/* warning paragraph */}
         <div>
           <p className="text-xs sm:text-sm text-black bg-yellow-50 border border-purple-200 rounded px-3 py-2">
             <span className="font-extrabold">Reminder:</span> To maintain
@@ -166,7 +167,7 @@ const RentalHistory = () => {
               (completed)
             </span>{" "}
             before deleting the rental order. This helps prevent accidental
-            overbooking. 
+            overbooking.
           </p>
         </div>
         {loading ? (
@@ -185,7 +186,7 @@ const RentalHistory = () => {
                   <TableHead className="text-center">Car</TableHead>
                   <TableHead className="text-center">Model</TableHead>
                   <TableHead className="text-center">Registration</TableHead>
-                  <TableHead className="text-center">Booking Date</TableHead> 
+                  <TableHead className="text-center">Booking Date</TableHead>
                   <TableHead className="text-center">Rental Date</TableHead>
                   <TableHead className="text-center">Purpose</TableHead>
                   <TableHead className="text-center">Set Price</TableHead>
@@ -202,7 +203,9 @@ const RentalHistory = () => {
                 {rentals.length > 0 ? (
                   rentals.map((rental) => (
                     <TableRow key={rental?._id}>
-                      <TableCell className="px-4 py-3">{rental?._id}</TableCell>
+                      <TableCell className="px-4 py-3 font-mono text-xs">
+                        {rental?._id}
+                      </TableCell>
                       <TableCell className="px-4 py-3">
                         {rental.customer?.name || "N/A"}
                       </TableCell>
@@ -222,7 +225,8 @@ const RentalHistory = () => {
                         {rental.fleet?.registration || "N/A"}
                       </TableCell>
                       <TableCell className="px-4 py-3">
-                        {new Date(rental?.bookingDate).toLocaleDateString()} {/* Updated */}
+                        {new Date(rental?.bookingDate).toLocaleDateString()}{" "}
+                        {/* Updated */}
                       </TableCell>
                       <TableCell className="px-4 py-3">
                         {new Date(rental?.rentalDate).toLocaleDateString()}
@@ -308,13 +312,17 @@ const RentalHistory = () => {
                       </TableCell>
                       <TableCell className="px-4 py-3">
                         <div className="flex gap-2">
-                          <Button
-                            variant={"destructive"}
-                            onClick={() => handleDelete(rental._id)}
-                            className="text-white hover:opacity-80 px-3 py-1 rounded transition font-semibold text-xs cursor-pointer"
-                          >
-                            <MdDeleteOutline size={19} />
-                          </Button>
+                          <DeleteDialog
+                            triggerButton={
+                              <Button
+                                variant="destructive"
+                                className="text-white hover:opacity-80 px-3 py-1 rounded transition font-semibold text-xs cursor-pointer"
+                              >
+                                <MdDeleteOutline size={19} />
+                              </Button>
+                            }
+                            onConfirm={() => handleDelete(rental._id)}
+                          />
                           <Button
                             variant="outline"
                             className="px-3 py-1 rounded transition font-semibold text-xs cursor-pointer"
@@ -332,7 +340,11 @@ const RentalHistory = () => {
                         </div>
                       </TableCell>
                       <TableCell className="px-4 py-3">
-                        {rental?.inspectionName ? rental.inspectionName : <span className="text-gray-400">—</span>}
+                        {rental?.inspectionName ? (
+                          rental.inspectionName
+                        ) : (
+                          <span className="text-gray-400">—</span>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))

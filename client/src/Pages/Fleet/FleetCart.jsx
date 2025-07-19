@@ -8,15 +8,19 @@ import { MdModeEditOutline, MdDeleteOutline } from "react-icons/md";
 import { motion } from "framer-motion";
 import { useDispatch } from "react-redux";
 import { deleteFleet } from "@/store/Slices/fleet.slice";
+import DeleteDialog from "@/components/Common/DeleteDialog";
+import { toast } from "sonner";
 
 const FleetCart = ({ filteredCars }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this car?")) {
-      dispatch(deleteFleet(id));
-    }
+    dispatch(deleteFleet(id)).then(() => {
+      toast.success("Car deleted successfully");
+    }).catch((error) => {
+      toast.error(`Failed to delete car: ${error.message}`);
+    });
   };
 
   return (
@@ -124,21 +128,24 @@ const FleetCart = ({ filteredCars }) => {
                 </Badge>
               </div>
               <div className="flex gap-2">
-                <Button
-                  variant="ghost"
-                  onClick={() => handleDelete(car._id)}
-                  className="flex items-center gap-1 px-3 py-1 text-xs font-semibold text-red-500 hover:text-red-600 rounded-full cursor-pointer"
-                  type="button"
-                >
-                  <motion.div
-                    whileHover={{ rotate: -20 }}
-                    whileTap={{ scale: 0.95 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                    className="text-base"
-                  >
-                    <MdDeleteOutline />
-                  </motion.div>
-                </Button>
+                <DeleteDialog
+                  triggerButton={
+                    <Button
+                      variant="ghost"
+                      className="flex items-center gap-1 px-3 py-1 text-xs font-semibold text-red-500 hover:text-red-600 rounded-full cursor-pointer"
+                    >
+                      <motion.div
+                        whileHover={{ rotate: -20 }}
+                        whileTap={{ scale: 0.95 }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                        className="text-base"
+                      >
+                        <MdDeleteOutline />
+                      </motion.div>
+                    </Button>
+                  }
+                  onConfirm={() => handleDelete(car._id)}
+                />
                 <Button
                   className="px-4 py-1 rounded-lg bg-purple-600 text-white text-xs font-semibold shadow hover:bg-purple-700 transition-colors cursor-pointer flex items-center gap-2"
                   type="button"
