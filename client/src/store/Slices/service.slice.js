@@ -77,6 +77,22 @@ export const deleteServiceOrder = createAsyncThunk(
   }
 );
 
+// Async thunk to get a service order by fleetId
+export const getFleetServiceOrders = createAsyncThunk(
+  "service/getFleetServiceOrders",
+  async (fleetId, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/service/fleet/${fleetId}`,
+        { withCredentials: true }
+      );
+      return response.data.serviceOrders;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Something went wrong");
+    }
+  }
+);
+
 const serviceSlice = createSlice({
   name: "service",
   initialState,
@@ -153,6 +169,19 @@ const serviceSlice = createSlice({
         }
       })
       .addCase(deleteServiceOrder.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Get service by fleetId
+      .addCase(getFleetServiceOrders.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getFleetServiceOrders.fulfilled, (state, action) => {  
+        state.loading = false;
+        state.services = Array.isArray(action.payload) ? action.payload : [];
+      })
+      .addCase(getFleetServiceOrders.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

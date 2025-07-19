@@ -74,6 +74,7 @@ const CustomerAddForm = ({ onAdd, onCancel }) => {
           <div key={name} className={name === "address" ? "col-span-full" : ""}>
             <Label htmlFor={name} className="mb-2 inline-block">
               {label}
+              <span className="text-red-500"> *</span>
             </Label>
             <Input
               id={name}

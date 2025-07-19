@@ -44,8 +44,8 @@ const FleetAddForm = ({ onAdd, onCancel }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await dispatch(postFleet(form)).unwrap(); 
-      if (onAdd) onAdd(res); 
+      const res = await dispatch(postFleet(form)).unwrap();
+      if (onAdd) onAdd(res);
       setForm({ ...initialForm });
       onCancel();
     } catch (err) {
@@ -72,7 +72,24 @@ const FleetAddForm = ({ onAdd, onCancel }) => {
         </button>
 
         {/* ...existing fields... */}
-        {["carName","model","year","registration","fuel","insurance","owner","vin","engine","color","type","odometer","transmission","regExpiry","inspExpiry","businessUse"].map((name) => {
+        {[
+          "carName",
+          "model",
+          "year",
+          "registration",
+          "fuel",
+          "insurance",
+          "owner",
+          "vin",
+          "engine",
+          "color",
+          "type",
+          "odometer",
+          "transmission",
+          "regExpiry",
+          "inspExpiry",
+          "businessUse",
+        ].map((name) => {
           const labelMap = {
             carName: "Car Name",
             model: "Model",
@@ -89,17 +106,19 @@ const FleetAddForm = ({ onAdd, onCancel }) => {
             transmission: "Transmission",
             regExpiry: "Expiry Date",
             inspExpiry: "Inspection Report Expiry Date",
-            businessUse: "Business Use"
+            businessUse: "Business Use",
           };
           const typeMap = {
             year: "date",
             regExpiry: "date",
             inspExpiry: "date",
-            odometer: "number"
+            odometer: "number",
           };
           return (
             <div key={name}>
-              <Label htmlFor={name} className="mb-2 inline-block">{labelMap[name]}</Label>
+              <Label htmlFor={name} className="mb-2 inline-block">
+                {labelMap[name]} <span className="text-red-500">*</span>
+              </Label>
               <Input
                 id={name}
                 name={name}
@@ -125,14 +144,22 @@ const FleetAddForm = ({ onAdd, onCancel }) => {
                 <div className="flex flex-col gap-2 px-2 py-2">
                   <button
                     type="button"
-                    className={`w-full px-3 py-2 rounded-lg border ${form.status === "Available" ? "bg-purple-100 border-purple-400 text-purple-700" : "bg-white border-gray-300 text-gray-700 cursor-pointer"}`}
+                    className={`w-full px-3 py-2 rounded-lg border ${
+                      form.status === "Available"
+                        ? "bg-purple-100 border-purple-400 text-purple-700"
+                        : "bg-white border-gray-300 text-gray-700 cursor-pointer"
+                    }`}
                     onClick={() => setForm({ ...form, status: "Available" })}
                   >
                     Available
                   </button>
                   <button
                     type="button"
-                    className={`w-full px-3 py-2 rounded-lg border ${form.status === "Rented" ? "bg-purple-100 border-purple-400 text-purple-700" : "bg-white border-gray-300 text-gray-700 cursor-pointer"}`}
+                    className={`w-full px-3 py-2 rounded-lg border ${
+                      form.status === "Rented"
+                        ? "bg-purple-100 border-purple-400 text-purple-700"
+                        : "bg-white border-gray-300 text-gray-700 cursor-pointer"
+                    }`}
                     onClick={() => setForm({ ...form, status: "Rented" })}
                   >
                     Rented

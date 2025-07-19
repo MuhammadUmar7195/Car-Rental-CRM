@@ -22,7 +22,7 @@ export const createServiceOrder = async (req, res, next) => {
 
     // Validate inventory items and calculate cost
     const processedItems = [];
-    
+
     for (const item of itemsUsed) {
       const inventoryItem = await Inventory.findById(item.inventoryItem);
       if (!inventoryItem) {
@@ -45,8 +45,8 @@ export const createServiceOrder = async (req, res, next) => {
         quantityUsed: item.quantityUsed,
         unitPrice: inventoryItem.sellingPrice,
         totalPrice: item.quantityUsed * inventoryItem.sellingPrice,
-        itemName: inventoryItem.carName, 
-        itemModel: inventoryItem.carModel 
+        itemName: inventoryItem.carName,
+        itemModel: inventoryItem.carModel
       });
     }
 
@@ -59,14 +59,14 @@ export const createServiceOrder = async (req, res, next) => {
     });
 
     await serviceOrder.save();
-    
+
     // Populate the response
     await serviceOrder.populate('car itemsUsed.inventoryItem');
 
-    res.status(201).json({ 
+    res.status(201).json({
       success: true,
-      message: 'Service order created successfully', 
-      serviceOrder 
+      message: 'Service order created successfully',
+      serviceOrder
     });
   } catch (error) {
     next(error);
@@ -94,13 +94,13 @@ export const updateServiceOrderStatus = async (req, res, next) => {
     }
 
     const serviceOrder = await ServiceOrder.findByIdAndUpdate(id, { status }, { new: true });
-    
+
     if (!serviceOrder) {
       return next(new ErrorHandler("Service order not found", 404));
     }
 
-    res.status(200).json({ 
-      message: "Service order status updated successfully", 
+    res.status(200).json({
+      message: "Service order status updated successfully",
       serviceOrder
     });
   } catch (error) {
@@ -113,7 +113,7 @@ export const deleteServiceOrder = async (req, res, next) => {
   try {
     const { id } = req.params;
     const serviceOrder = await ServiceOrder.findByIdAndDelete(id);
-    
+
     if (!serviceOrder) {
       return next(new ErrorHandler("Service order not found", 404));
     }
@@ -123,3 +123,19 @@ export const deleteServiceOrder = async (req, res, next) => {
     next(error);
   }
 }
+
+//get all service orders for a specific fleetId
+export const getSingleServiceOrder = async (req, res, next) => {
+  try {
+    const { fleetId } = req.params;
+    const serviceOrders = await ServiceOrder.find({ car: fleetId }).populate('car itemsUsed.inventoryItem');
+
+    if (!serviceOrders) {
+      return next(new ErrorHandler("Service order not found", 404));
+    }
+
+    res.status(200).json({ serviceOrders });
+  } catch (error) {
+    next(error);
+  }
+};

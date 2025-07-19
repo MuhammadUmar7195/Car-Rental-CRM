@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PuffLoader } from "react-spinners";
@@ -77,7 +77,7 @@ const FleetHistory = ({ fleetId }) => {
               <TableBody>
                 {rentals.map((rental) => (
                   <TableRow key={rental._id} className="hover:bg-purple-50 transition">
-                    <TableCell>{rental._id}</TableCell>
+                    <TableCell className="font-mono text-xs">{rental._id}</TableCell>
                     <TableCell>{rental.customer?.name || "N/A"}</TableCell>
                     <TableCell>
                       {rental.rentalDate

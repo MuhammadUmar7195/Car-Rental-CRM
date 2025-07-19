@@ -72,7 +72,7 @@ const CustomerHistory = ({ customerId }) => {
               <TableBody>
                 {rentals.map((rental) => (
                   <TableRow key={rental._id} className="hover:bg-purple-50 transition">
-                    <TableCell>{rental._id}</TableCell>
+                    <TableCell className="font-mono text-xs">{rental._id}</TableCell>
                     <TableCell>{rental.fleet?.carName || "N/A"}</TableCell>
                     <TableCell>{rental.fleet?.model || "N/A"}</TableCell>
                     <TableCell>{rental.fleet?.registration || "N/A"}</TableCell>

@@ -104,7 +104,8 @@ const EditCustomerPage = () => {
         ].map(({ label, name, type, ...rest }) => (
           <div key={name}>
             <Label htmlFor={name} className="mb-2">
-              {label}
+              {label} 
+              <span className="text-red-500">*</span>
             </Label>
             <Input
               id={name}

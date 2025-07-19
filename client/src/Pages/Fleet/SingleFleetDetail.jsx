@@ -26,6 +26,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import axios from "axios";
 import { Label } from "@/components/ui/label";
+import FleetServiceHistory from "./FleetServiceHistory";
 
 const SingleFleetDetail = () => {
   const { id } = useParams();
@@ -170,14 +171,14 @@ const SingleFleetDetail = () => {
           <div className="mt-8 flex flex-col md:flex-row gap-4 justify-center items-center w-full">
             <Button
               variant="outline"
-              onClick={() => alert("Rental feature coming soon!")}
+              onClick={() => navigate("/dashboard/rental")}
               className="px-6 py-2 font-semibold border-green-600 text-green-700 hover:bg-green-50 hover:border-green-700 cursor-pointer"
             >
               Rental
             </Button>
             <Button
               variant="outline"
-              onClick={() => alert("Service feature coming soon!")}
+              onClick={() => navigate("/dashboard/pos")}
               className="px-6 py-2 font-semibold border-blue-600 text-blue-700 hover:bg-blue-50 hover:border-blue-700 cursor-pointer"
             >
               Service
@@ -194,6 +195,9 @@ const SingleFleetDetail = () => {
       </Card>
       <div className="w-full max-w-5xl">
         <FleetHistory fleetId={id} />
+      </div>
+      <div className="w-full max-w-5xl">
+        <FleetServiceHistory fleetId={id} />
       </div>
 
       {/* Return Rental Dialog */}
