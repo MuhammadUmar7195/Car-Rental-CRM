@@ -40,8 +40,6 @@ const RentalHistory = () => {
   const { rentals, loading, error } = useSelector(
     (state) => state?.rental || {}
   );
-  console.log(rentals);
-  
 
   useEffect(() => {
     dispatch(getAllRental());

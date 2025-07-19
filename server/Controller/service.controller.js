@@ -3,6 +3,7 @@ import Inventory from '../Model/inventory.model.js';
 import ServiceOrder from '../Model/service.model.js';
 import ErrorHandler from '../Utils/ErrorHandler.js';
 
+//create your service order
 export const createServiceOrder = async (req, res, next) => {
   try {
     const { carId, itemsUsed, description, servicedBy } = req.body;
@@ -71,3 +72,54 @@ export const createServiceOrder = async (req, res, next) => {
     next(error);
   }
 };
+
+//get all service order
+export const getAllServiceOrder = async (req, res, next) => {
+  try {
+    const serviceOrders = await ServiceOrder.find().populate('car itemsUsed.inventoryItem');
+    res.status(200).json({ serviceOrders });
+  } catch (error) {
+    next(error);
+  }
+}
+
+//update status of service order 
+export const updateServiceOrderStatus = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!status) {
+      return next(new ErrorHandler("Status is required", 400));
+    }
+
+    const serviceOrder = await ServiceOrder.findByIdAndUpdate(id, { status }, { new: true });
+    
+    if (!serviceOrder) {
+      return next(new ErrorHandler("Service order not found", 404));
+    }
+
+    res.status(200).json({ 
+      message: "Service order status updated successfully", 
+      serviceOrder
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+//delete single order by id
+export const deleteServiceOrder = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const serviceOrder = await ServiceOrder.findByIdAndDelete(id);
+    
+    if (!serviceOrder) {
+      return next(new ErrorHandler("Service order not found", 404));
+    }
+
+    res.status(200).json({ message: "Service order deleted successfully" });
+  } catch (error) {
+    next(error);
+  }
+}

@@ -23,6 +23,7 @@ import RentalHistory from "./Pages/Rental/RentalHistory";
 import SingleInventoryDetail from "./Pages/Inventory/SingleInventoryDetail";
 import EditInventory from "./Pages/Inventory/EditInventory";
 import POS from "./Pages/POS/POS";
+import POSHistory from "./Pages/POS/POSHistory";
 
 function App() {
   return (
@@ -87,6 +88,7 @@ function App() {
 
             //POS routes
             <Route path="pos" element={<POS />} />
+            <Route path="pos/history" element={<POSHistory />} />
 
             <Route path="accounting" element={<Accounting />} />
             <Route path="fleet-owner" element={<FleetOwner />} />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -25,7 +25,6 @@ import { postService } from "@/store/Slices/service.slice";
 import { PuffLoader } from "react-spinners";
 import { toast } from "sonner";
 import { MdDelete } from "react-icons/md";
-import { PiShoppingCartFill } from "react-icons/pi";
 
 const PosInventory = ({ cart, setCart, selectedCar }) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
