@@ -5,12 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  FaBoxes,
-  FaShoppingCart,
-  FaPlus,
-  FaMinus,
-} from "react-icons/fa";
+import { FaBoxes, FaShoppingCart, FaPlus, FaMinus } from "react-icons/fa";
 import {
   Dialog,
   DialogContent,
@@ -226,6 +221,12 @@ const PosInventory = ({ cart, setCart, selectedCar }) => {
             >
               <div className="relative">
                 <FaShoppingCart className="text-xl" />
+                {/* Cart Counter Badge */}
+                {cart.length > 0 && (
+                  <div className="absolute -top-6 -right-7 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center border-2 border-white shadow-lg">
+                    {getTotalItems() > 99 ? "99+" : getTotalItems()}
+                  </div>
+                )}
               </div>
             </Button>
           </DialogTrigger>
@@ -274,29 +275,42 @@ const PosInventory = ({ cart, setCart, selectedCar }) => {
 
                         {/* Quantity Controls */}
                         <div className="flex items-center gap-4">
-                          <div className="flex items-center gap-2 bg-gray-100 rounded-lg">
+                          <div className="flex items-center bg-white border-2 border-gray-200 rounded-full shadow-sm hover:shadow-md transition-all duration-200 lg:ml-3">
                             <Button
                               size="sm"
                               variant="ghost"
                               onClick={() =>
                                 updateQuantity(item._id, item.quantity - 1)
                               }
-                              className="h-8 w-8 p-0 hover:bg-gray-200 cursor-pointer"
+                              className="h-8 w-8 p-0 rounded-full hover:bg-red-50 hover:text-red-600 transition-colors duration-200 cursor-pointer border-0"
                             >
-                              <FaMinus />
+                              <FaMinus className="w-3 h-3" />
                             </Button>
-                            <span className="w-12 text-center font-semibold text-lg">
-                              {item.quantity || 0}
-                            </span>
+
+                            <div className="px-3 py-1 min-w-[50px] text-center">
+                              <span className="font-bold text-lg text-gray-800 select-none">
+                                {item.quantity || 0}
+                              </span>
+                            </div>
+
                             <Button
                               size="sm"
                               variant="ghost"
                               onClick={() =>
                                 updateQuantity(item._id, item.quantity + 1)
                               }
-                              className="h-8 w-8 p-0 hover:bg-gray-200 cursor-pointer disabled:cursor-not-allowed"
+                              className="h-8 w-8 p-0 rounded-full hover:bg-green-50 hover:text-green-600 transition-colors duration-200 cursor-pointer border-0"
+                              disabled={(() => {
+                                const originalItem = inventory?.find(
+                                  (inv) => inv._id === item._id
+                                );
+                                return (
+                                  originalItem &&
+                                  item.quantity >= originalItem.quantity
+                                );
+                              })()}
                             >
-                              <FaPlus />
+                              <FaPlus className="w-3 h-3" />
                             </Button>
                           </div>
 
