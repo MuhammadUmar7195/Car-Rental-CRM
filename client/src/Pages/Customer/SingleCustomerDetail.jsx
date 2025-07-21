@@ -150,6 +150,15 @@ const SingleCustomerDetail = () => {
             >
               Edit Customer
             </Button>
+            <Button
+              variant="outline"            
+              className="px-6 py-2 font-semibold border-black text-black hover:bg-gray-50 hover:border-black cursor-pointer"
+              onClick={() =>
+                navigate(`/dashboard/payments/${customer._id}`)
+              }
+            >
+              Payments 
+            </Button>
           </div>
         </CardContent>
       </Card>

@@ -12,12 +12,14 @@ import { toast } from "sonner";
 
 const RentalForm = ({ selectedCar, selectedCustomer }) => {
   const [formData, setFormData] = useState({
-    rentalDate: "",
+    returnDate: "",
+    bookingDate: "", // optional
     purpose: "",
     setPrice: "",
     bond: "",
     advanceRent: "",
   });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -38,8 +40,7 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
       return;
     }
 
-    // Basic validation
-    if (!formData.rentalDate || !formData.purpose || !formData.setPrice) {
+    if (!formData.purpose || !formData.setPrice) {
       setError("Please fill all required fields");
       return;
     }
@@ -49,12 +50,15 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
       const rentalData = {
         customerId: selectedCustomer._id,
         fleetId: selectedCar._id,
-        bookingDate: new Date(), 
+        // Send bookingDate only if admin filled it, otherwise backend uses Date.now()
+        ...(formData.bookingDate && { bookingDate: new Date(formData.bookingDate) }),
         rentalData: {
-          ...formData,
-          bond: parseFloat(formData.bond),
-          advanceRent: parseFloat(formData.advanceRent),
+          // returnDate is optional, backend handles 7-day logic
+          ...(formData.returnDate && { returnDate: formData.returnDate }),
+          purpose: formData.purpose,
           setPrice: parseFloat(formData.setPrice),
+          bond: parseFloat(formData.bond) || 0,
+          advanceRent: parseFloat(formData.advanceRent) || 0,
         },
       };
 
@@ -89,6 +93,7 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
         {error && (
           <div className="text-red-500 text-sm text-center">{error}</div>
         )}
+
         <div>
           <Label className="block text-sm font-medium mb-1">
             Selected Car <span className="text-xs text-gray-500">(fixed)</span>
@@ -119,14 +124,25 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
 
         <div>
           <Label className="block text-sm font-medium mb-1">
-            Rental Date <span className="text-red-500">*</span>{" "}
+            Booking Date <span className="text-xs text-gray-500">(optional)</span>
           </Label>
           <Input
             type="date"
-            name="rentalDate"
-            value={formData.rentalDate}
+            name="bookingDate"
+            value={formData.bookingDate}
             onChange={handleChange}
-            required
+          />
+        </div>
+
+        <div>
+          <Label className="block text-sm font-medium mb-1">
+            Return Date <span className="text-xs text-gray-500">(optional)</span>
+          </Label>
+          <Input
+            type="date"
+            name="returnDate"
+            value={formData.returnDate}
+            onChange={handleChange}
           />
         </div>
 
@@ -177,7 +193,7 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
 
         <Button
           type="submit"
-          className="w-full bg-purple-600 hover:bg-purple-700 cursor-pointer"
+          className="w-full bg-purple-600 hover:bg-purple-700"
           disabled={loading}
         >
           {loading ? <PuffLoader size={20} color="#ffffff" /> : "Create Rental"}
@@ -188,3 +204,4 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
 };
 
 export default RentalForm;
+

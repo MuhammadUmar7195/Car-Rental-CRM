@@ -5,66 +5,83 @@ import ErrorHandler from '../Utils/ErrorHandler.js';
 import { transporter } from "../Utils/nodemailer.js";
 import { Buffer } from "buffer";
 
-// Cerate a new rental order
+// Create a new rental order
 export const createRentalOrder = async (req, res, next) => {
-    try {
-        const { customerId, fleetId, bookingDate, rentalData } = req.body;
+  try {
+    const { customerId, fleetId, bookingDate, rentalData } = req.body;
 
-        // Validate required fields based on new schema
-        if (!customerId || !fleetId || !rentalData?.rentalDate || !rentalData?.purpose ||
-            !rentalData?.setPrice || !rentalData?.bond || !rentalData?.advanceRent) {
-            return next(new ErrorHandler('Missing required rental data', 400));
-        }
-
-        const customer = await Customer.findById(customerId);
-        const fleet = await Fleet.findById(fleetId);
-
-        if (!customer || !fleet) {
-            return next(new ErrorHandler('Customer or vehicle not found', 404));
-        }
-
-        // Check if vehicle is available for rental
-        if (fleet.status === "Rented") {
-            return next(new ErrorHandler('Vehicle is not available for rental', 400));
-        }
-
-        const remainingAmount = rentalData.setPrice - (rentalData.advanceRent || 0);
-
-        const rentalOrder = new RentalOrder({
-            customer: customerId,
-            fleet: fleetId,
-            bookingDate: bookingDate ? new Date(bookingDate) : new Date(), 
-            rentalDate: new Date(rentalData.rentalDate),
-            purpose: rentalData.purpose,
-            setPrice: rentalData.setPrice,
-            overdue: rentalData.overdue || 0,
-            bond: rentalData.bond,
-            advanceRent: rentalData.advanceRent,
-            totalBill: rentalData.setPrice,
-            amountPaid: rentalData.advanceRent || 0,
-            remainingAmount: remainingAmount,
-            status: 'reserved',
-            paymentStatus: rentalData.advanceRent > 0 ? 'partial' : 'pending',
-            inspectionName: rentalData.inspectionName || "", // <-- Add inspectionName if provided
-        });
-
-        await rentalOrder.save();
-        fleet.status = "Rented";
-        await fleet.save();
-
-        return res.status(201).json({
-            success: true,
-            message: "Rental order created successfully",
-            data: rentalOrder
-        });
-    } catch (error) {
-        // Handle MongoDB duplicate key error
-        if (error.code === 11000) {
-            return next(new ErrorHandler("Duplicate rental order: This vehicle already has a reserved rental.", 409));
-        }
-        next(error);
+    if (!customerId || !fleetId || !rentalData?.purpose ||
+        !rentalData?.setPrice || !rentalData?.bond || !rentalData?.advanceRent) {
+      return next(new ErrorHandler('Missing required rental data', 400));
     }
+
+    const customer = await Customer.findById(customerId);
+    const fleet = await Fleet.findById(fleetId);
+
+    if (!customer || !fleet) {
+      return next(new ErrorHandler('Customer or vehicle not found', 404));
+    }
+
+    if (fleet.status === "Rented") {
+      return next(new ErrorHandler('Vehicle is not available for rental', 400));
+    }
+
+    // Return date logic
+    let returnDate;
+    let rentalPeriodSuggestion = null;
+    if (!rentalData.returnDate) {
+      const today = new Date();
+      const endDate = new Date(today);
+      endDate.setDate(today.getDate() + 7);
+
+      returnDate = endDate;
+      rentalPeriodSuggestion = {
+        suggestedStart: today,
+        suggestedEnd: endDate,
+        message: "No return date provided. Suggesting a 7-day rental period."
+      };
+    } else {
+      returnDate = new Date(rentalData.returnDate);
+    }
+
+    const remainingAmount = rentalData.setPrice - (rentalData.advanceRent || 0);
+
+    const rentalOrder = new RentalOrder({
+      customer: customerId,
+      fleet: fleetId,
+      bookingDate: bookingDate ? new Date(bookingDate) : new Date(),
+      returnDate: returnDate, // updated
+      purpose: rentalData.purpose,
+      setPrice: rentalData.setPrice,
+      overdue: rentalData.overdue || 0,
+      bond: rentalData.bond,
+      advanceRent: rentalData.advanceRent,
+      totalBill: rentalData.setPrice,
+      amountPaid: rentalData.advanceRent || 0,
+      remainingAmount: remainingAmount,
+      status: 'reserved',
+      paymentStatus: rentalData.advanceRent > 0 ? 'partial' : 'pending',
+      inspectionName: rentalData.inspectionName || "",
+    });
+
+    await rentalOrder.save();
+    fleet.status = "Rented";
+    await fleet.save();
+
+    return res.status(201).json({
+      success: true,
+      message: "Rental order created successfully",
+      data: rentalOrder,
+      ...(rentalPeriodSuggestion && { rentalPeriodSuggestion })
+    });
+  } catch (error) {
+    if (error.code === 11000) {
+      return next(new ErrorHandler("Duplicate rental order: This vehicle already has a reserved rental.", 409));
+    }
+    next(error);
+  }
 }
+
 
 // send rental invoice via email
 export const sendRentalInvoice = async (req, res, next) => {

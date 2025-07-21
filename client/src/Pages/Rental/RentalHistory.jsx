@@ -41,6 +41,7 @@ const RentalHistory = () => {
   const { rentals, loading, error } = useSelector(
     (state) => state?.rental || {}
   );
+  console.log("rentals", rentals);
 
   useEffect(() => {
     dispatch(getAllRental());
@@ -187,7 +188,7 @@ const RentalHistory = () => {
                   <TableHead className="text-center">Model</TableHead>
                   <TableHead className="text-center">Registration</TableHead>
                   <TableHead className="text-center">Booking Date</TableHead>
-                  <TableHead className="text-center">Rental Date</TableHead>
+                  <TableHead className="text-center">Return Date</TableHead>
                   <TableHead className="text-center">Purpose</TableHead>
                   <TableHead className="text-center">Set Price</TableHead>
                   <TableHead className="text-center">Advance</TableHead>
@@ -229,7 +230,7 @@ const RentalHistory = () => {
                         {/* Updated */}
                       </TableCell>
                       <TableCell className="px-4 py-3">
-                        {new Date(rental?.rentalDate).toLocaleDateString()}
+                        {new Date(rental?.returnDate).toLocaleDateString()}
                       </TableCell>
                       <TableCell className="px-4 py-3">
                         {rental?.purpose || "N/A"}

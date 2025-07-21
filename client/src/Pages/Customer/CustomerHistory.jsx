@@ -59,7 +59,7 @@ const CustomerHistory = ({ customerId }) => {
                   <TableHead className="text-center">Model</TableHead>
                   <TableHead className="text-center">Registration</TableHead>
                   <TableHead className="text-center">Booking Date</TableHead>
-                  <TableHead className="text-center">Rental Date</TableHead>
+                  <TableHead className="text-center">Return Date</TableHead>
                   <TableHead className="text-center">Purpose</TableHead>
                   <TableHead className="text-center">Set Price</TableHead>
                   <TableHead className="text-center">Advance</TableHead>
@@ -82,8 +82,8 @@ const CustomerHistory = ({ customerId }) => {
                         : "N/A"}
                     </TableCell>
                     <TableCell>
-                      {rental.rentalDate
-                        ? new Date(rental.rentalDate).toLocaleDateString()
+                      {rental.returnDate
+                        ? new Date(rental.returnDate).toLocaleDateString()
                         : "N/A"}
                     </TableCell>
                     <TableCell>{rental.purpose || "N/A"}</TableCell>

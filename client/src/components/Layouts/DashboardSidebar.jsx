@@ -132,22 +132,6 @@ const DashboardSidebar = ({ toggleSidebar }) => {
           <FaUserTie />
           <span>Fleet Owner</span>
         </NavLink>
-        <NavLink
-          to="/dashboard/payment-dues"
-          className={navLinkClass}
-          onClick={toggleSidebar}
-        >
-          <FaFileInvoiceDollar />
-          <span>Payment Dues</span>
-        </NavLink>
-        <NavLink
-          to="/dashboard/service"
-          className={navLinkClass}
-          onClick={toggleSidebar}
-        >
-          <FaBell />
-          <span>Service</span>
-        </NavLink>
       </nav>
 
       {/* Logout & User Info */}

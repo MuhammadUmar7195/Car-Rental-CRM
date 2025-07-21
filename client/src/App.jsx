@@ -5,7 +5,6 @@ import Home from "./Pages/Home/Home";
 import Fleet from "./Pages/Fleet/Fleet";
 import Customer from "./Pages/Customer/Customer";
 import Inventory from "./Pages/Inventory/Inventory";
-import Service from "./Pages/Services/Service";
 import { Toaster } from "sonner";
 import Register from "./components/auth/Register";
 import ProtectedRoute from "./Routes/ProtectedRoute";
@@ -90,10 +89,14 @@ function App() {
             <Route path="pos" element={<POS />} />
             <Route path="pos/history" element={<POSHistory />} />
 
+            //Bank CSV upload logic 
             <Route path="accounting" element={<Accounting />} />
+
+            //Payment dues 
+            <Route path="payments/:id" element={<Payment />} />
+
+            //Fleet Owner
             <Route path="fleet-owner" element={<FleetOwner />} />
-            <Route path="payment-dues" element={<Payment />} />
-            <Route path="service" element={<Service />} />
           </Route>
           {/* Global catch-all route to redirect to login */}
           <Route

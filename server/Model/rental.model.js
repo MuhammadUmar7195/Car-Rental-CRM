@@ -16,7 +16,7 @@ const rentalOrderSchema = new mongoose.Schema({
     required: true,
     default: Date.now
   },
-  rentalDate: {
+  returnDate: {
     type: Date,
   },
   purpose: {
