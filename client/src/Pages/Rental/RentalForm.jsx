@@ -51,7 +51,9 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
         customerId: selectedCustomer._id,
         fleetId: selectedCar._id,
         // Send bookingDate only if admin filled it, otherwise backend uses Date.now()
-        ...(formData.bookingDate && { bookingDate: new Date(formData.bookingDate) }),
+        ...(formData.bookingDate && {
+          bookingDate: new Date(formData.bookingDate),
+        }),
         rentalData: {
           // returnDate is optional, backend handles 7-day logic
           ...(formData.returnDate && { returnDate: formData.returnDate }),
@@ -124,7 +126,8 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
 
         <div>
           <Label className="block text-sm font-medium mb-1">
-            Booking Date <span className="text-xs text-gray-500">(optional)</span>
+            Booking Date{" "}
+            <span className="text-xs text-gray-500">(optional)</span>
           </Label>
           <Input
             type="date"
@@ -136,7 +139,8 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
 
         <div>
           <Label className="block text-sm font-medium mb-1">
-            Return Date <span className="text-xs text-gray-500">(optional)</span>
+            Return Date{" "}
+            <span className="text-xs text-gray-500">(optional)</span>
           </Label>
           <Input
             type="date"
@@ -172,7 +176,10 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
         </div>
 
         <div>
-          <Label className="block text-sm font-medium mb-1">Bond Amount</Label>
+          <Label className="block text-sm font-medium mb-1">
+            Bond Amount
+            <span className="text-red-500"> *</span>
+          </Label>
           <Input
             type="number"
             name="bond"
@@ -182,7 +189,10 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
         </div>
 
         <div>
-          <Label className="block text-sm font-medium mb-1">Advance Rent</Label>
+          <Label className="block text-sm font-medium mb-1">
+            Advance Rent
+            <span className="text-red-500"> *</span>
+          </Label>
           <Input
             type="number"
             name="advanceRent"
@@ -193,7 +203,7 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
 
         <Button
           type="submit"
-          className="w-full bg-purple-600 hover:bg-purple-700"
+          className="w-full bg-purple-600 hover:bg-purple-700 cursor-pointer"
           disabled={loading}
         >
           {loading ? <PuffLoader size={20} color="#ffffff" /> : "Create Rental"}
@@ -204,4 +214,3 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
 };
 
 export default RentalForm;
-

@@ -65,7 +65,7 @@ const PaymentDetails = () => {
       <Card className="mb-6 shadow-lg relative">
         <Button
           onClick={() => navigate(-1)}
-          className="absolute left-4 top-4 px-3 py-2 font-semibold bg-purple-700 text-white hover:bg-purple-800 rounded-full"
+          className="absolute left-4 top-4 px-3 py-2 font-semibold bg-purple-700 text-white hover:bg-purple-800 hover:text-white rounded-full cursor-pointer"
           variant="ghost"
         >
           <IoChevronBackSharp size={18} />
