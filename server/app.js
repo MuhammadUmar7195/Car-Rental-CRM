@@ -39,6 +39,7 @@ import RentalRoutes from "./Routes/rental.route.js";
 import AccountingRoutes from "./Routes/accounting.route.js";
 import InventoryRoutes from "./Routes/inventory.route.js";
 import ServiceRoutes from "./Routes/service.route.js";
+import AssignCustomer from "./Routes/assignCustomerAccounts.route.js";
 
 app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/fleet", fleetRoutes);
@@ -47,6 +48,7 @@ app.use("/api/v1/rental", RentalRoutes);
 app.use("/api/v1/service", ServiceRoutes);
 app.use("/api/v1/accounting", AccountingRoutes);
 app.use("/api/v1/inventory", InventoryRoutes);
+app.use("/api/v1/assign-customer", AssignCustomer);
 
 //error handling middleware
 import errorMiddleware from "./Middleware/error.js";

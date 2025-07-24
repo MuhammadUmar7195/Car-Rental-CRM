@@ -14,15 +14,15 @@ import { useDispatch } from "react-redux";
 import { deleteAccountingEntry } from "@/store/Slices/accouting.slice";
 import { toast } from "sonner";
 import { FiRefreshCw } from "react-icons/fi";
+import AssignCustomerDialog from "./AssignCustomerDialog";
 
 const AccountingCart = ({ accountingData, loading, error }) => {
   const dispatch = useDispatch();
-
   const handleDelete = (id) => {
     dispatch(deleteAccountingEntry(id));
     toast.success("Accounting entry deleted successfully!");
   };
-  
+
   return (
     <div className="p-6">
       <div className="mb-4">
@@ -84,9 +84,7 @@ const AccountingCart = ({ accountingData, loading, error }) => {
                 <Button className="bg-purple-600 hover:bg-purple-700 cursor-pointer text-white text-xs px-4 py-1 rounded">
                   Workshop Expense
                 </Button>
-                <Button className="bg-purple-600 hover:bg-purple-700 cursor-pointer text-white text-xs px-4 py-1 rounded">
-                  Assign Customer
-                </Button>
+               <AssignCustomerDialog accountingId={row._id} />
               </div>
             </CardContent>
           </Card>
@@ -95,7 +93,8 @@ const AccountingCart = ({ accountingData, loading, error }) => {
         <Card>
           <CardContent>
             <div className="flex items-center justify-center gap-2 text-gray-500 py-6">
-              No Records Found. Refresh it <FiRefreshCw className="animate-spin"/>
+              No Records Found. Refresh it{" "}
+              <FiRefreshCw className="animate-spin" />
             </div>
           </CardContent>
         </Card>
