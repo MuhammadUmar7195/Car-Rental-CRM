@@ -4,7 +4,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogDescription
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { PuffLoader } from "react-spinners";
 import { Button } from "@/components/ui/button";
@@ -12,9 +12,22 @@ import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllCustomers } from "@/store/Slices/customer.slice";
-import { postAssignCustomerAccount } from "@/store/Slices/assignCustomerAccount";
+import {
+  deleteAccountingEntry,
+  postAssignCustomerAccount,
+} from "@/store/Slices/assignCustomerAccount";
 import { toast } from "sonner";
-import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 
 const AssignCustomerDialog = ({ accountingId }) => {
   const [open, setOpen] = useState(false);
@@ -24,7 +37,9 @@ const AssignCustomerDialog = ({ accountingId }) => {
   const [showConfirm, setShowConfirm] = useState(false);
   const dispatch = useDispatch();
   const { customers, loading } = useSelector((state) => state?.customer || {});
-  const { loading: assignLoading, error: assignError } = useSelector((state) => state?.accounting || {});
+  const { loading: assignLoading, error: assignError } = useSelector(
+    (state) => state?.accounting || {}
+  );
 
   useEffect(() => {
     if (open) {
@@ -36,9 +51,17 @@ const AssignCustomerDialog = ({ accountingId }) => {
     dispatch(postAssignCustomerAccount({ customerId, accountingId }))
       .unwrap()
       .then(() => {
-        toast.success("Customer assigned successfully!");
-        setAssigned(true); // Mark as assigned
-        setOpen(false);
+        // Only delete after successful assignment
+        dispatch(deleteAccountingEntry(accountingId))
+          .unwrap()
+          .then(() => {
+            toast.success("Customer assigned and accounting entry deleted!");
+            setAssigned(true); // Mark as assigned
+            setOpen(false);
+          })
+          .catch((err) => {
+            toast.error(err || "Failed to delete accounting entry.");
+          });
       })
       .catch((err) => {
         toast.error(err || "Failed to assign customer.");
@@ -102,7 +125,9 @@ const AssignCustomerDialog = ({ accountingId }) => {
                     <div
                       key={customer._id}
                       className={`flex justify-between items-center py-2 px-3 border-b transition cursor-pointer ${
-                        assigned ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "hover:bg-purple-50"
+                        assigned
+                          ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                          : "hover:bg-purple-50"
                       }`}
                       onClick={() => {
                         if (!assigned) {
@@ -129,7 +154,9 @@ const AssignCustomerDialog = ({ accountingId }) => {
                 )}
               </div>
               {assignError && (
-                <div className="text-red-500 text-xs text-center">{assignError}</div>
+                <div className="text-red-500 text-xs text-center">
+                  {assignError}
+                </div>
               )}
               <Button
                 variant="outline"
@@ -156,7 +183,10 @@ const AssignCustomerDialog = ({ accountingId }) => {
             <AlertDialogCancel onClick={() => setShowConfirm(false)}>
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction className= "bg-red-600 hover:bg-red-700 text-white cursor-pointer" onClick={handleConfirmAssign}>
+            <AlertDialogAction
+              className="bg-red-600 hover:bg-red-700 text-white cursor-pointer"
+              onClick={handleConfirmAssign}
+            >
               Yes, Assign
             </AlertDialogAction>
           </AlertDialogFooter>

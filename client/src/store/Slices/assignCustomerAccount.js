@@ -25,6 +25,22 @@ export const postAssignCustomerAccount = createAsyncThunk(
     }
 );
 
+//Async thunk to delete accounting entry by their ID
+export const deleteAccountingEntry = createAsyncThunk(
+    "accounting/deleteAccountingEntry",
+    async (accountingId, { rejectWithValue }) => {
+        try {
+            const response = await axios.delete(
+                `${import.meta.env.VITE_BACKEND_URL}/api/v1/assign-customer/delete/${accountingId}`,
+                { withCredentials: true }
+            );
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || "Something went wrong");
+        }
+    }
+);
+
 const accountingSlice = createSlice({
     name: "accounting",
     initialState,
@@ -38,6 +54,7 @@ const accountingSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
+            //post assign customer account
             .addCase(postAssignCustomerAccount.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -47,6 +64,21 @@ const accountingSlice = createSlice({
                 state.assignCustomerAccountData = action.payload;
             })
             .addCase(postAssignCustomerAccount.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            //delete accounting entry
+            .addCase(deleteAccountingEntry.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(deleteAccountingEntry.fulfilled, (state, action) => {
+                state.loading = false;
+                state.assignCustomerAccountData = state.assignCustomerAccountData.filter(
+                    (entry) => entry._id !== action.payload._id
+                );
+            })
+            .addCase(deleteAccountingEntry.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });
