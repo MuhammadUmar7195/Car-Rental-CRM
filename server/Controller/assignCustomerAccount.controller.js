@@ -1,7 +1,7 @@
 import AssignCustomerAccount from "../Model/assignCustomerAccounts.model.js";
-import Accounting from "../Model/accounting.model.js";
 import ErrorHandler from "../Utils/ErrorHandler.js";
 
+// Assign a customer to an accounting entry
 export const assignCustomerToAccounting = async (req, res, next) => {
     try {
         const { customerId, accountingId } = req.body;
@@ -27,20 +27,41 @@ export const assignCustomerToAccounting = async (req, res, next) => {
     }
 };
 
-export const deleteAccountingById = async (req, res, next) => {
+// Get assigned payments with single customer ID
+export const getAssignedPaymentsByCustomerId = async (req, res, next) => {
+    try {
+        const { customerId } = req.params;
+
+        if (!customerId) {
+            return next(new ErrorHandler("customerId is required.", 400));
+        }
+
+        const assignments = await AssignCustomerAccount.find({ customerId }).populate('accountingId');
+
+        return res.status(200).json({
+            message: "Assigned payments retrieved successfully!",
+            data: assignments,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// In assignCustomerAccount.controller.js
+export const checkIfAssigned = async (req, res, next) => {
     try {
         const { accountingId } = req.params;
         if (!accountingId) {
             return next(new ErrorHandler("accountingId is required.", 400));
         }
 
-        const deleted = await Accounting.findByIdAndDelete(accountingId);
-        if (!deleted) {
-            return next(new ErrorHandler("Accounting entry not found.", 404));
-        }
+        const assignment = await AssignCustomerAccount.findOne({ accountingId });
+        const isAssigned = assignment ? true : false;
 
         return res.status(200).json({
-            message: "Accounting entry deleted successfully!",
+            message: "Assignment status checked successfully!",
+            isAssigned,
+            assignment: assignment || null,
         });
     } catch (error) {
         next(error);

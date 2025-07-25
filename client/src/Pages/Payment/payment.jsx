@@ -10,7 +10,9 @@ import { IoChevronBackSharp } from "react-icons/io5";
 import { HiOutlineUserCircle } from "react-icons/hi";
 import { getSingleCustomer } from "@/store/Slices/customer.slice";
 import { getRentalsByCustomerId } from "@/store/Slices/rental.slice";
+import { getAssignAccountByCustomerId } from "@/store/Slices/assignCustomerAccount";
 import dayjs from "dayjs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const PaymentDetails = () => {
   const { id } = useParams();
@@ -21,21 +23,31 @@ const PaymentDetails = () => {
     singleCustomer,
     loading: customerLoading,
     error: customerError,
-  } = useSelector((state) => state.customer);
+  } = useSelector((state) => state?.customer || {});
+
   const {
     rentals,
     loading: rentalsLoading,
     error: rentalsError,
-  } = useSelector((state) => state.rental);
+  } = useSelector((state) => state?.rental || {});
+
+  const {
+    assignCustomerAccountData,
+    loading: accountingLoading,
+    error: accountingError,
+  } = useSelector((state) => state?.assignCustomerAccount || {});
+
+  console.log("assignCustomerAccountData:", assignCustomerAccountData);
 
   useEffect(() => {
     if (id) {
       dispatch(getSingleCustomer(id));
       dispatch(getRentalsByCustomerId(id));
+      dispatch(getAssignAccountByCustomerId(id));
     }
   }, [dispatch, id]);
 
-  if (customerLoading || rentalsLoading) {
+  if (customerLoading || rentalsLoading || accountingLoading) {
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
         <PuffLoader color="#9333ea" size={60} />
@@ -43,10 +55,10 @@ const PaymentDetails = () => {
     );
   }
 
-  if (customerError || rentalsError) {
+  if (customerError || rentalsError || accountingError) {
     return (
       <div className="text-red-600 text-center py-10">
-        {customerError || rentalsError}
+        {customerError || rentalsError || accountingError}
       </div>
     );
   }
@@ -58,6 +70,15 @@ const PaymentDetails = () => {
   const weeksOverdue = returnDate?.isBefore(now)
     ? now.diff(returnDate, "week") + 1
     : 0;
+
+  // Fix: Access the correct data array from assignCustomerAccountData
+  const paidSummary = Array.isArray(assignCustomerAccountData?.data)
+    ? assignCustomerAccountData.data.filter(
+        (entry) => entry && typeof entry === "object"
+      )
+    : [];
+
+  console.log("paidSummary:", paidSummary);
 
   return (
     <div className="px-6 py-8 max-w-6xl mx-auto">
@@ -131,7 +152,9 @@ const PaymentDetails = () => {
             />
             <div className="flex flex-col">
               <Label className="text-gray-600">Status</Label>
-              <Badge variant="default" className="capitalize w-fit mt-1">{rental?.status}</Badge>
+              <Badge variant="default" className="capitalize w-fit mt-1">
+                {rental?.status}
+              </Badge>
             </div>
           </CardContent>
         </Card>
@@ -166,14 +189,89 @@ const PaymentDetails = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
+            {/* Rental Paid Total */}
             <div className="flex justify-between">
-              <span>Paid Total</span>
+              <span>Rental Paid Total</span>
               <span className="font-medium text-green-600">
                 Rs {rental?.amountPaid?.toLocaleString() || "0"}
               </span>
             </div>
-            <p className="text-gray-500 mt-2">
-              Payment may have been made weekly or in lump sum.
+
+            {/* Assigned Accounting Payments Table */}
+            {paidSummary.length > 0 && (
+              <>
+                <div className="mt-3 text-xs text-gray-500 font-semibold border-t pt-2">
+                  Assigned Accounting Payments:
+                </div>
+
+                <Table className="mt-2 border">
+                  <TableHeader>
+                    <TableRow className="bg-muted">
+                      <TableHead className="text-left">Date</TableHead>
+                      <TableHead className="text-left">Description</TableHead>
+                      <TableHead className="text-right">Amount</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {paidSummary.map((entry, idx) => (
+                      <TableRow key={entry._id || idx}>
+                        <TableCell>
+                          {entry?.accountingId?.date || "—"}
+                        </TableCell>
+                        <TableCell>
+                          {entry?.accountingId?.description || "No Description"}
+                        </TableCell>
+                        <TableCell className="text-right text-green-700 font-medium">
+                          Rs{" "}
+                          {entry?.accountingId?.amount?.toLocaleString() || "0"}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+
+                {/* Total from Assigned Payments */}
+                <div className="flex justify-between font-semibold border-t pt-2 mt-2">
+                  <span>Assigned Total</span>
+                  <span className="text-green-700">
+                    Rs{" "}
+                    {paidSummary
+                      .reduce(
+                        (total, entry) =>
+                          total + (entry?.accountingId?.amount || 0),
+                        0
+                      )
+                      .toLocaleString()}
+                  </span>
+                </div>
+              </>
+            )}
+
+            {/* Show message when no assigned payments */}
+            {paidSummary.length === 0 && (
+              <div className="text-gray-500 text-center py-4 border rounded">
+                No assigned payments found.
+              </div>
+            )}
+
+            {/* Grand Total */}
+            <div className="flex justify-between font-bold text-lg border-t-2 pt-2 mt-3">
+              <span>Grand Total Paid</span>
+              <span className="text-green-600">
+                Rs{" "}
+                {(
+                  (rental?.amountPaid || 0) +
+                  paidSummary.reduce(
+                    (total, entry) =>
+                      total + (entry?.accountingId?.amount || 0),
+                    0
+                  )
+                ).toLocaleString()}
+              </span>
+            </div>
+
+            <p className="text-gray-500 mt-2 text-xs">
+              Payment includes rental payments and assigned accounting entries.
             </p>
           </CardContent>
         </Card>

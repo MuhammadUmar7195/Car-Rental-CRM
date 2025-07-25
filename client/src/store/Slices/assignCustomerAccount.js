@@ -17,7 +17,6 @@ export const postAssignCustomerAccount = createAsyncThunk(
                 { customerId, accountingId },
                 { withCredentials: true }
             );
-            console.log("Assign Customer Account Response:", response.data);
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || "Something went wrong");
@@ -25,13 +24,13 @@ export const postAssignCustomerAccount = createAsyncThunk(
     }
 );
 
-//Async thunk to delete accounting entry by their ID
-export const deleteAccountingEntry = createAsyncThunk(
-    "accounting/deleteAccountingEntry",
-    async (accountingId, { rejectWithValue }) => {
+//Async thunk to get assign payment by customer Id
+export const getAssignAccountByCustomerId = createAsyncThunk(
+    "accounting/getAssignCustomerAccountByCustomerId",
+    async (customerId, { rejectWithValue }) => {
         try {
-            const response = await axios.delete(
-                `${import.meta.env.VITE_BACKEND_URL}/api/v1/assign-customer/delete/${accountingId}`,
+            const response = await axios.get(
+                `${import.meta.env.VITE_BACKEND_URL}/api/v1/assign-customer/customer/${customerId}`,
                 { withCredentials: true }
             );
             return response.data;
@@ -41,8 +40,8 @@ export const deleteAccountingEntry = createAsyncThunk(
     }
 );
 
-const accountingSlice = createSlice({
-    name: "accounting",
+const assignCustomerAccountSlice = createSlice({
+    name: "assignCustomerAccount",
     initialState,
     reducers: {
         clearAccountingError: (state) => {
@@ -67,23 +66,21 @@ const accountingSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
-            //delete accounting entry
-            .addCase(deleteAccountingEntry.pending, (state) => {
+            //get assign customer account by customer Id
+            .addCase(getAssignAccountByCustomerId.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(deleteAccountingEntry.fulfilled, (state, action) => {
+            .addCase(getAssignAccountByCustomerId.fulfilled, (state, action) => {
                 state.loading = false;
-                state.assignCustomerAccountData = state.assignCustomerAccountData.filter(
-                    (entry) => entry._id !== action.payload._id
-                );
+                state.assignCustomerAccountData = action.payload || [];
             })
-            .addCase(deleteAccountingEntry.rejected, (state, action) => {
+            .addCase(getAssignAccountByCustomerId.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });
     }
 });
 
-export const { clearAccountingError, clearAccounting } = accountingSlice.actions;
-export default accountingSlice.reducer;
+export const { clearAccountingError, clearAccounting } = assignCustomerAccountSlice.actions;
+export default assignCustomerAccountSlice.reducer;
