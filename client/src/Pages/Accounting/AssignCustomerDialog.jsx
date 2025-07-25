@@ -9,7 +9,7 @@ import {
 import { PuffLoader } from "react-spinners";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllCustomers } from "@/store/Slices/customer.slice";
 import { postAssignCustomerAccount } from "@/store/Slices/assignCustomerAccount";
@@ -26,13 +26,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import axios from "axios";
 
-const AssignCustomerDialog = ({ accountingId }) => {
+const AssignCustomerDialog = ({ accountingId, onClose }) => {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [assigned, setAssigned] = useState(false);
   const [confirmCustomerId, setConfirmCustomerId] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [checkingAssignment, setCheckingAssignment] = useState(true);
+  const [checkingAssignment, setCheckingAssignment] = useState(false);
 
   const dispatch = useDispatch();
   const { customers, loading } = useSelector((state) => state?.customer || {});
@@ -40,63 +40,68 @@ const AssignCustomerDialog = ({ accountingId }) => {
     (state) => state?.accounting || {}
   );
 
-  // Check if accounting entry is already assigned on component mount
+  // Check if accounting entry is already assigned
   useEffect(() => {
     const checkIfAssigned = async () => {
+      if (!accountingId) return;
       try {
         setCheckingAssignment(true);
-        const response = await axios.get(
+        const res = await axios.get(
           `${import.meta.env.VITE_BACKEND_URL}/api/v1/assign-customer/check/${accountingId}`
         );
-        setAssigned(response.data.isAssigned || false);
-      } catch (error) {
-        console.error("Failed to check assignment status:", error);
+        setAssigned(res.data?.isAssigned || false);
+      } catch (err) {
+        console.error("Assignment check failed:", err);
         setAssigned(false);
       } finally {
         setCheckingAssignment(false);
       }
     };
-
-    if (accountingId) {
-      checkIfAssigned();
-    }
+    checkIfAssigned();
   }, [accountingId]);
 
+  // Only fetch customers if not already present
   useEffect(() => {
-    if (open) {
+    if (open && (!customers || customers.length === 0)) {
       dispatch(getAllCustomers());
     }
-  }, [dispatch, open]);
+  }, [open, dispatch, customers]);
 
-  const handleAssign = (customerId) => {
-    dispatch(postAssignCustomerAccount({ customerId, accountingId }))
-      .unwrap()
-      .then(() => {
-        toast.success("Customer assigned successfully!");
-        setAssigned(true);
-        setOpen(false);
-      })
-      .catch((err) => {
-        toast.error(err || "Failed to assign customer.");
-      });
-  };
+  const handleAssign = useCallback(
+    (customerId) => {
+      dispatch(postAssignCustomerAccount({ customerId, accountingId }))
+        .unwrap()
+        .then(() => {
+          toast.success("Customer assigned successfully!");
+          setAssigned(true);
+          setOpen(false);
+          onClose?.();
+        })
+        .catch((err) => {
+          toast.error(err || "Failed to assign customer.");
+        });
+    },
+    [dispatch, accountingId, onClose]
+  );
 
-  const handleConfirmAssign = () => {
+  const handleConfirmAssign = useCallback(() => {
     if (confirmCustomerId) {
       handleAssign(confirmCustomerId);
       setShowConfirm(false);
       setConfirmCustomerId(null);
     }
-  };
+  }, [confirmCustomerId, handleAssign]);
 
-  const filteredCustomers = customers?.filter((customer) => {
+  const filteredCustomers = useMemo(() => {
     const query = search.trim().toLowerCase();
-    return (
-      customer?.name?.toLowerCase().includes(query) ||
-      customer?.phone?.toLowerCase().includes(query) ||
-      customer?.licenseNo?.toLowerCase().includes(query)
-    );
-  });
+    return customers?.filter((customer) => {
+      return (
+        customer?.name?.toLowerCase().includes(query) ||
+        customer?.phone?.toLowerCase().includes(query) ||
+        customer?.licenseNo?.toLowerCase().includes(query)
+      );
+    });
+  }, [customers, search]);
 
   if (checkingAssignment) {
     return (
@@ -143,13 +148,13 @@ const AssignCustomerDialog = ({ accountingId }) => {
                 onChange={(e) => setSearch(e.target.value)}
               />
               <div className="max-h-64 overflow-y-auto">
-                {filteredCustomers && filteredCustomers.length > 0 ? (
+                {filteredCustomers?.length > 0 ? (
                   filteredCustomers.map((customer) => (
                     <div
-                      key={customer?._id}
+                      key={customer._id}
                       className="flex justify-between items-center py-2 px-3 border-b transition cursor-pointer hover:bg-purple-50"
                       onClick={() => {
-                        setConfirmCustomerId(customer?._id);
+                        setConfirmCustomerId(customer._id);
                         setShowConfirm(true);
                       }}
                     >
@@ -187,6 +192,7 @@ const AssignCustomerDialog = ({ accountingId }) => {
         </DialogContent>
       </Dialog>
 
+      {/* Confirmation Dialog */}
       <AlertDialog open={showConfirm} onOpenChange={setShowConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -212,4 +218,4 @@ const AssignCustomerDialog = ({ accountingId }) => {
   );
 };
 
-export default AssignCustomerDialog;
+export default React.memo(AssignCustomerDialog);

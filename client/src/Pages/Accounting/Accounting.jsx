@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import AccountingCart from "./AccountingCart";
 import { FiRefreshCw } from "react-icons/fi";
 import { CiViewList } from "react-icons/ci";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import Papa from "papaparse";
 import axios from "axios";
@@ -19,19 +19,21 @@ const Accounting = () => {
     useSelector((state) => state?.accounting) || {};
 
   useEffect(() => {
-    dispatch(getAllAccountingData());
-  }, [dispatch]);
+    if (!accountingData || accountingData.length === 0) {
+      dispatch(getAllAccountingData());
+    }
+  }, [dispatch, accountingData]);
 
   const handleUploadClick = () => {
     if (fileInputRef.current) {
-      fileInputRef.current.value = ""; // clear previous file
+      fileInputRef.current.value = "";
       fileInputRef.current.click();
     }
   };
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    await dispatch(getAllAccountingData());
+    dispatch(getAllAccountingData());
     setRefreshing(false);
   };
 

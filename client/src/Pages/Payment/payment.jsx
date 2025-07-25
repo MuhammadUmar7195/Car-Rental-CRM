@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -37,8 +37,6 @@ const PaymentDetails = () => {
     error: accountingError,
   } = useSelector((state) => state?.assignCustomerAccount || {});
 
-  console.log("assignCustomerAccountData:", assignCustomerAccountData);
-
   useEffect(() => {
     if (id) {
       dispatch(getSingleCustomer(id));
@@ -57,7 +55,7 @@ const PaymentDetails = () => {
 
   if (customerError || rentalsError || accountingError) {
     return (
-      <div className="text-red-600 text-center py-10">
+      <div className="text-red-600 text-center py-10 px-4">
         {customerError || rentalsError || accountingError}
       </div>
     );
@@ -71,33 +69,31 @@ const PaymentDetails = () => {
     ? now.diff(returnDate, "week") + 1
     : 0;
 
-  // Fix: Access the correct data array from assignCustomerAccountData
   const paidSummary = Array.isArray(assignCustomerAccountData?.data)
     ? assignCustomerAccountData.data.filter(
         (entry) => entry && typeof entry === "object"
       )
     : [];
 
-  console.log("paidSummary:", paidSummary);
-
   return (
-    <div className="px-6 py-8 max-w-6xl mx-auto">
+    <div className="px-4 sm:px-6 py-4 sm:py-8 max-w-6xl mx-auto">
       {/* Customer Card */}
-      <Card className="mb-6 shadow-lg relative">
+      <Card className="mb-4 sm:mb-6 shadow-lg relative">
         <Button
           onClick={() => navigate(-1)}
-          className="absolute left-4 top-4 px-3 py-2 font-semibold bg-purple-700 text-white hover:bg-purple-800 hover:text-white rounded-full cursor-pointer"
+          className="absolute left-2 sm:left-4 top-2 sm:top-4 px-2 sm:px-3 py-1 sm:py-2 font-semibold bg-purple-700 text-white hover:bg-purple-800 hover:text-white rounded-full cursor-pointer text-sm"
           variant="ghost"
         >
-          <IoChevronBackSharp size={18} />
+          <IoChevronBackSharp size={16} className="sm:w-[18px] sm:h-[18px]" />
         </Button>
-        <CardHeader className="flex justify-center items-center">
-          <CardTitle className="text-purple-800 text-2xl font-bold uppercase flex items-center gap-2">
-            <HiOutlineUserCircle className="text-3xl" />
-            Customer Profile
+        <CardHeader className="flex justify-center items-center pt-12 sm:pt-6">
+          <CardTitle className="text-purple-800 text-xl sm:text-2xl font-bold uppercase flex items-center gap-2 text-center">
+            <HiOutlineUserCircle className="text-2xl sm:text-3xl" />
+            <span className="hidden sm:inline">Customer Profile</span>
+            <span className="sm:hidden">Profile</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+        <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 text-sm">
           <Info label="Name" value={customer?.name} />
           <Info label="License No" value={customer?.licenseNo} />
           <Info label="Email" value={customer?.email} />
@@ -109,22 +105,23 @@ const PaymentDetails = () => {
 
       {/* Rental Card */}
       {rental && (
-        <Card className="mb-6 bg-purple-50 shadow-md">
-          <CardHeader className="flex justify-between items-center">
-            <CardTitle className="text-purple-700 text-xl font-semibold uppercase">
-              📄 Rental Payment Summary
+        <Card className="mb-4 sm:mb-6 bg-purple-50 shadow-md">
+          <CardHeader className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+            <CardTitle className="text-purple-700 text-lg sm:text-xl font-semibold uppercase text-center sm:text-left">
+              📄 <span className="hidden sm:inline">Rental Payment Summary</span>
+              <span className="sm:hidden">Payment Summary</span>
             </CardTitle>
             {rental?.status === "reserved" ? (
-              <Badge className="bg-green-600 text-white animate-pulse">
+              <Badge className="bg-green-600 text-white animate-pulse w-fit mx-auto sm:mx-0">
                 Active
               </Badge>
             ) : (
-              <Badge variant="outline" className="bg-red-100 text-red-600">
+              <Badge variant="outline" className="bg-red-100 text-red-600 w-fit mx-auto sm:mx-0">
                 Inactive
               </Badge>
             )}
           </CardHeader>
-          <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+          <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm">
             <Info
               label="Set Price"
               value={`Rs ${rental?.setPrice?.toLocaleString()}`}
@@ -161,10 +158,10 @@ const PaymentDetails = () => {
       )}
 
       {/* Dues and Payment */}
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-red-600 text-lg font-semibold">
+            <CardTitle className="text-red-600 text-base sm:text-lg font-semibold">
               📌 Payment Dues
             </CardTitle>
           </CardHeader>
@@ -184,7 +181,7 @@ const PaymentDetails = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-green-700 text-lg font-semibold">
+            <CardTitle className="text-green-700 text-base sm:text-lg font-semibold">
               💰 Paid Summary
             </CardTitle>
           </CardHeader>
@@ -204,31 +201,60 @@ const PaymentDetails = () => {
                   Assigned Accounting Payments:
                 </div>
 
-                <Table className="mt-2 border">
-                  <TableHeader>
-                    <TableRow className="bg-muted">
-                      <TableHead className="text-left">Date</TableHead>
-                      <TableHead className="text-left">Description</TableHead>
-                      <TableHead className="text-right">Amount</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {paidSummary.map((entry, idx) => (
-                      <TableRow key={entry._id || idx}>
-                        <TableCell>
-                          {entry?.accountingId?.date || "—"}
-                        </TableCell>
-                        <TableCell>
-                          {entry?.accountingId?.description || "No Description"}
-                        </TableCell>
-                        <TableCell className="text-right text-green-700 font-medium">
-                          Rs{" "}
-                          {entry?.accountingId?.amount?.toLocaleString() || "0"}
-                        </TableCell>
+                {/* Desktop Table View */}
+                <div className="hidden sm:block">
+                  <Table className="mt-2 border">
+                    <TableHeader>
+                      <TableRow className="bg-muted">
+                        <TableHead className="text-left">Date</TableHead>
+                        <TableHead className="text-left">Description</TableHead>
+                        <TableHead className="text-right">Amount</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {paidSummary.map((entry, idx) => (
+                        <TableRow key={entry._id || idx}>
+                          <TableCell>
+                            {entry?.accountingId?.date || "—"}
+                          </TableCell>
+                          <TableCell>
+                            {entry?.accountingId?.description || "No Description"}
+                          </TableCell>
+                          <TableCell className="text-right text-green-700 font-medium">
+                            Rs{" "}
+                            {entry?.accountingId?.amount?.toLocaleString() || "0"}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+
+                {/* Mobile Card View */}
+                <div className="sm:hidden space-y-3 mt-2">
+                  {paidSummary.map((entry, idx) => (
+                    <div key={entry._id || idx} className="border rounded-lg p-3 bg-gray-50">
+                      <div className="flex justify-between items-start mb-2">
+                        <span className="text-xs text-gray-500">Date</span>
+                        <span className="text-sm font-medium">
+                          {entry?.accountingId?.date || "—"}
+                        </span>
+                      </div>
+                      <div className="mb-2">
+                        <span className="text-xs text-gray-500 block mb-1">Description</span>
+                        <span className="text-sm">
+                          {entry?.accountingId?.description || "No Description"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center pt-2 border-t">
+                        <span className="text-xs text-gray-500">Amount</span>
+                        <span className="text-sm font-semibold text-green-700">
+                          Rs {entry?.accountingId?.amount?.toLocaleString() || "0"}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
 
                 {/* Total from Assigned Payments */}
                 <div className="flex justify-between font-semibold border-t pt-2 mt-2">
@@ -255,7 +281,7 @@ const PaymentDetails = () => {
             )}
 
             {/* Grand Total */}
-            <div className="flex justify-between font-bold text-lg border-t-2 pt-2 mt-3">
+            <div className="flex justify-between font-bold text-base sm:text-lg border-t-2 pt-2 mt-3">
               <span>Grand Total Paid</span>
               <span className="text-green-600">
                 Rs{" "}
@@ -283,8 +309,10 @@ const PaymentDetails = () => {
 // 🧩 Reusable Info Block
 const Info = ({ label, value }) => (
   <div className="flex flex-col">
-    <Label className="text-gray-600">{label}</Label>
-    <span className="mt-1 font-medium text-gray-800">{value || "—"}</span>
+    <Label className="text-gray-600 text-xs sm:text-sm">{label}</Label>
+    <span className="mt-1 font-medium text-gray-800 text-sm sm:text-base break-words">
+      {value || "—"}
+    </span>
   </div>
 );
 
