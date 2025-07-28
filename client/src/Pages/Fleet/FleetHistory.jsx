@@ -16,6 +16,7 @@ import {
 const FleetHistory = ({ fleetId }) => {
   const dispatch = useDispatch();
   const { rentals, loading, error } = useSelector((state) => state.rental);
+console.log(rentals);
 
   useEffect(() => {
     if (fleetId) {
@@ -80,8 +81,8 @@ const FleetHistory = ({ fleetId }) => {
                     <TableCell className="font-mono text-xs">{rental._id}</TableCell>
                     <TableCell>{rental.customer?.name || "N/A"}</TableCell>
                     <TableCell>
-                      {rental.rentalDate
-                        ? new Date(rental.rentalDate).toLocaleDateString()
+                      {rental.bookingDate
+                        ? new Date(rental.bookingDate).toLocaleDateString()
                         : "N/A"}
                     </TableCell>
                     <TableCell>{rental.purpose || "N/A"}</TableCell>
