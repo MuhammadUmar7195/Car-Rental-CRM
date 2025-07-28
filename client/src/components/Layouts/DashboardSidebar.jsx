@@ -5,14 +5,11 @@ import {
   FaUsers,
   FaClipboardList,
   FaToolbox,
-  FaBell,
   FaSignOutAlt,
   FaTimes,
   FaUserTie,
-  FaFileInvoiceDollar,
-  FaCogs,
   FaCalculator,
-  FaCashRegister, // Added for POS
+  FaCashRegister,
 } from "react-icons/fa";
 import { Button } from "../ui/button";
 import { FaCheckCircle } from "react-icons/fa";
@@ -24,7 +21,7 @@ const DashboardSidebar = ({ toggleSidebar }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state?.auth);
-  
+
   const handleLogout = () => {
     localStorage.removeItem("userInfo");
     dispatch(logoutUser());
@@ -142,7 +139,9 @@ const DashboardSidebar = ({ toggleSidebar }) => {
             {user?.username || "User"}
           </span>
           <span className="text-xs text-gray-500 font-medium truncate max-w-[140px]">
-            {user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : ""}
+            {user?.role
+              ? user.role.charAt(0).toUpperCase() + user.role.slice(1)
+              : ""}
           </span>
         </div>
         <Button

@@ -23,6 +23,7 @@ import SingleInventoryDetail from "./Pages/Inventory/SingleInventoryDetail";
 import EditInventory from "./Pages/Inventory/EditInventory";
 import POS from "./Pages/POS/POS";
 import POSHistory from "./Pages/POS/POSHistory";
+import Footer from "./components/Common/Footer";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
               <>
                 <Navbar />
                 <Login />
+                <Footer/>
               </>
             }
           />
@@ -45,6 +47,7 @@ function App() {
               <>
                 <Navbar />
                 <Register />
+                <Footer/>
               </>
             }
           />
@@ -54,6 +57,7 @@ function App() {
               <>
                 <Navbar />
                 <ForgetPassword />
+                <Footer/>
               </>
             }
           />
@@ -105,6 +109,7 @@ function App() {
               <>
                 <Navbar />
                 <Login />
+                <Footer/>
               </>
             }
           />
