@@ -158,6 +158,7 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
             name="purpose"
             value={formData.purpose}
             onChange={handleChange}
+            placeholder="Enter the purpose of rental"
             required
           />
         </div>
@@ -171,6 +172,7 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
             name="setPrice"
             value={formData.setPrice}
             onChange={handleChange}
+            min="0"
             required
           />
         </div>
@@ -185,6 +187,7 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
             name="bond"
             value={formData.bond}
             onChange={handleChange}
+            min="0"
           />
         </div>
 
@@ -198,6 +201,7 @@ const RentalForm = ({ selectedCar, selectedCustomer }) => {
             name="advanceRent"
             value={formData.advanceRent}
             onChange={handleChange}
+            min="0"
           />
         </div>
 

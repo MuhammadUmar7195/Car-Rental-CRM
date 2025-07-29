@@ -54,7 +54,7 @@ const Inventory = () => {
           onClick={() => setShowForm(true)}
         >
           <IoIosAdd size={22} />
-          Add Car
+          Add Inventory
         </Button>
       </div>
 

@@ -1,16 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
@@ -25,7 +15,7 @@ import { VscReplace } from "react-icons/vsc";
 import { useDispatch, useSelector } from "react-redux";
 import { PuffLoader } from "react-spinners";
 import { toast } from "sonner";
-import axios from "axios";
+import HomeReturnReplace from "./HomeRentalReplace";
 
 const HomeRentalHistory = ({ customerFilter, vehicleFilter }) => {
   const dispatch = useDispatch();
@@ -33,12 +23,9 @@ const HomeRentalHistory = ({ customerFilter, vehicleFilter }) => {
     (state) => state?.rental || {}
   );
 
-  // Return dialog state
+  // Dialog state - only what's needed for HomeReturnReplace
   const [showReturnDialog, setShowReturnDialog] = useState(false);
   const [selectedRental, setSelectedRental] = useState(null);
-  const [inspectionName, setInspectionName] = useState("");
-  const [agree, setAgree] = useState(false);
-  const [returnLoading, setReturnLoading] = useState(false);
 
   useEffect(() => {
     dispatch(getAllRental());
@@ -51,6 +38,7 @@ const HomeRentalHistory = ({ customerFilter, vehicleFilter }) => {
     }
   }, [error, dispatch]);
 
+  // Filter rentals based on customerFilter and vehicleFilter
   const filteredRentals = useMemo(() => {
     if (!rentals || rentals.length === 0) return [];
 
@@ -92,46 +80,12 @@ const HomeRentalHistory = ({ customerFilter, vehicleFilter }) => {
   const handleReplaceClick = (rental) => {
     setSelectedRental(rental);
     setShowReturnDialog(true);
-    setInspectionName("");
-    setAgree(false);
-  };
-
-  // Handle return rental submission
-  const handleReturnRental = async () => {
-    setReturnLoading(true);
-    try {
-      await axios.put(
-        `${import.meta.env.VITE_BACKEND_URL}/api/v1/rental/inspection/${
-          selectedRental?.fleet?._id
-        }`,
-        { inspectionName: inspectionName.trim() },
-        { withCredentials: true }
-      );
-
-      toast.success(
-        `${selectedRental?.fleet?.carName} rental returned successfully!`
-      );
-
-      setShowReturnDialog(false);
-      setInspectionName("");
-      setAgree(false);
-      setSelectedRental(null);
-      dispatch(getAllRental());
-    } catch (err) {
-      toast.error(err?.response?.data?.message || "Failed to return rental");
-    } finally {
-      setReturnLoading(false);
-    }
   };
 
   // Handle dialog close
   const handleDialogClose = () => {
-    if (!returnLoading) {
-      setShowReturnDialog(false);
-      setInspectionName("");
-      setAgree(false);
-      setSelectedRental(null);
-    }
+    setShowReturnDialog(false);
+    setSelectedRental(null);
   };
 
   return (
@@ -160,10 +114,12 @@ const HomeRentalHistory = ({ customerFilter, vehicleFilter }) => {
           )}
         </div>
 
-        {/* warning paragraph */}
-        <div>
+        {/* Warning paragraph */}
+        <div className="mb-4">
           <p className="text-xs sm:text-sm text-black bg-yellow-50 border border-purple-200 rounded px-3 py-2">
-            <span className="font-extrabold">Note:</span> If you want to replace the car with a new one, then you will return the current rental car first.
+            <span className="font-extrabold">Note:</span> If you want to replace
+            the car with a new one, then you will return the current rental car
+            first.
           </p>
         </div>
 
@@ -201,7 +157,7 @@ const HomeRentalHistory = ({ customerFilter, vehicleFilter }) => {
                   <TableHead className="text-center">Advance</TableHead>
                   <TableHead className="text-center">Bond</TableHead>
                   <TableHead className="text-center">Remaining</TableHead>
-                  <TableHead className="text-center">Payment</TableHead>
+                  <TableHead className="text-center">Status</TableHead>
                   <TableHead className="text-center">Action</TableHead>
                 </TableRow>
               </TableHeader>
@@ -244,15 +200,19 @@ const HomeRentalHistory = ({ customerFilter, vehicleFilter }) => {
                       </TableCell>
                       <TableCell className="px-4 py-3">
                         <Badge
-                          className={`px-2 py-1 text-xs font-medium rounded-full uppercase ${
-                            rental.paymentStatus === "partial"
-                              ? "bg-blue-100 text-blue-800"
-                              : rental.paymentStatus === "pending"
+                          className={`px-2 py-1 text-xs font-medium rounded-full cursor-pointer uppercase ${
+                            rental.status === "reserved"
+                              ? "bg-yellow-100 text-yellow-800"
+                              : rental.status === "completed"
+                              ? "bg-green-100 text-green-800"
+                              : rental.status === "cancelled"
                               ? "bg-red-100 text-red-800"
-                              : "bg-green-100 text-green-800"
+                              : rental.status === "active"
+                              ? "bg-blue-100 text-blue-800"
+                              : "bg-gray-100 text-gray-800"
                           }`}
                         >
-                          {rental.paymentStatus}
+                          {rental?.status}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -292,79 +252,12 @@ const HomeRentalHistory = ({ customerFilter, vehicleFilter }) => {
           </div>
         )}
 
-        {/* Return Rental Dialog */}
-        <Dialog open={showReturnDialog} onOpenChange={handleDialogClose}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle className="text-lg font-semibold">
-                Return Rental - {selectedRental?.fleet?.carName}
-              </DialogTitle>
-            </DialogHeader>
-
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="inspector" className="text-sm font-medium">
-                  Inspected By <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="inspector"
-                  value={inspectionName}
-                  onChange={(e) => setInspectionName(e.target.value)}
-                  placeholder="Enter inspector name"
-                  disabled={returnLoading}
-                  className="w-full"
-                  autoFocus
-                />
-              </div>
-
-              <div className="flex items-start space-x-2">
-                <Checkbox
-                  id="agreement"
-                  checked={agree}
-                  onCheckedChange={setAgree}
-                  disabled={returnLoading}
-                  className="mt-0.5"
-                />
-                <Label htmlFor="agreement" className="text-sm leading-5">
-                  I confirm that the vehicle has been properly inspected and
-                  agree to process the return and replace for new car.
-                </Label>
-              </div>
-
-              {/* Additional rental info */}
-              <div className="bg-gray-50 p-3 rounded-lg text-sm">
-                <p>
-                  <strong>Customer:</strong> {selectedRental?.customer?.name}
-                </p>
-                <p>
-                  <strong>Vehicle:</strong> {selectedRental?.fleet?.carName} (
-                  {selectedRental?.fleet?.registration})
-                </p>
-                <p>
-                  <strong>Rental ID:</strong> {selectedRental?._id}
-                </p>
-              </div>
-            </div>
-
-            <DialogFooter className="flex gap-2 sm:gap-0">
-              <Button
-                variant="outline"
-                onClick={handleDialogClose}
-                disabled={returnLoading}
-                className="flex-1 sm:flex-none"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleReturnRental}
-                disabled={!inspectionName.trim() || !agree || returnLoading}
-                className="flex-1 sm:flex-none bg-purple-700 hover:bg-purple-600 text-white"
-              >
-                {returnLoading ? "Processing..." : "Confirm Return"}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        {/* HomeReturnReplace Component handles its own dialog logic */}
+        <HomeReturnReplace
+          open={showReturnDialog}
+          onClose={handleDialogClose}
+          rental={selectedRental}
+        />
       </Card>
     </div>
   );
