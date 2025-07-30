@@ -4,6 +4,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -263,6 +264,7 @@ const HomeReturnReplace = ({ open, onClose, rental }) => {
             {getStepIcon()}
             {getStepTitle()}
           </DialogTitle>
+          <DialogDescription className="font-sans">Follows the step to replace the car</DialogDescription>
           {/* Step Indicator */}
           <div className="flex items-center gap-2 mt-2">
             {[1, 2, 3].map((stepNumber) => (
@@ -324,7 +326,7 @@ const HomeReturnReplace = ({ open, onClose, rental }) => {
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg font-mono">
+                <CardTitle className="text-lg font-medium">
                   Current Rental Details
                 </CardTitle>
               </CardHeader>

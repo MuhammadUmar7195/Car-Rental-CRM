@@ -1,6 +1,17 @@
+import HomeReturnReplace from "./HomeRentalReplace";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -15,7 +26,8 @@ import { VscReplace } from "react-icons/vsc";
 import { useDispatch, useSelector } from "react-redux";
 import { PuffLoader } from "react-spinners";
 import { toast } from "sonner";
-import HomeReturnReplace from "./HomeRentalReplace";
+import { Switch } from "@/components/ui/switch";
+import axios from "axios";
 
 const HomeRentalHistory = ({ customerFilter, vehicleFilter }) => {
   const dispatch = useDispatch();
@@ -23,9 +35,21 @@ const HomeRentalHistory = ({ customerFilter, vehicleFilter }) => {
     (state) => state?.rental || {}
   );
 
-  // Dialog state - only what's needed for HomeReturnReplace
+  // Dialog state for return rental
   const [showReturnDialog, setShowReturnDialog] = useState(false);
   const [selectedRental, setSelectedRental] = useState(null);
+
+  // Return rental form state
+  const [inspectionName, setInspectionName] = useState("");
+  const [agree, setAgree] = useState(false);
+  const [returnLoading, setReturnLoading] = useState(false);
+
+  // Replace dialog state
+  const [showReplaceDialog, setShowReplaceDialog] = useState(false);
+  const [selectedReplaceRental, setSelectedReplaceRental] = useState(null);
+
+  // Toggle state
+  const [toggleStates, setToggleStates] = useState({});
 
   useEffect(() => {
     dispatch(getAllRental());
@@ -43,7 +67,6 @@ const HomeRentalHistory = ({ customerFilter, vehicleFilter }) => {
     if (!rentals || rentals.length === 0) return [];
 
     return rentals.filter((rental) => {
-      // Customer filter logic
       const matchesCustomer =
         !customerFilter ||
         rental?.customer?.name
@@ -56,7 +79,6 @@ const HomeRentalHistory = ({ customerFilter, vehicleFilter }) => {
           ?.toLowerCase()
           .includes(customerFilter.toLowerCase());
 
-      // Vehicle filter logic
       const matchesVehicle =
         !vehicleFilter ||
         rental?.fleet?.carName
@@ -73,19 +95,93 @@ const HomeRentalHistory = ({ customerFilter, vehicleFilter }) => {
     });
   }, [rentals, customerFilter, vehicleFilter]);
 
-  // Check if any filters are active
   const hasActiveFilters = customerFilter || vehicleFilter;
+
+  // Handle toggle change - opens return dialog when switched ON
+  const handleToggle = (rentalId, value, rental) => {
+    if (value) {
+      // When toggle is turned ON, open the return dialog
+      setSelectedRental(rental);
+      setShowReturnDialog(true);
+    } else {
+      // When toggle is turned OFF, just update the state
+      setToggleStates((prev) => ({
+        ...prev,
+        [rentalId]: value,
+      }));
+    }
+  };
+
+  // Handle return rental
+  const handleReturnRental = async () => {
+    if (!inspectionName.trim()) {
+      toast.error("Please enter inspector name");
+      return;
+    }
+
+    if (!agree) {
+      toast.error("Please confirm the inspection agreement");
+      return;
+    }
+
+    setReturnLoading(true);
+    try {
+      await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/rental/inspection/${
+          selectedRental?.fleet?._id
+        }`,
+        { inspectionName: inspectionName.trim() },
+        { withCredentials: true }
+      );
+
+      toast.success(`${selectedRental?.fleet?.carName} returned successfully!`);
+
+      // Update toggle state to show returned
+      setToggleStates((prev) => ({
+        ...prev,
+        [selectedRental._id]: true,
+      }));
+
+      // Close dialog and reset form
+      setShowReturnDialog(false);
+      setInspectionName("");
+      setAgree(false);
+      setSelectedRental(null);
+
+      // Refresh rental data
+      dispatch(getAllRental());
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Failed to return rental");
+    } finally {
+      setReturnLoading(false);
+    }
+  };
+
+  // Handle return dialog close
+  const handleReturnDialogClose = () => {
+    setShowReturnDialog(false);
+    if (selectedRental) {
+      // Reset the toggle to OFF when dialog closes without completing return
+      setToggleStates((prev) => ({
+        ...prev,
+        [selectedRental._id]: false,
+      }));
+    }
+    setSelectedRental(null);
+    setInspectionName("");
+    setAgree(false);
+  };
 
   // Handle replace button click
   const handleReplaceClick = (rental) => {
-    setSelectedRental(rental);
-    setShowReturnDialog(true);
+    setSelectedReplaceRental(rental);
+    setShowReplaceDialog(true);
   };
 
-  // Handle dialog close
-  const handleDialogClose = () => {
-    setShowReturnDialog(false);
-    setSelectedRental(null);
+  // Handle replace dialog close
+  const handleReplaceDialogClose = () => {
+    setShowReplaceDialog(false);
+    setSelectedReplaceRental(null);
   };
 
   return (
@@ -96,7 +192,6 @@ const HomeRentalHistory = ({ customerFilter, vehicleFilter }) => {
             Recent History
           </h2>
 
-          {/* Active Filters Display */}
           {hasActiveFilters && (
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-600">Filtered by:</span>
@@ -114,7 +209,6 @@ const HomeRentalHistory = ({ customerFilter, vehicleFilter }) => {
           )}
         </div>
 
-        {/* Warning paragraph */}
         <div className="mb-4">
           <p className="text-xs sm:text-sm text-black bg-yellow-50 border border-purple-200 rounded px-3 py-2">
             <span className="font-extrabold">Note:</span> If you want to replace
@@ -123,7 +217,6 @@ const HomeRentalHistory = ({ customerFilter, vehicleFilter }) => {
           </p>
         </div>
 
-        {/* Results Summary */}
         {hasActiveFilters && (
           <div className="mb-4 p-3 bg-gray-50 rounded-lg">
             <p className="text-sm text-gray-700">
@@ -147,6 +240,7 @@ const HomeRentalHistory = ({ customerFilter, vehicleFilter }) => {
               <TableHeader>
                 <TableRow>
                   <TableHead className="text-center">Rental ID</TableHead>
+                  <TableHead className="text-center">Return Car</TableHead>
                   <TableHead className="text-center">Customer</TableHead>
                   <TableHead className="text-center">License No</TableHead>
                   <TableHead className="text-center">Phone</TableHead>
@@ -167,6 +261,16 @@ const HomeRentalHistory = ({ customerFilter, vehicleFilter }) => {
                     <TableRow key={rental?._id} className="hover:bg-gray-50">
                       <TableCell className="px-4 py-3 font-mono text-xs">
                         {rental?._id}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Switch
+                          id={`switch-${rental._id}`}
+                          checked={toggleStates[rental._id] || false}
+                          onCheckedChange={(value) =>
+                            handleToggle(rental._id, value, rental)
+                          }
+                          className="cursor-pointer"
+                        />
                       </TableCell>
                       <TableCell className="px-4 py-3 font-medium">
                         {rental.customer?.name || "N/A"}
@@ -230,7 +334,7 @@ const HomeRentalHistory = ({ customerFilter, vehicleFilter }) => {
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan="13"
+                      colSpan="14"
                       className="text-center text-gray-500 px-4 py-8"
                     >
                       {hasActiveFilters ? (
@@ -252,11 +356,59 @@ const HomeRentalHistory = ({ customerFilter, vehicleFilter }) => {
           </div>
         )}
 
-        {/* HomeReturnReplace Component handles its own dialog logic */}
+        {/* Return Rental Dialog */}
+        <Dialog open={showReturnDialog} onOpenChange={handleReturnDialogClose}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Return Rental</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <label className="block font-medium mb-1">
+                Inspected By: <span className="text-red-500">*</span>
+              </label>
+              <Input
+                value={inspectionName}
+                onChange={(e) => setInspectionName(e.target.value)}
+                placeholder="Enter Inspector name"
+                required
+              />
+              <div className="flex items-center gap-2 mt-2">
+                <Checkbox
+                  checked={agree}
+                  className={"cursor-pointer"}
+                  onCheckedChange={setAgree}
+                  id="agree"
+                />
+                <Label htmlFor="agree" className="text-sm">
+                  I confirm the inspection and agree to return this vehicle.
+                </Label>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={handleReturnDialogClose}
+                disabled={returnLoading}
+                className={`cursor-pointer`}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="bg-purple-700 hover:bg-purple-600 text-white cursor-pointer"
+                onClick={handleReturnRental}
+                disabled={!inspectionName || !agree || returnLoading}
+              >
+                {returnLoading ? "Processing..." : "Confirm Return"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* HomeReturnReplace Component for car replacement */}
         <HomeReturnReplace
-          open={showReturnDialog}
-          onClose={handleDialogClose}
-          rental={selectedRental}
+          open={showReplaceDialog}
+          onClose={handleReplaceDialogClose}
+          rental={selectedReplaceRental}
         />
       </Card>
     </div>
