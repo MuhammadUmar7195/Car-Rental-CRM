@@ -65,10 +65,10 @@ const InventoryCart = ({ filteredInventory }) => {
                 Quantity: {inv.quantity ?? "N/A"}
               </span>
               <span className="bg-gray-100 px-2 py-1 rounded">
-                Cost Price: Rs {inv.costPrice ?? "N/A"}
+                Cost Price: $ {inv.costPrice ?? "N/A"}
               </span>
               <span className="bg-gray-100 px-2 py-1 rounded">
-                Selling Price: Rs {inv.sellingPrice ?? "N/A"}
+                Selling Price: $ {inv.sellingPrice ?? "N/A"}
               </span>
             </div>
             <div className="mt-auto flex justify-between items-end pt-4">

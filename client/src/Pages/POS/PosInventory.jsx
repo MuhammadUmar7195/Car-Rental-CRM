@@ -187,7 +187,7 @@ const PosInventory = ({ cart, setCart, selectedCar }) => {
                       {item.carModel || "No Model"}
                     </p>
                     <p className="text-lg font-bold text-purple-600 mb-2 text-center">
-                      Rs {(item.sellingPrice || 0).toLocaleString()}
+                      $ {(item.sellingPrice || 0).toLocaleString()}
                     </p>
 
                     <div className="flex items-center justify-center mb-3">
@@ -269,7 +269,7 @@ const PosInventory = ({ cart, setCart, selectedCar }) => {
                             Model: {item.carModel || "No Model"}
                           </p>
                           <p className="text-lg font-bold text-purple-600">
-                            Rs. {(item.sellingPrice || 0).toLocaleString()} each
+                            $ {(item.sellingPrice || 0).toLocaleString()} each
                           </p>
                         </div>
 
@@ -318,7 +318,7 @@ const PosInventory = ({ cart, setCart, selectedCar }) => {
                           <div className="text-right min-w-[100px]">
                             <p className="text-sm text-gray-500">Subtotal</p>
                             <p className="font-bold text-lg text-gray-800">
-                              Rs.{" "}
+                              ${" "}
                               {(
                                 (item.sellingPrice || 0) * item.quantity
                               ).toLocaleString()}
@@ -415,7 +415,7 @@ const PosInventory = ({ cart, setCart, selectedCar }) => {
                       <div className="flex justify-between items-center text-2xl">
                         <span className="font-bold">Grand Total:</span>
                         <span className="font-bold text-purple-600">
-                          Rs. {getTotalAmount().toLocaleString()}
+                          $ {getTotalAmount().toLocaleString()}
                         </span>
                       </div>
                     </div>

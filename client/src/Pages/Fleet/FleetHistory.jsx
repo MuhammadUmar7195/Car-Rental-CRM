@@ -86,10 +86,10 @@ console.log(rentals);
                         : "N/A"}
                     </TableCell>
                     <TableCell>{rental.purpose || "N/A"}</TableCell>
-                    <TableCell>Rs {rental.setPrice || "N/A"}</TableCell>
-                    <TableCell>Rs {rental.advanceRent || "N/A"}</TableCell>
-                    <TableCell>Rs {rental.bond || "N/A"}</TableCell>
-                    <TableCell>Rs {rental.remainingAmount || "N/A"}</TableCell>
+                    <TableCell>$ {rental.setPrice || "N/A"}</TableCell>
+                    <TableCell>$ {rental.advanceRent || "N/A"}</TableCell>
+                    <TableCell>$ {rental.bond || "N/A"}</TableCell>
+                    <TableCell>$ {rental.remainingAmount || "N/A"}</TableCell>
                     <TableCell>
                       <Badge
                         className={`px-2 py-1 rounded-full text-xs font-medium uppercase ${

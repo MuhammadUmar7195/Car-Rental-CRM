@@ -91,10 +91,10 @@ const SingleInventoryDetail = () => {
             <div className="space-y-2 text-sm text-gray-700">
               <Info label="Car Model" value={inventory.carModel} />
               <Info label="Quantity" value={inventory.quantity} />
-              <Info label="Cost Price" value={`Rs ${inventory.costPrice}`} />
+              <Info label="Cost Price" value={`$ ${inventory.costPrice}`} />
               <Info
                 label="Selling Price"
-                value={`Rs ${inventory.sellingPrice}`}
+                value={`$ ${inventory.sellingPrice}`}
               />
             </div>
           </div>

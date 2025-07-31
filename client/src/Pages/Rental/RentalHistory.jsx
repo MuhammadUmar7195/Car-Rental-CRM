@@ -235,16 +235,16 @@ const RentalHistory = () => {
                         {rental?.purpose || "N/A"}
                       </TableCell>
                       <TableCell className="px-4 py-3">
-                        Rs {rental?.setPrice || "N/A"}
+                        $ {rental?.setPrice || "N/A"}
                       </TableCell>
                       <TableCell className="px-4 py-3">
-                        Rs {rental?.advanceRent || "N/A"}
+                        $ {rental?.advanceRent || "N/A"}
                       </TableCell>
                       <TableCell className="px-4 py-3">
-                        Rs {rental?.bond || "N/A"}
+                        $ {rental?.bond || "N/A"}
                       </TableCell>
                       <TableCell className="px-4 py-3">
-                        Rs {rental?.remainingAmount || "N/A"}
+                        $ {rental?.remainingAmount || "N/A"}
                       </TableCell>
                       <TableCell className="px-4 py-3">
                         <Popover>

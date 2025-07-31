@@ -18,6 +18,7 @@ import AssignCustomerDialog from "./AssignCustomerDialog";
 
 const AccountingCart = ({ accountingData, loading, error }) => {
   const dispatch = useDispatch();
+
   const handleDelete = (id) => {
     dispatch(deleteAccountingEntry(id));
     toast.success("Accounting entry deleted successfully!");
@@ -64,7 +65,7 @@ const AccountingCart = ({ accountingData, loading, error }) => {
                     <TableCell>{row?.date}</TableCell>
                     <TableCell>{row?.description}</TableCell>
                     <TableCell className="text-green-600 font-medium">
-                      {row?.amount}
+                      $ {row?.amount}
                     </TableCell>
                     <TableCell>
                       <MdDeleteOutline

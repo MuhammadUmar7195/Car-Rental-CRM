@@ -291,16 +291,16 @@ const HomeRentalHistory = ({ customerFilter, vehicleFilter }) => {
                         {rental.fleet?.registration || "N/A"}
                       </TableCell>
                       <TableCell className="px-4 py-3 font-medium">
-                        Rs {rental?.setPrice?.toLocaleString() || "N/A"}
+                        $ {rental?.setPrice?.toLocaleString() || "N/A"}
                       </TableCell>
                       <TableCell className="px-4 py-3">
-                        Rs {rental?.advanceRent?.toLocaleString() || "N/A"}
+                        $ {rental?.advanceRent?.toLocaleString() || "N/A"}
                       </TableCell>
                       <TableCell className="px-4 py-3">
-                        Rs {rental?.bond?.toLocaleString() || "N/A"}
+                        $ {rental?.bond?.toLocaleString() || "N/A"}
                       </TableCell>
                       <TableCell className="px-4 py-3 font-medium">
-                        Rs {rental?.remainingAmount?.toLocaleString() || "N/A"}
+                        $ {rental?.remainingAmount?.toLocaleString() || "N/A"}
                       </TableCell>
                       <TableCell className="px-4 py-3">
                         <Badge

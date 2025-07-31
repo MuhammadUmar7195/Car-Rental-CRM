@@ -214,7 +214,7 @@ const POSHistory = () => {
                       </TableCell>
                       <TableCell className="px-4 py-3">
                         <span className="font-semibold text-purple-600">
-                          Rs {service?.totalCost?.toLocaleString() || "0"}
+                          $ {service?.totalCost?.toLocaleString() || "0"}
                         </span>
                       </TableCell>
                       <TableCell className="px-4 py-3">
