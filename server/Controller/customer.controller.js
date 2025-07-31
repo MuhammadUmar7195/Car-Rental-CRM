@@ -96,18 +96,24 @@ export const updateCustomer = async (req, res, next) => {
     }
 };
 
-// Get a single customer by license number
-export const getCustomerByLicenseNo = async (req, res, next) => {
+//Get customer with their name or license number just 
+export const getCustomerByNameOrLicense = async (req, res, next) => {
     try {
-        const { licenseNo } = req.params;
-        if (!licenseNo) {
-            return next(new ErrorHandler("License number is required", 400));
+        const { query } = req.query;
+        if (!query) {
+            return next(new ErrorHandler("Query parameter is required", 400));
         }
-        const customer = await Customer.findOne({ licenseNo });
-        if (!customer) {
-            return next(new ErrorHandler("Customer with this license number not found", 404));
+        const regex = new RegExp(query, 'i'); 
+        const customers = await Customer.find({
+            $or: [
+                { name: regex },
+                { licenseNo: regex }
+            ]
+        });
+        if (customers.length === 0) {
+            return next(new ErrorHandler("No customers found", 404));
         }
-        res.status(200).json({ customer });
+        res.status(200).json({ customers });
     } catch (error) {
         next(error);
     }

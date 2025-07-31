@@ -22,6 +22,8 @@ const RentalFlow = () => {
             <span className="text-xs uppercase">Rental History</span>
           </Link>
         </div>
+
+        {/* The car selection and customer details */}
         <div className="grid md:grid-cols-2 gap-6">
           <RentalCarStatus onCarSelect={setSelectedCar} />
           <CustomerWithLicense onCustomerSelect={setSelectedCustomer} />

@@ -5,40 +5,82 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { PuffLoader } from "react-spinners";
 import { FaUser } from "react-icons/fa";
+import { FaRegCircleCheck } from "react-icons/fa6";
 import { Label } from "@/components/ui/label";
+import { AlertCircle, RefreshCw } from "lucide-react";
+// eslint-disable-next-line no-unused-vars
+import { AnimatePresence, motion } from "framer-motion";
 
 const CustomerWithLicense = ({ onCustomerSelect }) => {
-  const [licenseNumber, setLicenseNumber] = useState("");
-  const [customer, setCustomer] = useState(null);
+  const [search, setSearch] = useState("");
+  const [customers, setCustomers] = useState([]);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [hasSearched, setHasSearched] = useState(false);
 
   const handleSearch = async () => {
-    if (!licenseNumber.trim()) {
-      setError("Please enter a license number");
+    if (!search.trim()) {
+      setError("Please enter a name or license number");
       return;
     }
 
     setLoading(true);
+    setError("");
+    setHasSearched(true);
+
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/v1/customer/license/${licenseNumber}`,
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/v1/customer/customer-search?query=${encodeURIComponent(
+          search.trim()
+        )}`,
         { withCredentials: true }
       );
-      if (response?.data?.customer) {
-        setCustomer(response.data.customer);
-        onCustomerSelect(response.data.customer);
+
+      if (response?.data?.customers && response.data.customers.length > 0) {
+        setCustomers(response.data.customers);
         setError("");
       } else {
-        setError("Customer not found");
-        setCustomer(null);
+        setCustomers([]);
+        setError("No customers found matching your search");
       }
     } catch (err) {
       console.error(err);
-      setError("Error fetching customer data");
-      setCustomer(null);
+      setError(err?.response?.data?.message || "Error searching customers");
+      setCustomers([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCustomerSelect = (customer) => {
+    if (selectedCustomer?._id === customer._id) {
+      setSelectedCustomer(null);
+      onCustomerSelect(null);
+    } else {
+      setSelectedCustomer(customer);
+      onCustomerSelect(customer);
+    }
+  };
+
+  const handleRetry = () => {
+    if (search.trim()) {
+      handleSearch();
+    }
+  };
+
+  // Filter customers by name or license number in real-time
+  const filteredCustomers = customers.filter(
+    (customer) =>
+      customer.name?.toLowerCase().includes(search.toLowerCase()) ||
+      customer.licenseNo?.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
     }
   };
 
@@ -46,54 +88,122 @@ const CustomerWithLicense = ({ onCustomerSelect }) => {
     <Card className="bg-white p-6 rounded-xl shadow-md w-full">
       <div className="flex flex-col items-center mb-4">
         <FaUser className="text-purple-600 text-5xl mb-2" />
-        <h2 className="text-xl font-bold text-purple-700 mt-5 uppercase">Customer Details</h2>
+        <h2 className="text-xl font-bold text-purple-700 mt-5 uppercase">
+          Customer Details
+        </h2>
       </div>
 
       <div className="space-y-4">
         <div>
           <Label className="block text-sm font-semibold mb-1 text-gray-700 -mt-6">
-            Driver's License Number
+            Search Customer
           </Label>
-          <div className="flex gap-2">
+          <div className="flex gap-2 mt-2">
             <Input
-              value={licenseNumber}
-              onChange={(e) => setLicenseNumber(e.target.value)}
-              placeholder="Enter license number"
-              className="border border-purple-300 focus:border-purple-500"
+              type="text"
+              placeholder="Search by customer name or license number"
+              className="flex-1 border border-purple-300 focus:border-purple-500"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyPress={handleKeyPress}
+              disabled={loading}
             />
             <Button
               onClick={handleSearch}
-              disabled={loading}
-              className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-4 py-2 rounded-lg cursor-pointer transition"
+              disabled={loading || !search.trim()}
+              className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-4 py-2 rounded-lg cursor-pointer transition whitespace-nowrap"
             >
               {loading ? <PuffLoader size={20} color="#ffffff" /> : "Search"}
             </Button>
           </div>
         </div>
 
-        {error && <p className="text-red-500 text-sm">{error}</p>}
-
-        {customer && (
-          <div className="border-t pt-4 mt-2">
-            <h3 className="font-semibold text-purple-700 mb-2 flex items-center gap-2">
-              <FaUser className="text-purple-500" /> Customer Found
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 text-gray-700 text-sm">
-              <div>
-                <span className="font-medium">Name:</span> {customer.name}
+        {loading ? (
+          <div className="flex justify-center py-4">
+            <PuffLoader size={30} color="#9333ea" />
+          </div>
+        ) : error ? (
+          <div className="py-4">
+            <div className="flex flex-col items-center justify-center space-y-3 text-center">
+              <AlertCircle className="text-red-500" size={40} />
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-red-600">{error}</p>
               </div>
-              <div>
-                <span className="font-medium">Email:</span> {customer.email}
-              </div>
-              <div>
-                <span className="font-medium">Phone:</span> {customer.phone}
-              </div>
-              <div>
-                <span className="font-medium">License No:</span> {customer.licenseNo}
-              </div>
+              {hasSearched && (
+                <Button
+                  onClick={handleRetry}
+                  variant="outline"
+                  size="sm"
+                  className="mt-2 text-purple-600 border-purple-300 hover:bg-purple-50 cursor-pointer"
+                >
+                  <RefreshCw size={14} className="mr-2" />
+                  Try Again
+                </Button>
+              )}
             </div>
           </div>
-        )}
+        ) : filteredCustomers.length > 0 ? (
+          <div className="max-h-48 overflow-y-auto">
+            <ul className="space-y-2">
+              {filteredCustomers.map((customer) => {
+                const isSelected = selectedCustomer?._id === customer._id;
+                const isDisabled = selectedCustomer && !isSelected;
+
+                return (
+                  <li
+                    key={customer._id}
+                    className={`p-2 rounded flex items-center justify-between transition-all duration-200
+                      ${
+                        isSelected
+                          ? "bg-purple-100 font-semibold"
+                          : "hover:bg-gray-100"
+                      }
+                      ${
+                        isDisabled
+                          ? "opacity-50 pointer-events-none"
+                          : "cursor-pointer"
+                      }
+                    `}
+                    onClick={() => handleCustomerSelect(customer)}
+                  >
+                    <div className="flex-1">
+                      <div className="font-medium text-purple-700">
+                        {customer.name}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        License: {customer.licenseNo} • Phone: {customer.phone}
+                      </div>
+                    </div>
+                    <AnimatePresence>
+                      {isSelected && (
+                        <motion.span
+                          initial={{ scale: 0, rotate: -90, opacity: 0 }}
+                          animate={{ scale: 1, rotate: 0, opacity: 1 }}
+                          exit={{ scale: 0, rotate: 90, opacity: 0 }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 400,
+                            damping: 20,
+                          }}
+                          className="ml-2"
+                        >
+                          <FaRegCircleCheck
+                            className="text-green-500"
+                            size={22}
+                          />
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ) : hasSearched && search ? (
+          <div className="text-sm text-gray-500 py-2 text-center">
+            No customers found matching "{search}".
+          </div>
+        ) : null}
       </div>
     </Card>
   );
