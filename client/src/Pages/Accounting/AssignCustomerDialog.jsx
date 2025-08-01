@@ -12,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllCustomers } from "@/store/Slices/customer.slice";
-import { postAssignCustomerAccount } from "@/store/Slices/assignCustomerAccount";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -25,6 +24,7 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 import axios from "axios";
+import { assignCustomerToAccounting } from "@/store/Slices/accouting.slice";
 
 const AssignCustomerDialog = ({ accountingId, onClose }) => {
   const [open, setOpen] = useState(false);
@@ -46,8 +46,12 @@ const AssignCustomerDialog = ({ accountingId, onClose }) => {
       if (!accountingId) return;
       try {
         setCheckingAssignment(true);
+        // Updated API endpoint to match your backend
         const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/v1/assign-customer/check/${accountingId}`
+          `${
+            import.meta.env.VITE_BACKEND_URL
+          }/api/v1/accounting/check-assigned/${accountingId}`,
+          { withCredentials: true }
         );
         setAssigned(res.data?.isAssigned || false);
       } catch (err) {
@@ -69,7 +73,8 @@ const AssignCustomerDialog = ({ accountingId, onClose }) => {
 
   const handleAssign = useCallback(
     (customerId) => {
-      dispatch(postAssignCustomerAccount({ customerId, accountingId }))
+      // Updated dispatch to use the correct thunk from accounting slice
+      dispatch(assignCustomerToAccounting({ customerId, accountingId }))
         .unwrap()
         .then(() => {
           toast.success("Customer assigned successfully!");
@@ -105,7 +110,10 @@ const AssignCustomerDialog = ({ accountingId, onClose }) => {
 
   if (checkingAssignment) {
     return (
-      <Button className="bg-gray-400 text-white text-xs px-4 py-1 rounded" disabled>
+      <Button
+        className="bg-gray-400 text-white text-xs px-4 py-1 rounded"
+        disabled
+      >
         <PuffLoader color="#fff" size={12} />
       </Button>
     );

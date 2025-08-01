@@ -5,6 +5,10 @@ const AccountingSchema = new mongoose.Schema({
   date: String, 
   description: String, 
   amount: Number, 
+  assignedAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 const Accounting = mongoose.model("Accounting", AccountingSchema);

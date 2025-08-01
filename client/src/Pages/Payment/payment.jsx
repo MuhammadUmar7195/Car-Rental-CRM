@@ -10,9 +10,16 @@ import { IoChevronBackSharp } from "react-icons/io5";
 import { HiOutlineUserCircle } from "react-icons/hi";
 import { getSingleCustomer } from "@/store/Slices/customer.slice";
 import { getRentalsByCustomerId } from "@/store/Slices/rental.slice";
-import { getAssignAccountByCustomerId } from "@/store/Slices/assignCustomerAccount";
 import dayjs from "dayjs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { getAccountingByCustomerId } from "@/store/Slices/accouting.slice";
 
 const PaymentDetails = () => {
   const { id } = useParams();
@@ -32,16 +39,16 @@ const PaymentDetails = () => {
   } = useSelector((state) => state?.rental || {});
 
   const {
-    assignCustomerAccountData,
+    assignCustomerAccounting,
     loading: accountingLoading,
     error: accountingError,
-  } = useSelector((state) => state?.assignCustomerAccount || {});
+  } = useSelector((state) => state?.accounting || {});
 
   useEffect(() => {
     if (id) {
       dispatch(getSingleCustomer(id));
       dispatch(getRentalsByCustomerId(id));
-      dispatch(getAssignAccountByCustomerId(id));
+      dispatch(getAccountingByCustomerId(id));
     }
   }, [dispatch, id]);
 
@@ -69,8 +76,8 @@ const PaymentDetails = () => {
     ? now.diff(returnDate, "week") + 1
     : 0;
 
-  const paidSummary = Array.isArray(assignCustomerAccountData?.data)
-    ? assignCustomerAccountData.data.filter(
+  const paidSummary = Array.isArray(assignCustomerAccounting)
+    ? assignCustomerAccounting.filter(
         (entry) => entry && typeof entry === "object"
       )
     : [];
@@ -108,7 +115,8 @@ const PaymentDetails = () => {
         <Card className="mb-4 sm:mb-6 bg-purple-50 shadow-md">
           <CardHeader className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
             <CardTitle className="text-purple-700 text-lg sm:text-xl font-semibold uppercase text-center sm:text-left">
-              📄 <span className="hidden sm:inline">Rental Payment Summary</span>
+              📄{" "}
+              <span className="hidden sm:inline">Rental Payment Summary</span>
               <span className="sm:hidden">Payment Summary</span>
             </CardTitle>
             {rental?.status === "reserved" ? (
@@ -116,7 +124,10 @@ const PaymentDetails = () => {
                 Active
               </Badge>
             ) : (
-              <Badge variant="outline" className="bg-red-100 text-red-600 w-fit mx-auto sm:mx-0">
+              <Badge
+                variant="outline"
+                className="bg-red-100 text-red-600 w-fit mx-auto sm:mx-0"
+              >
                 Inactive
               </Badge>
             )}
@@ -124,16 +135,16 @@ const PaymentDetails = () => {
           <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm">
             <Info
               label="Set Price"
-              value={`Rs ${rental?.setPrice?.toLocaleString()}`}
+              value={`$ ${rental?.setPrice?.toLocaleString()}`}
             />
             <Info
               label="Advance Rent"
-              value={`Rs ${rental?.advanceRent?.toLocaleString()}`}
+              value={`$ ${rental?.advanceRent?.toLocaleString()}`}
             />
-            <Info label="Bond" value={`Rs ${rental?.bond?.toLocaleString()}`} />
+            <Info label="Bond" value={`$ ${rental?.bond?.toLocaleString()}`} />
             <Info
               label="Recent Paid"
-              value={`Rs ${rental?.amountPaid?.toLocaleString()}`}
+              value={`$ ${rental?.amountPaid?.toLocaleString()}`}
             />
             <Info
               label="Booking Date"
@@ -141,7 +152,7 @@ const PaymentDetails = () => {
             />
             <Info
               label="Remaining Amount"
-              value={`Rs ${rental?.remainingAmount?.toLocaleString()}`}
+              value={`$ ${rental?.remainingAmount?.toLocaleString()}`}
             />
             <Info
               label="Return Date"
@@ -172,7 +183,7 @@ const PaymentDetails = () => {
               Array.from({ length: weeksOverdue }).map((_, i) => (
                 <div key={i} className="flex justify-between">
                   <span>Week {i + 1}</span>
-                  <span>Rs {rental?.setPrice?.toLocaleString()}</span>
+                  <span>$ {rental?.setPrice?.toLocaleString()}</span>
                 </div>
               ))
             )}
@@ -190,7 +201,7 @@ const PaymentDetails = () => {
             <div className="flex justify-between">
               <span>Rental Paid Total</span>
               <span className="font-medium text-green-600">
-                Rs {rental?.amountPaid?.toLocaleString() || "0"}
+                $ {rental?.amountPaid?.toLocaleString() || "0"}
               </span>
             </div>
 
@@ -214,15 +225,12 @@ const PaymentDetails = () => {
                     <TableBody>
                       {paidSummary.map((entry, idx) => (
                         <TableRow key={entry._id || idx}>
+                          <TableCell>{entry?.date || "—"}</TableCell>
                           <TableCell>
-                            {entry?.accountingId?.date || "—"}
-                          </TableCell>
-                          <TableCell>
-                            {entry?.accountingId?.description || "No Description"}
+                            {entry?.description || "No Description"}
                           </TableCell>
                           <TableCell className="text-right text-green-700 font-medium">
-                            Rs{" "}
-                            {entry?.accountingId?.amount?.toLocaleString() || "0"}
+                            $ {Math.abs(entry?.amount)?.toLocaleString() || "0"}
                           </TableCell>
                         </TableRow>
                       ))}
@@ -233,23 +241,28 @@ const PaymentDetails = () => {
                 {/* Mobile Card View */}
                 <div className="sm:hidden space-y-3 mt-2">
                   {paidSummary.map((entry, idx) => (
-                    <div key={entry._id || idx} className="border rounded-lg p-3 bg-gray-50">
+                    <div
+                      key={entry._id || idx}
+                      className="border rounded-lg p-3 bg-gray-50"
+                    >
                       <div className="flex justify-between items-start mb-2">
                         <span className="text-xs text-gray-500">Date</span>
                         <span className="text-sm font-medium">
-                          {entry?.accountingId?.date || "—"}
+                          {entry?.date || "—"}
                         </span>
                       </div>
                       <div className="mb-2">
-                        <span className="text-xs text-gray-500 block mb-1">Description</span>
+                        <span className="text-xs text-gray-500 block mb-1">
+                          Description
+                        </span>
                         <span className="text-sm">
-                          {entry?.accountingId?.description || "No Description"}
+                          {entry?.description || "No Description"}
                         </span>
                       </div>
                       <div className="flex justify-between items-center pt-2 border-t">
                         <span className="text-xs text-gray-500">Amount</span>
                         <span className="text-sm font-semibold text-green-700">
-                          Rs {entry?.accountingId?.amount?.toLocaleString() || "0"}
+                          $ {Math.abs(entry?.amount)?.toLocaleString() || "0"}
                         </span>
                       </div>
                     </div>
@@ -260,11 +273,10 @@ const PaymentDetails = () => {
                 <div className="flex justify-between font-semibold border-t pt-2 mt-2">
                   <span>Assigned Total</span>
                   <span className="text-green-700">
-                    Rs{" "}
+                    ${" "}
                     {paidSummary
                       .reduce(
-                        (total, entry) =>
-                          total + (entry?.accountingId?.amount || 0),
+                        (total, entry) => total + Math.abs(entry?.amount || 0),
                         0
                       )
                       .toLocaleString()}
@@ -284,12 +296,11 @@ const PaymentDetails = () => {
             <div className="flex justify-between font-bold text-base sm:text-lg border-t-2 pt-2 mt-3">
               <span>Grand Total Paid</span>
               <span className="text-green-600">
-                Rs{" "}
+                ${" "}
                 {(
                   (rental?.amountPaid || 0) +
                   paidSummary.reduce(
-                    (total, entry) =>
-                      total + (entry?.accountingId?.amount || 0),
+                    (total, entry) => total + Math.abs(entry?.amount || 0),
                     0
                   )
                 ).toLocaleString()}

@@ -6,7 +6,6 @@ import rentalReducer from './Slices/rental.slice.js';
 import AccountingReducer from './Slices/accouting.slice.js';
 import InventoryReducer from './Slices/inventory.slice.js';
 import ServiceReducer from './Slices/service.slice.js';
-import AssignPaymentCustomer from './Slices/assignCustomerAccount.js';
 
 // Configure the Redux store with the slices
 export const store = configureStore({
@@ -18,6 +17,5 @@ export const store = configureStore({
     accounting: AccountingReducer,
     inventory: InventoryReducer,
     service: ServiceReducer,
-    assignCustomerAccount: AssignPaymentCustomer,
   },
 })
