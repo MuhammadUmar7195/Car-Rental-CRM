@@ -2,27 +2,30 @@ import { getAllAccountingData } from "@/store/Slices/accouting.slice";
 import { Separator } from "@/components/ui/separator";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "@/components/ui/button";
-import AccountingCart from "./AccountingCart";
 import { FiRefreshCw } from "react-icons/fi";
 import { CiViewList } from "react-icons/ci";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import AccountingCart from "./AccountingCart";
 import Papa from "papaparse";
 import axios from "axios";
 
 const Accounting = () => {
   const fileInputRef = useRef(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [hasInitialized, setHasInitialized] = useState(false); 
 
   const dispatch = useDispatch();
   const { accountingData, loading, error } =
     useSelector((state) => state?.accounting) || {};
 
+  // Fix the useEffect to prevent infinite loop
   useEffect(() => {
-    if (!accountingData || accountingData.length === 0) {
+    if (!hasInitialized && !loading) {
       dispatch(getAllAccountingData());
+      setHasInitialized(true); 
     }
-  }, [dispatch, accountingData]);
+  }, [dispatch, hasInitialized, loading]);
 
   const handleUploadClick = () => {
     if (fileInputRef.current) {
@@ -33,8 +36,11 @@ const Accounting = () => {
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    dispatch(getAllAccountingData());
-    setRefreshing(false);
+    try {
+      dispatch(getAllAccountingData());
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   const handleFileChange = async (e) => {

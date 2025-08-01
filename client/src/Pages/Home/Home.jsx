@@ -13,6 +13,7 @@ const Home = () => {
   const [vehicle, setVehicle] = useState("");
   const [totalCars, setTotalCars] = useState(0);
   const [availableCars, setAvailableCars] = useState(0);
+  const [sales, setSales] = useState(0);
 
   // Filter states for HomeRentalHistory
   const [customerFilter, setCustomerFilter] = useState("");
@@ -26,10 +27,11 @@ const Home = () => {
           {
             withCredentials: true,
           }
-        );
+        );    
         if (response?.data?.success) {
           setTotalCars(response.data.totalCars || 0);
           setAvailableCars(response.data.availableCars || 0);
+          setSales(response.data.totalSales || 0);
         }
       } catch (error) {
         console.log(error);
@@ -85,8 +87,8 @@ const Home = () => {
           <div className="flex justify-between items-center">
             <div>
               <h4 className="text-sm text-gray-500">Sales</h4>
-              <p className="text-lg font-bold mt-1">$500.20</p>
-              <p className="text-xs text-gray-400 mt-1">Total Sales Today</p>
+              <p className="text-lg font-bold mt-1">$ {sales}</p>
+              <p className="text-xs text-gray-400 mt-1">Total Sales</p>
             </div>
             <FiTrendingUp className="text-purple-600 text-2xl" />
           </div>

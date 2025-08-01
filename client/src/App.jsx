@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import DashboardLayout from "./components/Layouts/DashboardLayout";
 import Login from "./components/auth/Login";
 import Home from "./Pages/Home/Home";
@@ -24,8 +24,11 @@ import EditInventory from "./Pages/Inventory/EditInventory";
 import POS from "./Pages/POS/POS";
 import POSHistory from "./Pages/POS/POSHistory";
 import Footer from "./components/Common/Footer";
+import { useSelector } from "react-redux";
 
 function App() {
+  const { user } = useSelector((state) => state.auth) || {};
+
   return (
     <>
       <Toaster position="top-right" richColors />
@@ -34,33 +37,47 @@ function App() {
           <Route
             path="/login"
             element={
-              <>
-                <Navbar />
-                <Login />
-                <Footer/>
-              </>
+              user?.role ? (
+                <Navigate to="/dashboard" replace />
+              ) : (
+                <>
+                  <Navbar />
+                  <Login />
+                  <Footer />
+                </>
+              )
             }
           />
           <Route
             path="/register"
             element={
-              <>
-                <Navbar />
-                <Register />
-                <Footer/>
-              </>
+              user?.role ? (
+                <Navigate to="/dashboard" replace />
+              ) : (
+                <>
+                  <Navbar />
+                  <Register />
+                  <Footer />
+                </>
+              )
             }
           />
           <Route
             path="/forgot-password"
             element={
-              <>
-                <Navbar />
-                <ForgetPassword />
-                <Footer/>
-              </>
+              user?.role ? (
+                <Navigate to="/dashboard" replace />
+              ) : (
+                <>
+                  <Navbar />
+                  <ForgetPassword />
+                  <Footer />
+                </>
+              )
             }
           />
+
+          {/* Protected Dashboard Routes */}
           <Route
             path="/dashboard"
             element={
@@ -70,47 +87,55 @@ function App() {
             }
           >
             <Route index element={<Home />} />
-            //All rental routes
+            {/* All rental routes */}
             <Route path="rental" element={<RentalFlow />} />
             <Route path="rental-history" element={<RentalHistory />} />
-            
-            //All Fleet Routes
+            {/* All Fleet Routes */}
             <Route path="fleet" element={<Fleet />} />
             <Route path="fleet/:id" element={<SingleFleetDetail />} />
             <Route path="fleet/edit/:id" element={<EditFleetPage />} />
-
-            //All Customer Routes
+            {/* All Customer Routes */}
             <Route path="customer" element={<Customer />} />
             <Route path="customer/:id" element={<SingleCustomerDetail />} />
             <Route path="customer/edit/:id" element={<EditCustomerPage />} />
-
-            //All Inventory Routes
+            {/* All Inventory Routes */}
             <Route path="inventory" element={<Inventory />} />
             <Route path="inventory/:id" element={<SingleInventoryDetail />} />
             <Route path="inventory/edit/:id" element={<EditInventory />} />
-
-            //POS routes
+            {/* POS routes */}
             <Route path="pos" element={<POS />} />
             <Route path="pos/history" element={<POSHistory />} />
-
-            //Bank CSV upload logic 
+            {/* Bank CSV upload logic */}
             <Route path="accounting" element={<Accounting />} />
-
-            //Payment dues 
+            {/* Payment dues */}
             <Route path="payments/:id" element={<Payment />} />
-
-            //Fleet Owner
+            {/* Fleet Owner */}
             <Route path="fleet-owner" element={<FleetOwner />} />
           </Route>
-          {/* Global catch-all route to redirect to login */}
+
+          <Route
+            path="/"
+            element={
+              user?.role ? (
+                <Navigate to="/dashboard" replace />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
+
           <Route
             path="*"
             element={
-              <>
-                <Navbar />
-                <Login />
-                <Footer/>
-              </>
+              user?.role ? (
+                <Navigate to="/dashboard" replace />
+              ) : (
+                <>
+                  <Navbar />
+                  <Login />
+                  <Footer />
+                </>
+              )
             }
           />
         </Routes>

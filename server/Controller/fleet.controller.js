@@ -1,5 +1,7 @@
 import ErrorHandler from '../Utils/ErrorHandler.js';
 import Fleet from '../Model/fleet.model.js';
+import Rental from '../Model/rental.model.js';
+import ServiceOrder from '../Model/service.model.js';
 
 //Post Fleet
 export const postFleet = async (req, res, next) => {
@@ -181,10 +183,34 @@ export const getTotalCarCount = async (req, res, next) => {
         const totalCars = await Fleet.countDocuments();
         const availableCars = await Fleet.countDocuments({ status: 'Available' });
 
+        //Calculate sales 
+        const rental = await Rental.aggregate([
+            {
+                $group: {
+                    _id: null,
+                    totalAmount: { $sum: "$totalBill" }
+                }
+            }
+        ]);
+        const inventory = await ServiceOrder.aggregate([
+            {
+                $group: {
+                    _id: null,
+                    totalAmount: { $sum: "$totalCost" }
+                } 
+            }
+        ]);
+
+        const rentalAmount = rental[0]?.totalAmount || 0;
+        const inventoryAmount = inventory[0]?.totalAmount || 0;
+
+        let total = rentalAmount + inventoryAmount;
+
         res.status(200).json({
             success: true,
             totalCars,
-            availableCars
+            availableCars, 
+            totalSales: total
         });
     } catch (error) {
         next(error);
