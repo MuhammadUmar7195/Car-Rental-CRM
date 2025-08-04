@@ -97,8 +97,26 @@ const HomeRentalHistory = ({ customerFilter, vehicleFilter }) => {
 
   const hasActiveFilters = customerFilter || vehicleFilter;
 
+  useEffect(() => {
+    if (rentals && rentals.length > 0) {
+      const initialToggleStates = {};
+      rentals.forEach((rental) => {
+        if (rental.status === "completed") {
+          initialToggleStates[rental._id] = true;
+        }
+      });
+      setToggleStates((prev) => ({ ...prev, ...initialToggleStates }));
+    }
+  }, [rentals]);
+
   // Handle toggle change - opens return dialog when switched ON
   const handleToggle = (rentalId, value, rental) => {
+    // If rental is already completed, don't allow toggle
+    if (rental.status === "completed") {
+      toast.info("This rental is already completed");
+      return;
+    }
+
     if (value) {
       // When toggle is turned ON, open the return dialog
       setSelectedRental(rental);
@@ -265,7 +283,11 @@ const HomeRentalHistory = ({ customerFilter, vehicleFilter }) => {
                       <TableCell className="text-center">
                         <Switch
                           id={`switch-${rental._id}`}
-                          checked={toggleStates[rental._id] || false}
+                          checked={
+                            rental.status === "completed" ||
+                            toggleStates[rental._id] ||
+                            false
+                          }
                           onCheckedChange={(value) =>
                             handleToggle(rental._id, value, rental)
                           }
@@ -304,7 +326,7 @@ const HomeRentalHistory = ({ customerFilter, vehicleFilter }) => {
                       </TableCell>
                       <TableCell className="px-4 py-3">
                         <Badge
-                          className={`px-2 py-1 text-xs font-medium rounded-full cursor-pointer uppercase ${
+                          className={`px-2 py-1 text-xs font-medium rounded-full uppercase ${
                             rental.status === "reserved"
                               ? "bg-yellow-100 text-yellow-800"
                               : rental.status === "completed"

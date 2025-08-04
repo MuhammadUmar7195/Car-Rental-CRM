@@ -168,7 +168,7 @@ const CustomerWithLicense = ({ onCustomerSelect }) => {
                   >
                     <div className="flex-1">
                       <div className="font-medium text-purple-700">
-                        {customer.name}
+                        {customer.name} [{customer.email}]
                       </div>
                       <div className="text-sm text-gray-600">
                         License: {customer.licenseNo} • Phone: {customer.phone}
