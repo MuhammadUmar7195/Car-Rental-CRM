@@ -25,6 +25,7 @@ import POS from "./Pages/POS/POS";
 import POSHistory from "./Pages/POS/POSHistory";
 import Footer from "./components/Common/Footer";
 import { useSelector } from "react-redux";
+import POSGate from "./Pages/POS/POSGate";
 
 function App() {
   const { user } = useSelector((state) => state.auth) || {};
@@ -103,7 +104,9 @@ function App() {
             <Route path="inventory/:id" element={<SingleInventoryDetail />} />
             <Route path="inventory/edit/:id" element={<EditInventory />} />
             {/* POS routes */}
-            <Route path="pos" element={<POS />} />
+            <Route path="pos" element={<POSGate />} />
+            <Route path="pos/walk-in" element={<POS />} />
+            <Route path="pos/car-service" element={<POS />} />
             <Route path="pos/history" element={<POSHistory />} />
             {/* Bank CSV upload logic */}
             <Route path="accounting" element={<Accounting />} />

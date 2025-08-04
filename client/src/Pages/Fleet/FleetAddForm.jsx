@@ -71,7 +71,6 @@ const FleetAddForm = ({ onAdd, onCancel }) => {
           <IoMdClose size={24} />
         </button>
 
-        {/* ...existing fields... */}
         {[
           "carName",
           "model",
