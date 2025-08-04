@@ -8,7 +8,7 @@ const POSGate = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br px-4">
       <div className="bg-white shadow-2xl rounded-3xl p-8 w-full max-w-lg space-y-6 border border-gray-200">
-        <h1 className="text-2xl md:text-3xl font-bold text-center text-gray-800 drop-shadow-sm mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-8">
           Select Service Type
         </h1>
         <div className="flex flex-col gap-5">

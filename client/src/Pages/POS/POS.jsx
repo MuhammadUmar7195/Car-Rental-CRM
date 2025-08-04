@@ -23,16 +23,6 @@ const POS = () => {
           </Link>
         </div>
       )}
-      {isWalkIn && (
-        <div className="flex justify-end mb-2">
-          <Link
-            to="#"
-            className="inline-flex items-center hover:text-red-400 hover:underline gap-2 px-4 py-2 rounded-lg transition cursor-pointer"
-          >
-            <span className="text-xs uppercase">Walk-in History</span>
-          </Link>
-        </div>
-      )}
 
       {!isWalkIn && (
         <PosAllCars selectedCar={selectedCar} setSelectedCar={setSelectedCar} />
@@ -47,7 +37,7 @@ const POS = () => {
       )}
 
       {/* This component is for walk-in service customers */}
-      <WalkInServiceCustomer />
+      {isWalkIn && <WalkInServiceCustomer />}
     </div>
   );
 };

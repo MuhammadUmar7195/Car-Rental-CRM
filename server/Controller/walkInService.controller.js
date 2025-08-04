@@ -1,6 +1,7 @@
 import WalkInServiceOrder from "../Model/walkInService.model.js";
 import ErrorHandler from "../Utils/ErrorHandler.js";
 
+// Walk-in service order creation
 export const walkInServiceFleet = async (req, res, next) => {
   try {
     const {
@@ -43,8 +44,19 @@ export const walkInServiceFleet = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
-      message: "Walk-in service order created successfully"
+      message: "Walk-in service order created successfully",
+      newService: serviceOrder,
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Walk-in get all service 
+export const getAllWalkInServices = async (req, res, next) => {
+  try {
+    const serviceOrders = await WalkInServiceOrder.find().populate('itemsUsed.inventoryItem');
+    res.status(200).json({ serviceOrders });
   } catch (error) {
     next(error);
   }
