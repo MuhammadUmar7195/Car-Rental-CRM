@@ -15,6 +15,6 @@ router.put("/status/:id", authMiddleware, updateServiceOrderStatus);
 router.delete("/:id", authMiddleware, deleteServiceOrder);
 
 //Get all service orders by Fleet ID
-router.get("/fleet/:fleetId", getSingleServiceOrder);
+router.get("/fleet/:fleetId", authMiddleware, getSingleServiceOrder);
 
 export default router;

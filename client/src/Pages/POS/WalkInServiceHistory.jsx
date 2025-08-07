@@ -55,7 +55,7 @@ const WalkInServiceHistory = () => {
           >
             <IoChevronBackSharp size={20} />
           </Button>
-          <h2 className="text-2xl font-bold text-purple-600 text-center uppercase tracking-wide flex-1 lg:mr-30 uppercase">
+          <h2 className="text-2xl font-bold text-purple-600 text-center tracking-wide flex-1 lg:mr-30 uppercase">
             Walk-in Service History
           </h2>
         </div>

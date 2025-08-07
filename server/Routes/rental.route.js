@@ -17,14 +17,14 @@ router.post('/add', authMiddleware, createRentalOrder);
 router.post('/send-invoice', sendRentalInvoice);
 
 //get routes rental orders
-router.get('/all', getAllRentals);
-router.get('/:id', getSingleRental);
+router.get('/all', authMiddleware, getAllRentals);
+router.get('/:id', authMiddleware, getSingleRental);
 router.delete('/:id', authMiddleware, deleteRental);
 router.put('/edit/:id', authMiddleware, updateRentalStatus);
 
 //get data on the basis of fleetId
-router.get('/fleet/:fleetId', getRentalsByFleetId);
-router.get('/customer/:customerId', getRentalsByCustomerId);
-router.put('/inspection/:fleetId', updateInspectionNameByFleetId);
+router.get('/fleet/:fleetId', authMiddleware, getRentalsByFleetId);
+router.get('/customer/:customerId', authMiddleware, getRentalsByCustomerId);
+router.put('/inspection/:fleetId', authMiddleware, updateInspectionNameByFleetId);
 
 export default router;

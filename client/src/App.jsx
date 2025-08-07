@@ -27,9 +27,11 @@ import Footer from "./components/Common/Footer";
 import { useSelector } from "react-redux";
 import POSGate from "./Pages/POS/POSGate";
 import WalkInServiceHistory from "./Pages/POS/WalkInServiceHistory";
+import AutoCheckSession from "./hooks/useAutoLogoutGlobal";
 
 function App() {
   const { user } = useSelector((state) => state.auth) || {};
+  AutoCheckSession();
 
   return (
     <>
@@ -109,7 +111,10 @@ function App() {
             <Route path="pos/walk-in" element={<POS />} />
             <Route path="pos/car-service" element={<POS />} />
             <Route path="pos/history" element={<POSHistory />} />
-            <Route path="pos/walk-in-history" element={<WalkInServiceHistory />} />
+            <Route
+              path="pos/walk-in-history"
+              element={<WalkInServiceHistory />}
+            />
             {/* Bank CSV upload logic */}
             <Route path="accounting" element={<Accounting />} />
             {/* Payment dues */}

@@ -115,7 +115,6 @@ export const logout = async (req, res, next) => {
 }
 
 //Forgot Password logic here 
-
 export const forgotPassword = async (req, res, next) => {
     try {
         const { email } = req.body;
@@ -229,6 +228,26 @@ export const resetPassword = async (req, res, next) => {
             success: true,
             message: "Password reset successfully"
         });
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const checkSession = async (req, res, next) => {
+    try {
+        const token = req.cookies.token;
+
+        if (!token) {
+           return res.status(401).json({ isAuthenticated: false });
+        }
+        
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        
+        if(decoded){
+            return res.json({isAuthenticated: true});
+        }else {
+            return res.status(401).json({isAuthenticated: false});
+        }
     } catch (error) {
         next(error);
     }

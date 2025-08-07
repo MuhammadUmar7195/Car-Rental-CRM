@@ -12,7 +12,7 @@ const router = express.Router();
 
 //upload accounting parse data through this route
 router.post('/upload', authMiddleware, uploadAccountingFile);
-router.get('/all', getAllAccountingData);
+router.get('/all', authMiddleware, getAllAccountingData);
 router.delete('/:id', authMiddleware, deleteSingleAccountingData);
 
 //we assign the details of accounting with customerId and check status 
