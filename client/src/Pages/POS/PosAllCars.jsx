@@ -22,7 +22,8 @@ const PosAllCars = ({ selectedCar, setSelectedCar }) => {
     return fleets.filter(
       (car) =>
         car.carName?.toLowerCase().includes(lower) ||
-        car.model?.toLowerCase().includes(lower)
+        car.model?.toLowerCase().includes(lower) || 
+        car.registration?.toLowerCase().includes(lower)
     );
   }, [fleets, search]);
 

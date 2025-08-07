@@ -133,7 +133,7 @@ const WalkInServiceCustomer = () => {
               >
                 <IoChevronBackSharp size={20} />
               </Button>
-              <h2 className="text-2xl md:text-3xl font-bold text-purple-700 text-center flex-1">
+              <h2 className="text-2xl md:text-3xl font-bold text-purple-700 text-center flex-1 uppercase">
                 Walk-in Customer Service
               </h2>
             </div>
