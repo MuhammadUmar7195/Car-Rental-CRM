@@ -135,6 +135,7 @@ const SingleFleetDetail = () => {
                   car.year ? new Date(car.year).toLocaleDateString("en-GB") : ""
                 }
               />
+              <Info label="Price Per Day" value={car.pricePerDay || "N/A"} />
               <Info label="Registration" value={car.registration || "N/A"} />
               <Info label="Color" value={car.color || "N/A"} />
               <Info label="Fuel" value={car.fuel || "N/A"} />
@@ -146,6 +147,7 @@ const SingleFleetDetail = () => {
             <div className="space-y-2 text-sm text-gray-700">
               <Info label="VIN" value={car.vin || "N/A"} />
               <Info label="Engine" value={car.engine || "N/A"} />
+              <Info label="Category" value={car.category || "N/A"} />
               <Info label="Odometer" value={car.odometer || "N/A"} />
               <Info label="Transmission" value={car.transmission || "N/A"} />
               <Info label="Business Use" value={car.businessUse || "N/A"} />

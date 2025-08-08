@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { postFleet } from "@/store/Slices/fleet.slice";
@@ -20,6 +20,7 @@ const FleetAddForm = ({ onAdd, onCancel }) => {
     carName: "",
     model: "",
     year: "",
+    pricePerDay: "",
     registration: "",
     insurance: "",
     fuel: "",
@@ -33,9 +34,31 @@ const FleetAddForm = ({ onAdd, onCancel }) => {
     regExpiry: "",
     inspExpiry: "",
     businessUse: "",
+    category: "",
+    status: "",
   };
 
   const [form, setForm] = useState({ ...initialForm });
+
+  // Category options based on your enum
+  const categoryOptions = [
+    {
+      value: "Economy",
+      label: "Economy",
+      description: "Budget-friendly vehicles",
+    },
+    {
+      value: "Luxury",
+      label: "Luxury",
+      description: "Premium high-end vehicles",
+    },
+    { value: "SUV", label: "SUV", description: "Sport Utility Vehicles" },
+    {
+      value: "Sports",
+      label: "Sports",
+      description: "High-performance sports cars",
+    },
+  ];
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -75,6 +98,7 @@ const FleetAddForm = ({ onAdd, onCancel }) => {
           "carName",
           "model",
           "year",
+          "pricePerDay",
           "registration",
           "fuel",
           "insurance",
@@ -93,6 +117,7 @@ const FleetAddForm = ({ onAdd, onCancel }) => {
             carName: "Car Name",
             model: "Model",
             year: "Manufacturing Year",
+            pricePerDay: "Price Per Day",
             registration: "Registration Number",
             fuel: "Fuel Type",
             insurance: "Insurance",
@@ -112,7 +137,16 @@ const FleetAddForm = ({ onAdd, onCancel }) => {
             regExpiry: "date",
             inspExpiry: "date",
             odometer: "number",
+            pricePerDay: "number",
           };
+          const stepMap = {
+            pricePerDay: "0.01",
+          };
+          const minMap = {
+            pricePerDay: "0",
+            odometer: "0",
+          };
+
           return (
             <div key={name}>
               <Label htmlFor={name} className="mb-2 inline-block">
@@ -122,6 +156,8 @@ const FleetAddForm = ({ onAdd, onCancel }) => {
                 id={name}
                 name={name}
                 type={typeMap[name] || "text"}
+                step={stepMap[name]}
+                min={minMap[name]}
                 placeholder={labelMap[name]}
                 value={form[name]}
                 onChange={handleChange}
@@ -131,37 +167,82 @@ const FleetAddForm = ({ onAdd, onCancel }) => {
           );
         })}
 
+        {/* Category Accordion */}
+        <div className="col-span-full">
+          <Label className="mb-2 inline-block">
+            Category <span className="text-red-500">*</span>
+          </Label>
+          <Accordion type="single" collapsible>
+            <AccordionItem value="category">
+              <AccordionTrigger className="bg-white text-purple-700 px-4 py-3 rounded-xl font-semibold border border-gray-300">
+                {form.category
+                  ? `Selected: ${form.category}`
+                  : "Select Category"}
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 px-2 py-2">
+                  {categoryOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      className={`p-4 rounded-lg border text-left transition-all duration-200 ${
+                        form.category === option.value
+                          ? "bg-purple-100 border-purple-400 text-purple-700 shadow-md"
+                          : "bg-white border-gray-300 text-gray-700 hover:border-purple-300 hover:bg-purple-50 cursor-pointer"
+                      }`}
+                      onClick={() =>
+                        setForm({ ...form, category: option.value })
+                      }
+                    >
+                      <div className="font-semibold text-lg">
+                        {option.label}
+                      </div>
+                      <div className="text-sm text-gray-600 mt-1">
+                        {option.description}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+
         {/* Status Accordion */}
         <div className="col-span-full">
-          <Label className="mb-2 inline-block">Status</Label>
+          <Label className="mb-2 inline-block">
+            Status <span className="text-red-500">*</span>
+          </Label>
           <Accordion type="single" collapsible>
             <AccordionItem value="status">
-              <AccordionTrigger className="bg-white text-purple-700 px-4 py-3 rounded-xl font-semibold">
+              <AccordionTrigger className="bg-white text-purple-700 px-4 py-3 rounded-xl font-semibold border border-gray-300">
                 {form.status ? `Selected: ${form.status}` : "Select Status"}
               </AccordionTrigger>
               <AccordionContent>
                 <div className="flex flex-col gap-2 px-2 py-2">
                   <button
                     type="button"
-                    className={`w-full px-3 py-2 rounded-lg border ${
+                    className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 ${
                       form.status === "Available"
-                        ? "bg-purple-100 border-purple-400 text-purple-700"
-                        : "bg-white border-gray-300 text-gray-700 cursor-pointer"
+                        ? "bg-green-100 border-green-400 text-green-700 shadow-md"
+                        : "bg-white border-gray-300 text-gray-700 hover:border-green-300 hover:bg-green-50 cursor-pointer"
                     }`}
                     onClick={() => setForm({ ...form, status: "Available" })}
                   >
-                    Available
+                    <div className="font-semibold">Available</div>
+                    <div className="text-sm">Ready for rental</div>
                   </button>
                   <button
                     type="button"
-                    className={`w-full px-3 py-2 rounded-lg border ${
+                    className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 ${
                       form.status === "Rented"
-                        ? "bg-purple-100 border-purple-400 text-purple-700"
-                        : "bg-white border-gray-300 text-gray-700 cursor-pointer"
+                        ? "bg-red-100 border-red-400 text-red-700 shadow-md"
+                        : "bg-white border-gray-300 text-gray-700 hover:border-red-300 hover:bg-red-50 cursor-pointer"
                     }`}
                     onClick={() => setForm({ ...form, status: "Rented" })}
                   >
-                    Rented
+                    <div className="font-semibold">Rented</div>
+                    <div className="text-sm">Currently unavailable</div>
                   </button>
                 </div>
               </AccordionContent>
@@ -171,9 +252,17 @@ const FleetAddForm = ({ onAdd, onCancel }) => {
 
         <div className="col-span-full flex justify-end gap-3 mt-4">
           <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            className="px-6 py-2"
+          >
+            Cancel
+          </Button>
+          <Button
             type="submit"
-            className="bg-purple-700 text-white cursor-pointer"
-            disabled={loading}
+            className="bg-purple-700 text-white cursor-pointer px-6 py-2"
+            disabled={loading || !form.category || !form.status}
           >
             {loading ? "Adding..." : "Add Car"}
           </Button>

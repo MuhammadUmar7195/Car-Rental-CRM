@@ -32,6 +32,26 @@ const EditFleetPage = () => {
   const [submitLoading, setSubmitLoading] = useState(false);
   const [submitError, setSubmitError] = useState("");
 
+  // Category options matching FleetAddForm
+  const categoryOptions = [
+    {
+      value: "Economy",
+      label: "Economy",
+      description: "Budget-friendly vehicles",
+    },
+    {
+      value: "Luxury",
+      label: "Luxury",
+      description: "Premium high-end vehicles",
+    },
+    { value: "SUV", label: "SUV", description: "Sport Utility Vehicles" },
+    {
+      value: "Sports",
+      label: "Sports",
+      description: "High-performance sports cars",
+    },
+  ];
+
   useEffect(() => {
     if (!singleFleet || singleFleet._id !== id) {
       dispatch(getSingleFleet(id));
@@ -100,6 +120,13 @@ const EditFleetPage = () => {
           { label: "Car Name", name: "carName", type: "text" },
           { label: "Model", name: "model", type: "text" },
           { label: "Manufacturing Year", name: "year", type: "date" },
+          {
+            label: "Price Per Day",
+            name: "pricePerDay",
+            type: "number",
+            step: "0.01",
+            min: 0,
+          },
           { label: "Registration Number", name: "registration", type: "text" },
           { label: "Fuel Type", name: "fuel", type: "text" },
           { label: "Insurance", name: "insurance", type: "text" },
@@ -113,7 +140,7 @@ const EditFleetPage = () => {
           { label: "Registration Expiry", name: "regExpiry", type: "date" },
           { label: "Inspection Expiry", name: "inspExpiry", type: "date" },
           { label: "Business Use", name: "businessUse", type: "text" },
-        ].map(({ label, name, type, ...rest }) => (
+        ].map(({ label, name, type, step, min, ...rest }) => (
           <div key={name}>
             <Label htmlFor={name} className={`mb-2`}>
               {label}
@@ -123,6 +150,8 @@ const EditFleetPage = () => {
               id={name}
               name={name}
               type={type}
+              step={step}
+              min={min}
               placeholder={label}
               value={
                 type === "date" ? formatDate(form[name]) : form[name] || ""
@@ -134,37 +163,85 @@ const EditFleetPage = () => {
           </div>
         ))}
 
+        {/* Category Accordion */}
+        <div className="col-span-full">
+          <Label className="mb-2 inline-block">
+            Category <span className="text-red-500">*</span>
+          </Label>
+          <Accordion type="single" collapsible>
+            <AccordionItem value="category">
+              <AccordionTrigger className="bg-white text-purple-700 px-4 py-3 rounded-xl font-semibold border border-gray-300">
+                {form.category
+                  ? `Selected: ${form.category}`
+                  : "Select Category"}
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 px-2 py-2">
+                  {categoryOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      className={`p-4 rounded-lg border text-left transition-all duration-200 ${
+                        form.category === option.value
+                          ? "bg-purple-100 border-purple-400 text-purple-700 shadow-md"
+                          : "bg-white border-gray-300 text-gray-700 hover:border-purple-300 hover:bg-purple-50 cursor-pointer"
+                      }`}
+                      onClick={() =>
+                        setForm({ ...form, category: option.value })
+                      }
+                      disabled={submitLoading}
+                    >
+                      <div className="font-semibold text-lg">
+                        {option.label}
+                      </div>
+                      <div className="text-sm text-gray-600 mt-1">
+                        {option.description}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+
         {/* Status Accordion */}
         <div className="col-span-full">
-          <Label className="mb-2 inline-block">Status</Label>
+          <Label className="mb-2 inline-block">
+            Status <span className="text-red-500">*</span>
+          </Label>
           <Accordion type="single" collapsible>
             <AccordionItem value="status">
-              <AccordionTrigger className="bg-white text-purple-700 px-4 py-3 rounded-xl font-semibold">
+              <AccordionTrigger className="bg-white text-purple-700 px-4 py-3 rounded-xl font-semibold border border-gray-300">
                 {form.status ? `Selected: ${form.status}` : "Select Status"}
               </AccordionTrigger>
               <AccordionContent>
                 <div className="flex flex-col gap-2 px-2 py-2">
                   <button
                     type="button"
-                    className={`w-full px-3 py-2 rounded-lg border ${
+                    className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 ${
                       form.status === "Available"
-                        ? "bg-purple-100 border-purple-400 text-purple-700"
-                        : "bg-white border-gray-300 text-gray-700"
+                        ? "bg-green-100 border-green-400 text-green-700 shadow-md"
+                        : "bg-white border-gray-300 text-gray-700 hover:border-green-300 hover:bg-green-50 cursor-pointer"
                     }`}
                     onClick={() => setForm({ ...form, status: "Available" })}
+                    disabled={submitLoading}
                   >
-                    Available
+                    <div className="font-semibold">Available</div>
+                    <div className="text-sm">Ready for rental</div>
                   </button>
                   <button
                     type="button"
-                    className={`w-full px-3 py-2 rounded-lg border ${
+                    className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 ${
                       form.status === "Rented"
-                        ? "bg-purple-100 border-purple-400 text-purple-700"
-                        : "bg-white border-gray-300 text-gray-700"
+                        ? "bg-red-100 border-red-400 text-red-700 shadow-md"
+                        : "bg-white border-gray-300 text-gray-700 hover:border-red-300 hover:bg-red-50 cursor-pointer"
                     }`}
                     onClick={() => setForm({ ...form, status: "Rented" })}
+                    disabled={submitLoading}
                   >
-                    Rented
+                    <div className="font-semibold">Rented</div>
+                    <div className="text-sm">Currently unavailable</div>
                   </button>
                 </div>
               </AccordionContent>
@@ -191,7 +268,7 @@ const EditFleetPage = () => {
           <Button
             type="submit"
             className="bg-purple-700 text-white hover:bg-purple-800 cursor-pointer"
-            disabled={submitLoading}
+            disabled={submitLoading || !form.category || !form.status}
           >
             {submitLoading ? "Updating..." : "Update Fleet"}
           </Button>

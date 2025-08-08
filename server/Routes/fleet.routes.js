@@ -7,7 +7,7 @@ router.post('/add', authMiddleware, postFleet);
 router.get('/all', authMiddleware, getAllFleets);
 
 //get total cars or status available
-router.get('/get-count', authMiddleware, getTotalCarCount);
+router.get('/get-count', getTotalCarCount);
 
 //get car with status
 router.get('/get-car-status', getCarsByStatus);

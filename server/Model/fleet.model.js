@@ -4,6 +4,7 @@ const fleetSchema = new mongoose.Schema({
     carName: { type: String, required: true },
     model: { type: String, required: true },
     year: { type: Date, required: true },
+    pricePerDay: { type: Number, required: true, default: 0 },
     registration: { type: String, required: true },
     fuel: { type: String, required: true },
     insurance: { type: String, required: true },
@@ -17,6 +18,7 @@ const fleetSchema = new mongoose.Schema({
     regExpiry: { type: Date, required: true },
     inspExpiry: { type: Date, required: true },
     businessUse: { type: String, required: true },
+    category: { type: String, enum: ["Economy", "Luxury", "SUV", "Sports"], required: true },
     status: { type: String, enum: ['Available', 'Rented'], default: 'Available' },
 }, { timestamps: true });
 

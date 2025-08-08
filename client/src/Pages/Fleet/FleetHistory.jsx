@@ -16,7 +16,7 @@ import {
 const FleetHistory = ({ fleetId }) => {
   const dispatch = useDispatch();
   const { rentals, loading, error } = useSelector((state) => state.rental);
-console.log(rentals);
+
 
   useEffect(() => {
     if (fleetId) {

@@ -63,6 +63,17 @@ const FleetCart = ({ filteredCars }) => {
                         : ""}
                     </span>
                   </span>
+                  <span className="font-semibold">
+                    Price Per Day:{" "}
+                    <span className="font-normal">
+                      {car.pricePerDay
+                        ? new Intl.NumberFormat("en-US", {
+                            style: "currency",
+                            currency: "USD",
+                          }).format(car.pricePerDay)
+                        : ""}
+                    </span>
+                  </span>
                 </div>
               </div>
             </div>

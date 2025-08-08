@@ -10,6 +10,7 @@ export const postFleet = async (req, res, next) => {
             carName,
             model,
             year,
+            pricePerDay,
             registration,
             fuel,
             insurance,
@@ -19,6 +20,7 @@ export const postFleet = async (req, res, next) => {
             color,
             type,
             odometer,
+            category,
             transmission,
             regExpiry,
             inspExpiry,
@@ -27,7 +29,7 @@ export const postFleet = async (req, res, next) => {
         } = req.body;
 
         // Only check for required fields that are actually being updated (allow partial updates)
-        const requiredFields = [carName, model, year, registration, fuel, insurance, owner, vin, engine, color, type, odometer, transmission, regExpiry, inspExpiry, businessUse, status];
+        const requiredFields = [carName, model, year, pricePerDay, registration, fuel, insurance, owner, vin, engine, color, type, odometer, category, transmission, regExpiry, inspExpiry, businessUse, status];
         if (requiredFields.some(field => typeof field === 'undefined')) {
             return next(new ErrorHandler("All fields are required", 400));
         }
@@ -36,6 +38,7 @@ export const postFleet = async (req, res, next) => {
             carName,
             model,
             year,
+            pricePerDay,
             registration,
             fuel,
             insurance,
@@ -45,6 +48,7 @@ export const postFleet = async (req, res, next) => {
             color,
             type,
             odometer,
+            category,
             transmission,
             regExpiry,
             inspExpiry,
@@ -108,6 +112,7 @@ export const updateFleet = async (req, res, next) => {
             carName,
             model,
             year,
+            pricePerDay,
             registration,
             fuel,
             insurance,
@@ -117,6 +122,7 @@ export const updateFleet = async (req, res, next) => {
             color,
             type,
             odometer,
+            category,
             transmission,
             regExpiry,
             inspExpiry,
@@ -124,7 +130,7 @@ export const updateFleet = async (req, res, next) => {
             status
         } = req.body;
 
-        if (!carName || !model || !year || !registration || !fuel || !insurance || !owner || !vin || !engine || !color || !type || !odometer || !transmission || !regExpiry || !inspExpiry || !businessUse || !status) {
+        if (!carName || !model || !year || !pricePerDay || !registration || !fuel || !insurance || !owner || !vin || !engine || !color || !type || !odometer || !category || !transmission || !regExpiry || !inspExpiry || !businessUse || !status) {
             return next(new ErrorHandler("All fields are required", 400));
         }
 
@@ -132,6 +138,7 @@ export const updateFleet = async (req, res, next) => {
             carName,
             model,
             year,
+            pricePerDay,
             registration,
             fuel,
             insurance,
@@ -141,6 +148,7 @@ export const updateFleet = async (req, res, next) => {
             color,
             type,
             odometer,
+            category,
             transmission,
             regExpiry,
             inspExpiry,

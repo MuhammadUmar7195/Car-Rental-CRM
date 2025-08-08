@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors({
-    origin: process.env.FRONTEND_URL,
+    origin: [process.env.FRONTEND_URL, "http://localhost:2000"],
     credentials: true,
 }));
 
@@ -55,5 +55,5 @@ import errorMiddleware from "./Middleware/error.js";
 app.use(errorMiddleware);
 
 app.get("/", (req, res) => {
-  res.send(`<center>Welcome to KonceptNext Car Management</center>`);
+    res.send(`<center>Welcome to KonceptNext Car Management</center>`);
 });
