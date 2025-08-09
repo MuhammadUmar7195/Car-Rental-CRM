@@ -34,12 +34,12 @@ const InventoryCart = ({ filteredInventory }) => {
           <CardContent className="p-6 flex flex-col h-full">
             <div className="flex items-center gap-4 mb-4">
               <div className="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 text-2xl font-bold border-2 border-purple-200">
-                {inv.carName?.[0] || "C"}
+                {inv.inventoryName?.[0] || "C"}
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <h3 className="font-bold text-2xl text-purple-800 truncate max-w-[140px] xs:max-w-[180px] sm:max-w-[220px] md:max-w-[260px]">
-                    {inv.carName || "N/A"}
+                    {inv.inventoryName || "N/A"}
                   </h3>
                   <button
                     className="lg:ml-40 rounded-full hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-purple-300 transition flex-shrink-0 cursor-pointer"

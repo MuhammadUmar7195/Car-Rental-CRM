@@ -8,7 +8,7 @@ const Navbar = () => {
           <span className="inline-flex mr-3 rounded-full bg-gradient-to-tr from-purple-500 to-purple-300 shadow-lg p-2">
             <FaCheckCircle size={18} className="text-white drop-shadow" />
           </span>
-          KonceptNext Car Management
+          Astro Motors CMS
         </span>
       </div>
     </nav>

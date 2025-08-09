@@ -4,14 +4,14 @@ import ErrorHandler from "../Utils/ErrorHandler.js";
 //Post the Inventory
 export const postInventory = async (req, res, next) => {
     try {
-        const { carName, carModel, quantity, costPrice, sellingPrice } = req.body;
+        const { inventoryName, carModel, quantity, costPrice, sellingPrice } = req.body;
 
-        if (!carName || !carModel || quantity < 0 || costPrice < 0 || sellingPrice < 0) {
+        if (!inventoryName || !carModel || quantity < 0 || costPrice < 0 || sellingPrice < 0) {
             return next(new ErrorHandler("All fields are required and must be valid", 400));
         }
 
         const newInventory = new Inventory({
-            carName,
+            inventoryName,
             carModel,
             quantity,
             costPrice,
@@ -53,14 +53,14 @@ export const getSingleInventory = async (req, res, next) => {
 export const updateInventoryByID = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const { carName, carModel, quantity, costPrice, sellingPrice } = req.body;
+        const { inventoryName, carModel, quantity, costPrice, sellingPrice } = req.body;
 
-        if (!carName || !carModel || quantity < 0 || costPrice < 0 || sellingPrice < 0) {
+        if (!inventoryName || !carModel || quantity < 0 || costPrice < 0 || sellingPrice < 0) {
             return next(new ErrorHandler("All fields are required and must be valid", 400));
         }
 
         const updatedInventory = await Inventory.findByIdAndUpdate(id, {
-            carName,
+            inventoryName,
             carModel,
             quantity,
             costPrice,

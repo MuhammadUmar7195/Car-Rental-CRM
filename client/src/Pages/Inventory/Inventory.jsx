@@ -23,7 +23,7 @@ const Inventory = () => {
     ? inventory.filter((car) => {
         const query = search.toLowerCase();
         return (
-          (car.carName && car.carName.toLowerCase().includes(query)) ||
+          (car.inventoryName && car.inventoryName.toLowerCase().includes(query)) ||
           (car.carModel && car.carModel.toLowerCase().includes(query))
         );
       })

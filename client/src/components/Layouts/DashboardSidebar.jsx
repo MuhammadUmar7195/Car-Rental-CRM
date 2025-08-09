@@ -54,7 +54,7 @@ const DashboardSidebar = ({ toggleSidebar }) => {
           <FaCheckCircle size={18} className="text-white drop-shadow" />
         </span>
         <span className="text-2xl font-bold tracking-wide text-purple-700">
-          KonceptNext
+          Astro Motors
         </span>
       </div>
 

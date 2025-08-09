@@ -70,7 +70,7 @@ const SingleInventoryDetail = () => {
             <IoChevronBackSharp />
           </Button>
           <CardTitle className="text-3xl font-bold text-purple-800 mb-2 uppercase">
-            {inventory.carName || "N/A"}
+            {inventory.inventoryName || "N/A"}
           </CardTitle>
           <CardDescription>
             <Badge

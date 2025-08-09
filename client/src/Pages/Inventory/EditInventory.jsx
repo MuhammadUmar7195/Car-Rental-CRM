@@ -88,7 +88,7 @@ const EditInventory = () => {
         </h2>
 
         {[
-          { label: "Name", name: "carName", type: "text" },
+          { label: "Name", name: "inventoryName", type: "text" },
           { label: "Model", name: "carModel", type: "text" },
           { label: "Quantity", name: "quantity", type: "number", min: 0 },
           { label: "Cost Price", name: "costPrice", type: "number", min: 0 },

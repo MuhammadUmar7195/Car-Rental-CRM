@@ -11,7 +11,7 @@ const InventoryAddForm = ({ onAdd, onCancel }) => {
   const { loading } = useSelector((state) => state?.inventory || {});
 
   const initialForm = {
-    carName: "",
+    inventoryName: "",
     carModel: "",
     quantity: "",
     costPrice: "",
@@ -55,7 +55,7 @@ const InventoryAddForm = ({ onAdd, onCancel }) => {
         </button>
 
         {[
-          { label: "Name", name: "carName", type: "text" },
+          { label: "Name", name: "inventoryName", type: "text" },
           { label: "Model", name: "carModel", type: "text" },
           { label: "Quantity", name: "quantity", type: "number", min: 0 },
           { label: "Cost Price", name: "costPrice", type: "number", min: 0 },
