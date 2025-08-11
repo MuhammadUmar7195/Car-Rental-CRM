@@ -40,6 +40,7 @@ import AccountingRoutes from "./Routes/accounting.route.js";
 import InventoryRoutes from "./Routes/inventory.route.js";
 import ServiceRoutes from "./Routes/service.route.js";
 import WalkInServiceRoutes from "./Routes/walkInService.route.js";
+import UploadCar from "./Routes/uploadCar.route.js";
 
 app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/fleet", fleetRoutes);
@@ -49,6 +50,7 @@ app.use("/api/v1/service", ServiceRoutes);
 app.use("/api/v1/walkinService", WalkInServiceRoutes);
 app.use("/api/v1/accounting", AccountingRoutes);
 app.use("/api/v1/inventory", InventoryRoutes);
+app.use("/api/v1/upload", UploadCar);
 
 //error handling middleware
 import errorMiddleware from "./Middleware/error.js";

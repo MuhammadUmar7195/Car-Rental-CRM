@@ -27,11 +27,9 @@ import Footer from "./components/Common/Footer";
 import { useSelector } from "react-redux";
 import POSGate from "./Pages/POS/POSGate";
 import WalkInServiceHistory from "./Pages/POS/WalkInServiceHistory";
-import AutoCheckSession from "./hooks/useAutoLogoutGlobal";
 
 function App() {
   const { user } = useSelector((state) => state.auth) || {};
-  AutoCheckSession();
 
   return (
     <>

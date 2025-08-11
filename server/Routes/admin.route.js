@@ -1,6 +1,5 @@
 import express from 'express';
 import {
-    checkSession,
     forgotPassword,
     login,
     logout,
@@ -18,9 +17,6 @@ router.post("/login", login);
 router.post("/forgot-password", forgotPassword);
 router.post("/verify-password", verifyOTP);
 router.post("/reset-password", resetPassword);
-
-// For check session 
-router.get("/check-session", checkSession);
 
 //logout route
 router.get("/logout", logout)

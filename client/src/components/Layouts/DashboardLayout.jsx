@@ -21,7 +21,7 @@ const DashboardLayout = () => {
           <FaBars size={20} />
         </button>
         <h1 className="ml-4 text-xl font-bold text-purple-700 tracking-wide">
-          KonceptNextCar
+          Astro Motors
         </h1>
       </div>
 
