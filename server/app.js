@@ -1,3 +1,4 @@
+import rateLimit from "express-rate-limit";
 import connect from "./Config/connect.js";
 import cookieParser from "cookie-parser";
 import express from "express";
@@ -14,6 +15,8 @@ app.use(cors({
     origin: [process.env.FRONTEND_URL, process.env.CUSTOMER_PORTAL_URL],
     credentials: true,
 }));
+
+app.use(rateLimit({ windowMs: 1 * 60 * 1000, max: 100 }));
 
 const port = process.env.PORT || 9000;
 const database = process.env.MONGO_URI;

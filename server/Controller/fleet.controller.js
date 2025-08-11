@@ -25,11 +25,12 @@ export const postFleet = async (req, res, next) => {
             regExpiry,
             inspExpiry,
             businessUse,
-            status
+            status,
+            images
         } = req.body;
 
         // Only check for required fields that are actually being updated (allow partial updates)
-        const requiredFields = [carName, model, year, pricePerDay, registration, fuel, insurance, owner, vin, engine, color, type, odometer, category, transmission, regExpiry, inspExpiry, businessUse, status];
+        const requiredFields = [carName, model, year, pricePerDay, registration, fuel, insurance, owner, vin, engine, color, type, odometer, category, transmission, regExpiry, inspExpiry, businessUse, status, images];
         if (requiredFields.some(field => typeof field === 'undefined')) {
             return next(new ErrorHandler("All fields are required", 400));
         }
@@ -53,7 +54,8 @@ export const postFleet = async (req, res, next) => {
             regExpiry,
             inspExpiry,
             businessUse,
-            status
+            status,
+            images
         });
 
         await newFleet.save();
@@ -127,10 +129,11 @@ export const updateFleet = async (req, res, next) => {
             regExpiry,
             inspExpiry,
             businessUse,
-            status
+            status,
+            images
         } = req.body;
 
-        if (!carName || !model || !year || !pricePerDay || !registration || !fuel || !insurance || !owner || !vin || !engine || !color || !type || !odometer || !category || !transmission || !regExpiry || !inspExpiry || !businessUse || !status) {
+        if (!carName || !model || !year || !pricePerDay || !registration || !fuel || !insurance || !owner || !vin || !engine || !color || !type || !odometer || !category || !transmission || !regExpiry || !inspExpiry || !businessUse || !status || !images) {
             return next(new ErrorHandler("All fields are required", 400));
         }
 
@@ -153,7 +156,8 @@ export const updateFleet = async (req, res, next) => {
             regExpiry,
             inspExpiry,
             businessUse,
-            status
+            status,
+            images
         }, { new: true });
 
         if (!updatedFleet) {

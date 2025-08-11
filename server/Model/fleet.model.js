@@ -20,7 +20,21 @@ const fleetSchema = new mongoose.Schema({
     businessUse: { type: String, required: true },
     category: { type: String, enum: ["Economy", "Luxury", "SUV", "Sports"], required: true },
     status: { type: String, enum: ['Available', 'Rented'], default: 'Available' },
-}, { timestamps: true });
+    images: [{
+        url: {
+            type: String,
+            required: true,
+        },
+        altText: {
+            type: String,
+            default: function(){
+                return `${this.carName}`;
+            }
+        }
+    }]
+},
+    { timestamps: true }
+);
 
 const Fleet = mongoose.model('Fleet', fleetSchema);
 export default Fleet;

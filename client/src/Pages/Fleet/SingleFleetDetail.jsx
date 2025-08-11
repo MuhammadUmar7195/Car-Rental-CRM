@@ -27,6 +27,7 @@ import { toast } from "sonner";
 import axios from "axios";
 import { Label } from "@/components/ui/label";
 import FleetServiceHistory from "./FleetServiceHistory";
+import { Car, ImageOff } from "lucide-react";
 
 const SingleFleetDetail = () => {
   const { id } = useParams();
@@ -40,6 +41,8 @@ const SingleFleetDetail = () => {
   const [inspectionName, setInspectionName] = useState("");
   const [agree, setAgree] = useState(false);
   const [returnLoading, setReturnLoading] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     if (!singleFleet || singleFleet._id !== id) {
@@ -80,6 +83,16 @@ const SingleFleetDetail = () => {
   const car = singleFleet;
   const isRented = car.status?.toLowerCase() === "rented";
 
+  // Get car image URL
+  const getCarImageUrl = () => {
+    if (car.images && car.images.length > 0) {
+      return car.images[0].url;
+    }
+    return null;
+  };
+
+  const carImageUrl = getCarImageUrl();
+
   const handleReturnRental = async () => {
     setReturnLoading(true);
     try {
@@ -99,9 +112,19 @@ const SingleFleetDetail = () => {
     }
   };
 
+  const handleImageLoad = () => {
+    setImageLoading(false);
+    setImageError(false);
+  };
+
+  const handleImageError = () => {
+    setImageLoading(false);
+    setImageError(true);
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-2 py-8 bg-muted">
-      <Card className="w-full max-w-5xl shadow-xl rounded-3xl bg-white p-2 md:p-6">
+      <Card className="w-full max-w-6xl shadow-xl rounded-3xl bg-white p-2 md:p-6">
         <CardHeader className="flex flex-col items-center text-center relative">
           <Button
             onClick={() => navigate(`/dashboard/fleet`)}
@@ -124,53 +147,135 @@ const SingleFleetDetail = () => {
             </Badge>
           </CardDescription>
         </CardHeader>
+
         <CardContent className="mt-6 w-full">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 w-full">
-            {/* Left Section */}
-            <div className="space-y-2 text-sm text-gray-700">
-              <Info label="Model" value={car.model} />
-              <Info
-                label="Year"
-                value={
-                  car.year ? new Date(car.year).toLocaleDateString("en-GB") : ""
-                }
-              />
-              <Info label="Price Per Day" value={car.pricePerDay || "N/A"} />
-              <Info label="Registration" value={car.registration || "N/A"} />
-              <Info label="Color" value={car.color || "N/A"} />
-              <Info label="Fuel" value={car.fuel || "N/A"} />
-              <Info label="Type" value={car.type || "N/A"} />
-              <Info label="Owner" value={car.owner || "N/A"} />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full">
+            {/* Car Image Section */}
+            <div className="lg:col-span-1">
+              <div className="rounded-xl p-4 h-full">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4 text-center">
+                  Car Image
+                </h3>
+
+                {carImageUrl ? (
+                  <div className="relative">
+                    {imageLoading && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-lg">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+                      </div>
+                    )}
+
+                    <img
+                      src={carImageUrl}
+                      alt={`${car.carName} ${car.model}`}
+                      className={`w-full h-64 object-cover rounded-lg shadow-md transition-opacity duration-300 ${
+                        imageLoading ? "opacity-0" : "opacity-100"
+                      }`}
+                      onLoad={handleImageLoad}
+                      onError={handleImageError}
+                    />
+
+                    {imageError && (
+                      <div className="w-full h-64 bg-gray-200 rounded-lg flex flex-col items-center justify-center text-gray-500">
+                        <ImageOff className="h-12 w-12 mb-2" />
+                        <p className="text-sm">Failed to load image</p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="w-full h-64 bg-gray-200 rounded-lg flex flex-col items-center justify-center text-gray-500">
+                    <Car className="h-16 w-16 mb-3" />
+                    <p className="text-sm font-medium">No image available</p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Image not uploaded for this vehicle
+                    </p>
+                  </div>
+                )}
+
+                {/* Image Info */}
+                {carImageUrl && !imageError && (
+                  <div className="mt-3 text-xs text-gray-600 text-center">
+                    <p>
+                      Alt:{" "}
+                      {car.images?.[0]?.altText ||
+                        `${car.carName} ${car.model}`}
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Right Section */}
-            <div className="space-y-2 text-sm text-gray-700">
-              <Info label="VIN" value={car.vin || "N/A"} />
-              <Info label="Engine" value={car.engine || "N/A"} />
-              <Info label="Category" value={car.category || "N/A"} />
-              <Info label="Odometer" value={car.odometer || "N/A"} />
-              <Info label="Transmission" value={car.transmission || "N/A"} />
-              <Info label="Business Use" value={car.businessUse || "N/A"} />
-              <Info
-                label="Reg Expiry"
-                value={
-                  car.regExpiry
-                    ? new Date(car.regExpiry).toLocaleDateString("en-GB")
-                    : ""
-                }
-              />
-              <Info
-                label="Inspection Expiry"
-                value={
-                  car.inspExpiry
-                    ? new Date(car.inspExpiry).toLocaleDateString("en-GB")
-                    : ""
-                }
-              />
+            {/* Car Details Section */}
+            <div className="lg:col-span-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 w-full">
+                {/* Left Section */}
+                <div className="space-y-3 text-sm text-gray-700">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3 border-b border-gray-200 pb-2">
+                    Basic Information
+                  </h3>
+                  <Info label="Model" value={car.model} />
+                  <Info
+                    label="Year"
+                    value={
+                      car.year
+                        ? new Date(car.year).toLocaleDateString("en-GB")
+                        : ""
+                    }
+                  />
+                  <Info
+                    label="Price Per Day"
+                    value={`$${car.pricePerDay}` || "N/A"}
+                  />
+                  <Info
+                    label="Registration"
+                    value={car.registration || "N/A"}
+                  />
+                  <Info label="Color" value={car.color || "N/A"} />
+                  <Info label="Fuel" value={car.fuel || "N/A"} />
+                  <Info label="Type" value={car.type || "N/A"} />
+                  <Info label="Owner" value={car.owner || "N/A"} />
+                </div>
+
+                {/* Right Section */}
+                <div className="space-y-3 text-sm text-gray-700">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3 border-b border-gray-200 pb-2">
+                    Technical Details
+                  </h3>
+                  <Info label="VIN" value={car.vin || "N/A"} />
+                  <Info label="Engine" value={car.engine || "N/A"} />
+                  <Info label="Category" value={car.category || "N/A"} />
+                  <Info
+                    label="Odometer"
+                    value={`${car.odometer} km` || "N/A"}
+                  />
+                  <Info
+                    label="Transmission"
+                    value={car.transmission || "N/A"}
+                  />
+                  <Info label="Business Use" value={car.businessUse || "N/A"} />
+                  <Info
+                    label="Reg Expiry"
+                    value={
+                      car.regExpiry
+                        ? new Date(car.regExpiry).toLocaleDateString("en-GB")
+                        : ""
+                    }
+                  />
+                  <Info
+                    label="Inspection Expiry"
+                    value={
+                      car.inspExpiry
+                        ? new Date(car.inspExpiry).toLocaleDateString("en-GB")
+                        : ""
+                    }
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="mt-8 flex flex-col md:flex-row gap-4 justify-center items-center w-full">
+          {/* Action Buttons */}
+          <div className="mt-8 flex flex-col md:flex-row gap-4 justify-center items-center w-full pt-6 border-t border-gray-200">
             <Button
               variant="outline"
               onClick={() => navigate("/dashboard/rental")}
@@ -195,10 +300,11 @@ const SingleFleetDetail = () => {
           </div>
         </CardContent>
       </Card>
-      <div className="w-full max-w-5xl">
+
+      <div className="w-full max-w-6xl">
         <FleetHistory fleetId={id} />
       </div>
-      <div className="w-full max-w-5xl">
+      <div className="w-full max-w-6xl">
         <FleetServiceHistory fleetId={id} />
       </div>
 
@@ -257,8 +363,8 @@ const SingleFleetDetail = () => {
 // Small reusable field display component
 const Info = ({ label, value }) => (
   <div className="flex items-start gap-2">
-    <span className="font-semibold min-w-[130px]">{label}:</span>
-    <span className="text-gray-800">{value || "—"}</span>
+    <span className="font-semibold min-w-[130px] text-gray-600">{label}:</span>
+    <span className="text-gray-800 font-medium">{value || "—"}</span>
   </div>
 );
 

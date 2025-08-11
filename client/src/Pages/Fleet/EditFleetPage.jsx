@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PuffLoader } from "react-spinners";
 import { toast } from "sonner";
+import { Upload, X, Image, CheckCircle, Edit } from "lucide-react";
+import useCarImageUpload from "@/hooks/useCarImageUpload";
 import {
   Accordion,
   AccordionItem,
@@ -28,9 +30,18 @@ const EditFleetPage = () => {
   const { singleFleet, loading, error } = useSelector(
     (state) => state.fleet || {}
   );
+  const { uploadImage, uploading, uploadError, clearError } =
+    useCarImageUpload();
+
   const [form, setForm] = useState(null);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [submitError, setSubmitError] = useState("");
+
+  // Image upload states
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState(null);
+  const [showImageUpload, setShowImageUpload] = useState(false);
 
   // Category options matching FleetAddForm
   const categoryOptions = [
@@ -71,10 +82,109 @@ const EditFleetPage = () => {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Image handling functions
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file size (minimum 1MB)
+      if (file.size < 1 * 1024 * 1024) {
+        toast.error("Image size should be at least 1MB for better quality");
+        return;
+      }
+
+      // Validate file size (maximum 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Image size should not exceed 5MB");
+        return;
+      }
+
+      // Validate file type
+      if (!file.type.startsWith("image/")) {
+        toast.error("Please select only image files");
+        return;
+      }
+
+      setSelectedImage(file);
+
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+
+      // Clear any previous upload state
+      setUploadedImageUrl(null);
+      clearError();
+    }
+  };
+
+  const handleImageUpload = async () => {
+    if (!selectedImage) {
+      toast.error("Please select an image first");
+      return;
+    }
+
+    try {
+      const imageUrl = await uploadImage(selectedImage);
+      setUploadedImageUrl(imageUrl);
+
+      // Update form with image data
+      setForm({
+        ...form,
+        images: [
+          {
+            url: imageUrl,
+            altText: `${form.carName} ${form.model}`.trim() || "Car image",
+          },
+        ],
+      });
+
+      toast.success("Image uploaded successfully!");
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  const removeNewImage = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
+    setUploadedImageUrl(null);
+    clearError();
+  };
+
+  const removeExistingImage = () => {
+    setForm({ ...form, images: [] });
+    toast.success("Existing image will be removed on save");
+  };
+
+  // Helper function to format file size
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  };
+
+  // Get current image URL
+  const getCurrentImageUrl = () => {
+    if (uploadedImageUrl) return uploadedImageUrl;
+    if (form?.images && form.images.length > 0) return form.images[0].url;
+    return null;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitLoading(true);
     setSubmitError("");
+
+    // Validate that image is uploaded if selected
+    if (selectedImage && !uploadedImageUrl) {
+      toast.error("Please upload the selected image before submitting");
+      setSubmitLoading(false);
+      return;
+    }
 
     try {
       await dispatch(updateFleet({ fleetId: id, fleetData: form })).unwrap();
@@ -110,12 +220,166 @@ const EditFleetPage = () => {
     <div className="min-h-screen flex items-center justify-center px-4 py-10 bg-muted">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-5xl bg-white p-8 rounded-2xl shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6"
+        className="w-full max-w-5xl bg-white p-8 rounded-2xl shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[90vh] overflow-y-auto"
       >
         <h2 className="text-3xl font-bold text-purple-700 col-span-full text-center mb-2 uppercase">
           Edit Fleet Details
         </h2>
 
+        {/* Current Image Display & Upload Section */}
+        <div className="col-span-full">
+          <Label className="mb-2 inline-block">
+            Car Image <span className="text-gray-500">(Optional)</span>
+          </Label>
+
+          {/* Current Image Display */}
+          {getCurrentImageUrl() && !showImageUpload && (
+            <div className="space-y-4">
+              <div className="relative">
+                <img
+                  src={getCurrentImageUrl()}
+                  alt="Current car image"
+                  className="w-full h-64 object-cover rounded-lg shadow-md"
+                />
+                <div className="absolute top-2 right-2 flex gap-2">
+                  <Button
+                    type="button"
+                    onClick={() => setShowImageUpload(true)}
+                    className="bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 transition-colors shadow-lg cursor-pointer"
+                    title="Change image"
+                  >
+                    <Edit size={16} />
+                  </Button>
+                </div>
+              </div>
+              <p className="text-sm text-gray-600 text-center">
+                Current car image • Click edit to change
+              </p>
+            </div>
+          )}
+
+          {/* Image Upload Section */}
+          {(showImageUpload || !getCurrentImageUrl()) && (
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50 hover:border-purple-300 transition-colors">
+              {imagePreview ? (
+                <div className="space-y-4">
+                  <div className="relative">
+                    <img
+                      src={imagePreview}
+                      alt="New car image preview"
+                      className="w-full h-64 object-cover rounded-lg shadow-md"
+                    />
+                    <Button
+                      type="button"
+                      onClick={removeNewImage}
+                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition-colors shadow-lg cursor-pointer"
+                    >
+                      <X size={16} />
+                    </Button>
+                  </div>
+
+                  {/* File Info */}
+                  <div className="text-sm text-gray-600 space-y-1">
+                    <p>
+                      <span className="font-medium">File:</span>{" "}
+                      {selectedImage?.name}
+                    </p>
+                    <p>
+                      <span className="font-medium">Size:</span>{" "}
+                      {formatFileSize(selectedImage?.size)}
+                    </p>
+                    <p>
+                      <span className="font-medium">Type:</span>{" "}
+                      {selectedImage?.type}
+                    </p>
+                  </div>
+
+                  {/* Upload/Status Section */}
+                  <div className="flex items-center gap-3">
+                    {!uploadedImageUrl ? (
+                      <Button
+                        type="button"
+                        onClick={handleImageUpload}
+                        disabled={uploading || submitLoading}
+                        className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2 cursor-pointer"
+                      >
+                        {uploading ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                            Uploading...
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="h-4 w-4" />
+                            Upload to Cloud
+                          </>
+                        )}
+                      </Button>
+                    ) : (
+                      <div className="flex items-center text-green-600">
+                        <CheckCircle className="h-5 w-5 mr-2" />
+                        New image uploaded successfully!
+                      </div>
+                    )}
+
+                    {showImageUpload && getCurrentImageUrl() && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="cursor-pointer"
+                        onClick={() => {
+                          setShowImageUpload(false);
+                          removeNewImage();
+                        }}
+                        disabled={uploading || submitLoading}
+                      >
+                        Cancel
+                      </Button>
+                    )}
+                  </div>
+
+                  {/* Error display */}
+                  {uploadError && (
+                    <div className="text-red-500 text-sm bg-red-50 p-3 rounded-lg border border-red-200">
+                      {uploadError}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Label
+                  htmlFor="carImage"
+                  className="cursor-pointer flex flex-col items-center justify-center h-64 hover:bg-gray-100 transition-colors rounded-lg"
+                >
+                  <Image className="h-16 w-16 text-gray-400 mb-4" />
+                  <p className="text-gray-600 mb-2 text-center text-lg font-medium">
+                    {getCurrentImageUrl()
+                      ? "Click to select new car image"
+                      : "Click to select car image"}
+                  </p>
+                  <p className="text-gray-500 text-sm text-center">
+                    PNG, JPG, JPEG
+                  </p>
+                  <p className="text-gray-500 text-sm text-center">
+                    Minimum 1MB, Maximum 5MB
+                  </p>
+                  <p className="text-purple-600 text-sm text-center mt-2 font-medium">
+                    High quality images recommended
+                  </p>
+                </Label>
+              )}
+
+              <input
+                id="carImage"
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="hidden"
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Rest of your existing form fields */}
         {[
           { label: "Car Name", name: "carName", type: "text" },
           { label: "Model", name: "model", type: "text" },
@@ -261,14 +525,20 @@ const EditFleetPage = () => {
             variant="outline"
             className={`cursor-pointer`}
             onClick={() => navigate(-1)}
-            disabled={submitLoading}
+            disabled={submitLoading || uploading}
           >
             Cancel
           </Button>
           <Button
             type="submit"
             className="bg-purple-700 text-white hover:bg-purple-800 cursor-pointer"
-            disabled={submitLoading || !form.category || !form.status}
+            disabled={
+              submitLoading ||
+              !form.category ||
+              !form.status ||
+              uploading ||
+              (selectedImage && !uploadedImageUrl)
+            }
           >
             {submitLoading ? "Updating..." : "Update Fleet"}
           </Button>

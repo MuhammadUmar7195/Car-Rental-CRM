@@ -60,9 +60,10 @@ const FleetCart = ({ filteredCars }) => {
                     <span className="font-normal">
                       {car.year
                         ? new Date(car.year).toLocaleDateString("en-GB")
-                        : ""}
+                        : "N/A"}
                     </span>
                   </span>
+                  <span className="hidden sm:inline">|</span>
                   <span className="font-semibold">
                     Price Per Day:{" "}
                     <span className="font-normal">
@@ -71,7 +72,7 @@ const FleetCart = ({ filteredCars }) => {
                             style: "currency",
                             currency: "USD",
                           }).format(car.pricePerDay)
-                        : ""}
+                        : "N/A"}
                     </span>
                   </span>
                 </div>
