@@ -11,7 +11,7 @@ export const cookieOptions = {
 };
 
 //register admin
-export const register = async (req, res, next) => {
+export const adminRegister = async (req, res, next) => {
     const { username, email, password } = req.body;
 
     if (!username || !email || !password) {
@@ -53,7 +53,7 @@ export const register = async (req, res, next) => {
 }
 
 //login admin
-export const login = async (req, res, next) => {
+export const adminLogin = async (req, res, next) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -101,13 +101,12 @@ export const login = async (req, res, next) => {
     }
 }
 
-//logut session
+//logout session
 export const logout = async (req, res, next) => {
     try {
         res.clearCookie("token", cookieOptions);
         res.status(200).json({
             success: true,
-            message: "Admin logged out successfully",
         });
     } catch (error) {
         next(error);

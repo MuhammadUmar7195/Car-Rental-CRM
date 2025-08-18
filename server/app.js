@@ -36,6 +36,7 @@ start();
 
 //custom api routes
 import adminRoutes from "./Routes/admin.route.js";
+import userRoutes from "./Routes/user.route.js";
 import fleetRoutes from "./Routes/fleet.routes.js";
 import customerRoutes from "./Routes/customer.route.js";
 import RentalRoutes from "./Routes/rental.route.js";
@@ -46,6 +47,7 @@ import WalkInServiceRoutes from "./Routes/walkInService.route.js";
 import UploadCar from "./Routes/uploadCar.route.js";
 
 app.use("/api/v1/admin", adminRoutes);
+app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/fleet", fleetRoutes);
 app.use("/api/v1/customer", customerRoutes);
 app.use("/api/v1/rental", RentalRoutes);

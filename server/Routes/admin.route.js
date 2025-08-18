@@ -1,17 +1,17 @@
 import express from 'express';
 import {
+    adminLogin,
+    adminRegister,
     forgotPassword,
-    login,
-    logout,
-    register,
     resetPassword,
-    verifyOTP
+    verifyOTP,
+    logout,
 } from '../Controller/admin.controller.js';
 const router = express.Router();
 
-//Admin routes are here. Used best practice
-router.post("/register", register);
-router.post("/login", login);
+//User routes are here. Used best practice
+router.post("/register", adminRegister);
+router.post("/login", adminLogin);
 
 //reset password route
 router.post("/forgot-password", forgotPassword);
@@ -19,6 +19,6 @@ router.post("/verify-password", verifyOTP);
 router.post("/reset-password", resetPassword);
 
 //logout route
-router.get("/logout", logout)
+router.get("/logout", logout);
 
 export default router;
