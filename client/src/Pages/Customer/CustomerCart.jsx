@@ -35,13 +35,16 @@ const CustomerCart = ({ filteredCustomers }) => {
               <div className="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 text-2xl font-bold border-2 border-purple-200">
                 {customer.name?.[0] || "C"}
               </div>
-              <div>
+              <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <h3 className="font-bold text-2xl text-purple-800 truncate max-w-[140px] xs:max-w-[180px] sm:max-w-[220px] md:max-w-[260px]">
+                  <h3
+                    className="font-bold text-2xl text-purple-800 truncate max-w-[120px] xs:max-w-[160px] sm:max-w-[200px] md:max-w-[220px] lg:max-w-[240px]"
+                    title={customer.name}
+                  >
                     {customer.name || "N/A"}
                   </h3>
                   <button
-                    className="lg:ml-40 rounded-full hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-purple-300 transition flex-shrink-0 cursor-pointer"
+                    className="ml-2 rounded-full hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-purple-300 transition flex-shrink-0 cursor-pointer"
                     aria-label="Edit customer"
                     onClick={() =>
                       navigate(`/dashboard/customer/edit/${customer._id}`)
@@ -51,18 +54,28 @@ const CustomerCart = ({ filteredCustomers }) => {
                     <MdModeEditOutline className="w-5 h-5 text-purple-600" />
                   </button>
                 </div>
-                <div className="flex sm:flex-row gap-1 sm:gap-3 text-gray-500 text-sm">
-                  <span className="font-semibold">
+                <div className="flex flex-col sm:flex-row gap-1 sm:gap-3 text-gray-500 text-sm">
+                  <span className="font-semibold break-all">
                     Email:{" "}
-                    <span className="font-normal">
-                      {customer.email || "N/A"}
+                    <span className="font-normal break-all">
+                      {customer.email
+                        ? customer.email.length > 22
+                          ? customer.email.split("@")[0].slice(0, 18) +
+                            "...@" +
+                            customer.email.split("@")[1]
+                          : customer.email
+                        : "N/A"}
                     </span>
                   </span>
                   <span className="hidden sm:inline">|</span>
-                  <span className="font-semibold">
+                  <span className="font-semibold break-all">
                     Phone:{" "}
-                    <span className="font-normal">
-                      {customer.phone || "N/A"}
+                    <span className="font-normal break-all">
+                      {customer.phone
+                        ? customer.phone.length > 16
+                          ? customer.phone.slice(0, 14) + "..."
+                          : customer.phone
+                        : "N/A"}
                     </span>
                   </span>
                 </div>
