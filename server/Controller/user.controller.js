@@ -33,12 +33,6 @@ export const userRegister = async (req, res, next) => {
         res.status(201).json({
             success: true,
             message: "User registered successfully",
-            user: {
-                id: user._id,
-                username: user.username,
-                email: user.email,
-                role: user.role,
-            }
         });
     } catch (error) {
         next(error);
@@ -82,7 +76,7 @@ export const userLogin = async (req, res, next) => {
         res.status(200).json({
             success: true,
             message: "User logged in successfully",
-            admin: {
+            customer: {
                 id: user._id,
                 username: user.username,
                 email: user.email,
