@@ -11,22 +11,30 @@ import { PuffLoader } from "react-spinners";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import useGetAllWorkshopEntry from "@/hooks/useGetAllWorkshopEntry";
+import { Button } from "@/components/ui/button";
 
 const WorkshopAppointmentHistory = () => {
-  const { workshop, loading, error } = useGetAllWorkshopEntry();
+  const { workshop, loading, error, refetch } = useGetAllWorkshopEntry();
 
   // Handle error toast
   if (error) {
     toast.error(error || "Something went wrong");
   }
 
+  const handleRefresh = () => {
+    refetch();
+  }
+
   return (
     <div className="py-10 lg:px-30 md:px-10 min-h-screen relative">
       <Card className="p-8 rounded-2xl shadow-lg bg-white">
-        <div className="mb-6">
+        <div className="flex justify-between mb-6">
           <h2 className="text-2xl font-bold text-purple-600 text-center lg:ml-14 uppercase tracking-wide flex-1 lg:mr-30">
             Workshop Appointment
           </h2>
+          <Button variant="outline" size="sm" onClick={handleRefresh} className="text-purple-600 cursor-pointer">
+            refresh
+          </Button>
         </div>
         {loading ? (
           <div className="flex justify-center items-center h-40">
