@@ -35,27 +35,29 @@ const start = () => {
 start();
 
 //custom api routes
-import adminRoutes from "./Routes/admin.route.js";
-import userRoutes from "./Routes/user.route.js";
-import fleetRoutes from "./Routes/fleet.routes.js";
-import customerRoutes from "./Routes/customer.route.js";
+import AdminRoutes from "./Routes/admin.route.js";
+import UserRoutes from "./Routes/user.route.js";
+import FleetRoutes from "./Routes/fleet.routes.js";
+import CustomerRoutes from "./Routes/customer.route.js";
 import RentalRoutes from "./Routes/rental.route.js";
 import AccountingRoutes from "./Routes/accounting.route.js";
 import InventoryRoutes from "./Routes/inventory.route.js";
 import ServiceRoutes from "./Routes/service.route.js";
 import WalkInServiceRoutes from "./Routes/walkInService.route.js";
 import UploadCar from "./Routes/uploadCar.route.js";
+import WorkshopRoutes from "./Routes/workshop-appointment.route.js";
 
-app.use("/api/v1/admin", adminRoutes);
-app.use("/api/v1/user", userRoutes);
-app.use("/api/v1/fleet", fleetRoutes);
-app.use("/api/v1/customer", customerRoutes);
+app.use("/api/v1/admin", AdminRoutes);
+app.use("/api/v1/user", UserRoutes);
+app.use("/api/v1/fleet", FleetRoutes);
+app.use("/api/v1/customer", CustomerRoutes);
 app.use("/api/v1/rental", RentalRoutes);
 app.use("/api/v1/service", ServiceRoutes);
 app.use("/api/v1/walkinService", WalkInServiceRoutes);
 app.use("/api/v1/accounting", AccountingRoutes);
 app.use("/api/v1/inventory", InventoryRoutes);
 app.use("/api/v1/upload", UploadCar);
+app.use("/api/v1/workshop", WorkshopRoutes);
 
 //error handling middleware
 import errorMiddleware from "./Middleware/error.js";

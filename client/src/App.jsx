@@ -10,7 +10,6 @@ import Register from "./components/auth/Register";
 import ProtectedRoute from "./Routes/ProtectedRoute";
 import ForgetPassword from "./components/auth/ForgetPassword";
 import Accounting from "./Pages/Accounting/Accounting";
-import FleetOwner from "./Pages/FleetOwner/FleetOwner";
 import Payment from "./Pages/Payment/payment";
 import Navbar from "./components/Common/Navbar";
 import SingleFleetDetail from "./Pages/Fleet/SingleFleetDetail";
@@ -27,6 +26,7 @@ import Footer from "./components/Common/Footer";
 import { useSelector } from "react-redux";
 import POSGate from "./Pages/POS/POSGate";
 import WalkInServiceHistory from "./Pages/POS/WalkInServiceHistory";
+import Workshop from "./Pages/Workshop/Workshop";
 
 function App() {
   const { user } = useSelector((state) => state.auth) || {};
@@ -118,7 +118,7 @@ function App() {
             {/* Payment dues */}
             <Route path="payments/:id" element={<Payment />} />
             {/* Fleet Owner */}
-            <Route path="fleet-owner" element={<FleetOwner />} />
+            <Route path="workshop" element={<Workshop />} />
           </Route>
 
           <Route

@@ -10,6 +10,7 @@ import {
   FaUserTie,
   FaCalculator,
   FaCashRegister,
+  FaCalendarCheck,
 } from "react-icons/fa";
 import { Button } from "../ui/button";
 import { FaCheckCircle } from "react-icons/fa";
@@ -122,12 +123,12 @@ const DashboardSidebar = ({ toggleSidebar }) => {
           <span>Accounting</span>
         </NavLink>
         <NavLink
-          to="/dashboard/fleet-owner"
+          to="/dashboard/workshop"
           className={navLinkClass}
           onClick={toggleSidebar}
         >
-          <FaUserTie />
-          <span>Fleet Owner</span>
+          <FaCalendarCheck />
+          <span>Workshop</span>
         </NavLink>
       </nav>
 
