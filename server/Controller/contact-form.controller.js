@@ -31,9 +31,6 @@ export const createContactForm = async (req, res, next) => {
 export const getAllContacts = async (req, res, next) => {
     try {
         const contacts = await ContactForm.find();
-        if(contacts.length === 0) {
-            return next(new ErrorHandler("No contacts found", 404));
-        }
         return res.status(200).json({ contacts });
     } catch (error) {
         next(error);

@@ -17,6 +17,7 @@ import { FaCheckCircle } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "@/store/Slices/auth.slice";
 import { toast } from "sonner";
+import { FaAddressCard } from "react-icons/fa6";
 
 const DashboardSidebar = ({ toggleSidebar }) => {
   const navigate = useNavigate();
@@ -130,10 +131,18 @@ const DashboardSidebar = ({ toggleSidebar }) => {
           <FaCalendarCheck />
           <span>Workshop</span>
         </NavLink>
+        <NavLink
+          to="/dashboard/contact"
+          className={navLinkClass}
+          onClick={toggleSidebar}
+        >
+          <FaAddressCard />
+          <span>Contact Details</span>
+        </NavLink>
       </nav>
 
       {/* Logout & User Info */}
-      <div className="mt-auto pt-8 sticky bottom-0 bg-white">
+      <div className="mt-auto pt-0 sticky bottom-0 bg-white">
         {/* Admin Info */}
         <div className="flex flex-col items-center mb-4">
           <span className="text-sm font-semibold text-purple-700 truncate max-w-[140px]">

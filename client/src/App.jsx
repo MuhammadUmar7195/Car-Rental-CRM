@@ -27,6 +27,7 @@ import { useSelector } from "react-redux";
 import POSGate from "./Pages/POS/POSGate";
 import WalkInServiceHistory from "./Pages/POS/WalkInServiceHistory";
 import Workshop from "./Pages/Workshop/Workshop";
+import Contact from "./Pages/Contacts/Contact";
 
 function App() {
   const { user } = useSelector((state) => state.auth) || {};
@@ -119,6 +120,8 @@ function App() {
             <Route path="payments/:id" element={<Payment />} />
             {/* Fleet Owner */}
             <Route path="workshop" element={<Workshop />} />
+            {/* Contact Form */}
+            <Route path="contact" element={<Contact />} />
           </Route>
 
           <Route
