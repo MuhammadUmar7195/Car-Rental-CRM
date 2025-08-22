@@ -46,6 +46,7 @@ import ServiceRoutes from "./Routes/service.route.js";
 import WalkInServiceRoutes from "./Routes/walkInService.route.js";
 import UploadCar from "./Routes/uploadCar.route.js";
 import WorkshopRoutes from "./Routes/workshop-appointment.route.js";
+import ContactRoutes from "./Routes/contact-form.route.js";
 
 app.use("/api/v1/admin", AdminRoutes);
 app.use("/api/v1/user", UserRoutes);
@@ -58,6 +59,7 @@ app.use("/api/v1/accounting", AccountingRoutes);
 app.use("/api/v1/inventory", InventoryRoutes);
 app.use("/api/v1/upload", UploadCar);
 app.use("/api/v1/workshop", WorkshopRoutes);
+app.use("/api/v1/contact", ContactRoutes);
 
 //error handling middleware
 import errorMiddleware from "./Middleware/error.js";

@@ -1,42 +1,39 @@
 import mongoose from "mongoose";
 
-const workAppoint = new mongoose.Schema({
-    fullName: {
+const contactFormSchema = new mongoose.Schema({
+    firstName: {
         type: String,
         required: true
     },
-    phoneNumber: {
+    lastName: {
         type: String,
         required: true
     },
     email: {
         type: String,
         required: true,
-        trim: true,
         match: [
             /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
             "Please enter a valid email"
         ]
     },
-    vehicle: {
-        type: String, 
-        required: true
-    }, 
-    service: {
+    phoneNumber: {
         type: String,
-    },
-    preferedDate: {
-        type: Date,
         required: true
     },
-    additionalNotes: {
+    serviceInterest: {
         type: String,
-        default: "Customer wants workshop service"
-    }
+        required: true
+    },
+    message: {
+        type: String,
+        trim: true,
+        required: true
+    },
 }, {
     timestamps: true
 });
 
-const workshopAppointment = mongoose.model('WorkshopAppointment', workAppoint);
+const ContactForm = mongoose.model("ContactForm", contactFormSchema);
 
-export default workshopAppointment;
+export default ContactForm;
