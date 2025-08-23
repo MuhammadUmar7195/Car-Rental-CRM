@@ -4,19 +4,69 @@ import cookieParser from "cookie-parser";
 import express from "express";
 import env from "dotenv";
 import cors from "cors";
+import mongoSanitize from "express-mongo-sanitize";
+import helmet from "helmet";
+
 const app = express();
 env.config();
 
 //Third-party middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(helmet({
+    contentSecurityPolicy: {
+        useDefaults: true,
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'"],
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            imgSrc: ["'self'", "data:", "https://res.cloudinary.com"],
+            connectSrc: ["'self'", process.env.FRONTEND_URL, process.env.CUSTOMER_PORTAL_URL].filter(Boolean),
+            frameAncestors: ["'none'"],
+            upgradeInsecureRequests: []
+        }
+    },
+    crossOriginEmbedderPolicy: true,
+    crossOriginOpenerPolicy: { policy: "same-origin" },
+    crossOriginResourcePolicy: { policy: "same-origin" },
+    referrerPolicy: { policy: "no-referrer" },
+    noSniff: true,
+    frameguard: { action: "deny" },
+}));
+
+app.use(express.json({ limit: "10kb" }));
+app.use(express.urlencoded({ extended: true, limit: "10kb" }));
 app.use(cookieParser());
 app.use(cors({
     origin: [process.env.FRONTEND_URL, process.env.CUSTOMER_PORTAL_URL],
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
-app.use(rateLimit({ windowMs: 1 * 60 * 1000, max: 100 }));
+// To prevent NoSQL injection attacks
+app.use(mongoSanitize({
+    allowDots: true,
+    replaceWith: '_',
+}));
+
+
+// Rate limiting: 80 requests per minute per IP
+app.use(rateLimit({
+    windowMs: 1 * 60 * 1000,
+    max: 80,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: "Too many requests from this IP, please try again later."
+}));
+
+// Prevent HTTP Parameter Pollution
+app.use((req, res, next) => {
+    const keys = Object.keys(req.query);
+    const hasDuplicates = keys.some(key => Array.isArray(req.query[key]));
+    if (hasDuplicates) {
+        return res.status(400).json({ message: "Bad Request: Duplicate query parameters detected." });
+    }
+    next();
+});
 
 const port = process.env.PORT || 9000;
 const database = process.env.MONGO_URI;
