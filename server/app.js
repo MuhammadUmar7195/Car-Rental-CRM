@@ -43,10 +43,12 @@ app.use(cors({
 }));
 
 // To prevent NoSQL injection attacks
-app.use(mongoSanitize({
-    allowDots: true,
-    replaceWith: '_',
-}));
+app.use((req, res, next) => {
+    if (req.body) {
+        mongoSanitize.sanitize(req.body);
+    }
+    next();
+});
 
 
 // Rate limiting: 80 requests per minute per IP
@@ -57,16 +59,6 @@ app.use(rateLimit({
     legacyHeaders: false,
     message: "Too many requests from this IP, please try again later."
 }));
-
-// Prevent HTTP Parameter Pollution
-app.use((req, res, next) => {
-    const keys = Object.keys(req.query);
-    const hasDuplicates = keys.some(key => Array.isArray(req.query[key]));
-    if (hasDuplicates) {
-        return res.status(400).json({ message: "Bad Request: Duplicate query parameters detected." });
-    }
-    next();
-});
 
 const port = process.env.PORT || 9000;
 const database = process.env.MONGO_URI;
