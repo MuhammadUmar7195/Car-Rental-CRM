@@ -36,3 +36,22 @@ export const getAllContacts = async (req, res, next) => {
         next(error);
     }
 };
+
+export const deleteContact = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        const deletedContact = await ContactForm.findByIdAndDelete(id);
+
+        if (!deletedContact) {
+            return next(new ErrorHandler("Contact not found", 404));
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Contact deleted successfully",
+        });
+    } catch (error) {
+        next(error);
+    }
+};

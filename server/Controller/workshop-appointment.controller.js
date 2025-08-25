@@ -43,3 +43,22 @@ export const getAllWorkshopAppointments = async (req, res, next) => {
         next(error);
     }
 };
+
+export const deleteWorkshopAppointment = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        
+        const deletedAppointment = await workshopAppointment.findByIdAndDelete(id);
+
+        if (!deletedAppointment) {
+            return next(new ErrorHandler("Appointment not found", 404));
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Workshop appointment deleted successfully",
+        });
+    } catch (error) {
+        next(error);
+    }
+};
