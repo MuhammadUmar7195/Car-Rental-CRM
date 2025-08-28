@@ -61,3 +61,48 @@ export const getAllWalkInServices = async (req, res, next) => {
     next(error);
   }
 };
+
+//update walk-in service status
+export const updateWalkInServiceStatus = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!status) {
+      return next(new ErrorHandler("Status is required", 400));
+    }
+
+    const walkInServiceOrder = await WalkInServiceOrder.findByIdAndUpdate(id, { status }, { new: true });
+
+    if (!walkInServiceOrder) {
+      return next(new ErrorHandler("Walk-in service order not found", 404));
+    }
+
+    res.status(200).json({
+      message: "Walk-in service order status updated successfully",
+      walkInServiceOrder
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// Walk-in delete by their ID service
+export const deleteByIdService = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const deletedService = await WalkInServiceOrder.findByIdAndDelete(id);
+
+    if (!deletedService) {
+      return next(new ErrorHandler("Service order not found", 404));
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Walk-in service order deleted successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};

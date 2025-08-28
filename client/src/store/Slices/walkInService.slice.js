@@ -43,6 +43,40 @@ export const getAllWalkInServices = createAsyncThunk(
   }
 );
 
+//Async thunk to delete service by Id
+export const deleteWalkInServiceById = createAsyncThunk(
+  "walkInService/deleteWalkInServiceById",
+  async (id, { rejectWithValue }) => {
+    try {
+      await axios.delete(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/walkInService/delete/${id}`,
+        { withCredentials: true }
+      );
+      return id;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Something went wrong");
+    }
+  }
+);
+
+//Async thunk to update walk-in service status
+export const updateWalkInServiceStatus = createAsyncThunk(
+  "walkInService/updateWalkInServiceStatus",
+  async ({ id, status }, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/walkInService/update/${id}`,
+        { status },
+        { withCredentials: true }
+      );
+      console.log("Update response:", response.data); 
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Something went wrong");
+    }
+  }
+);
+
 const walkInServiceSlice = createSlice({
   name: "walkInService",
   initialState,
@@ -80,7 +114,38 @@ const walkInServiceSlice = createSlice({
       .addCase(getAllWalkInServices.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });    
+      })
+      // update walk-in service by ID and status
+      .addCase(updateWalkInServiceStatus.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateWalkInServiceStatus.fulfilled, (state, action) => {
+        state.loading = false;
+        if (action.payload && action.payload._id) {
+          const index = state.services.findIndex((service) => service._id === action.payload._id);
+          if (index !== -1) {
+            state.services[index] = action.payload;
+          }
+        }
+      })
+      .addCase(updateWalkInServiceStatus.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // delete walk-in service by ID
+      .addCase(deleteWalkInServiceById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteWalkInServiceById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.services = state.services.filter(service => service._id !== action.payload);
+      })
+      .addCase(deleteWalkInServiceById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   }
 });
 

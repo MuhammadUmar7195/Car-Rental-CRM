@@ -36,11 +36,12 @@ const DashboardLayout = () => {
       {/* Sidebar */}
       <div
         className={`
-          bg-white min-h-screen w-64 text-gray-800
+          bg-white h-screen w-64 text-gray-800
           fixed top-0 left-0 z-40 transition-transform duration-300
           ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
-          md:sticky md:top-0 md:left-0 md:z-30 md:translate-x-0
+          md:translate-x-0 md:fixed md:top-0 md:left-0 md:z-30
           shadow-md flex flex-col
+          overflow-y-auto
         `}
         style={{ maxWidth: "80vw" }}
       >
@@ -50,11 +51,14 @@ const DashboardLayout = () => {
             <FaTimes size={20} className="text-gray-700" />
           </button>
         </div>
-        <DashboardSidebar toggleSidebar={toggleSidebar} />
+        {/* Make sidebar content sticky */}
+        <div className="sticky top-0">
+          <DashboardSidebar toggleSidebar={toggleSidebar} />
+        </div>
       </div>
-
+      
       {/* Main Content */}
-      <main className="flex-grow p-4 md:p-8 overflow-auto bg-gray-100 min-h-screen">
+      <main className="flex-grow p-4 md:p-8 overflow-auto bg-gray-100 min-h-screen md:ml-64">
         <div className="max-w-[98vw] md:max-w-[90vw] lg:max-w-[1400px] mx-auto">
           <Outlet />
         </div>

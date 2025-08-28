@@ -90,7 +90,7 @@ const POSHistory = () => {
       <Card className="p-8 rounded-2xl shadow-lg bg-white">
         <div className="flex items-center mb-6">
           <Button
-            onClick={() => navigate("/dashboard/pos")}
+            onClick={() => navigate("/dashboard/pos/car-service")}
             className="mr-4 px-3 py-2 font-semibold bg-purple-700 text-white hover:bg-purple-800 cursor-pointer rounded-full"
           >
             <IoChevronBackSharp size={20} />

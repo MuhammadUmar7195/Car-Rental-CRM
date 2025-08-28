@@ -9,6 +9,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { updateWalkInServiceStatus } from "@/store/Slices/walkInService.slice.js";
 import { useEffect } from "react";
 import { IoChevronBackSharp } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,7 +24,10 @@ import { toast } from "sonner";
 import {
   getAllWalkInServices,
   clearServiceError,
+  deleteWalkInServiceById,
 } from "@/store/Slices/walkInService.slice";
+import DeleteDialog from "@/components/Common/DeleteDialog";
+import { MdDeleteOutline } from "react-icons/md";
 
 const WalkInServiceHistory = () => {
   const navigate = useNavigate();
@@ -26,7 +35,7 @@ const WalkInServiceHistory = () => {
 
   const { services, loading, error } = useSelector(
     (state) => state?.walkInService || {}
-  );  
+  );
 
   useEffect(() => {
     dispatch(getAllWalkInServices());
@@ -39,18 +48,47 @@ const WalkInServiceHistory = () => {
     }
   }, [error, dispatch]);
 
+  const handleDelete = async (id) => {
+    if (!id) {
+      toast.error("Invalid service ID");
+      return;
+    }
+
+    try {
+      dispatch(deleteWalkInServiceById(id)).then(() => {
+        dispatch(getAllWalkInServices());
+        toast.success("Service order deleted successfully!");
+      });
+    } catch (error) {
+      toast.error(error?.message || "Failed to delete service order");
+    }
+  };
+
+  const handleStatusUpdate = async (serviceId, status) => {
+    if (!serviceId) {
+      toast.error("Invalid service ID");
+      return;
+    }
+    try {
+      await dispatch(updateWalkInServiceStatus({ id: serviceId, status })).unwrap();
+      toast.success(`Status updated to ${status}!`);
+      dispatch(getAllWalkInServices());
+    } catch (error) {
+      toast.error(error?.message || "Failed to update status");
+    }
+  };
+
   // Ensure services is an array and filter out any invalid entries
   const validServices = Array.isArray(services)
     ? services.filter((service) => service && service._id)
     : [];
-    
 
   return (
     <div className="py-10 lg:px-30 md:px-10 min-h-screen relative">
       <Card className="p-8 rounded-2xl shadow-lg bg-white">
         <div className="flex items-center mb-6">
           <Button
-            onClick={() => navigate("/dashboard/pos")}
+            onClick={() => navigate("/dashboard/pos/walk-in")}
             className="mr-4 px-3 py-2 font-semibold bg-purple-700 text-white hover:bg-purple-800 cursor-pointer rounded-full"
           >
             <IoChevronBackSharp size={20} />
@@ -106,6 +144,7 @@ const WalkInServiceHistory = () => {
                   <TableHead className="text-center">Items Used</TableHead>
                   <TableHead className="text-center">Total Cost</TableHead>
                   <TableHead className="text-center">Status</TableHead>
+                  <TableHead className="text-center">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -156,7 +195,8 @@ const WalkInServiceHistory = () => {
                                     key={item?.inventoryItem || index}
                                     className="text-xs bg-gray-100 p-1 rounded"
                                   >
-                                    {item?.inventoryItem?.carName || "Unknown Item"}
+                                    {item?.inventoryItem?.carName ||
+                                      "Unknown Item"}
                                     <span className="font-semibold text-purple-600">
                                       {" "}
                                       (×{item?.quantityUsed || 0})
@@ -180,17 +220,52 @@ const WalkInServiceHistory = () => {
                         </span>
                       </TableCell>
                       <TableCell className="px-4 py-3">
-                        <Badge
-                          className={`px-2 py-1 text-xs font-medium rounded-full uppercase ${
-                            service?.status === "Pending"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : service?.status === "Completed"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-gray-100 text-gray-800"
-                          }`}
-                        >
-                          {service?.status || "Unknown"}
-                        </Badge>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Badge
+                              className={`px-2 py-1 text-xs font-medium rounded-full cursor-pointer uppercase ${
+                                service?.status === "Pending"
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : service?.status === "Completed"
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-gray-100 text-gray-800"
+                              }`}
+                            >
+                              {service?.status || "Unknown"}
+                            </Badge>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-40 p-2">
+                            <div className="flex flex-col gap-2">
+                              {["Pending", "Completed"].map((status) => (
+                                <Button
+                                  key={status}
+                                  size="sm"
+                                  variant={
+                                    service?.status === status ? "secondary" : "outline"
+                                  }
+                                  disabled={service?.status === status}
+                                  onClick={() => handleStatusUpdate(service._id, status)}
+                                  className="w-full cursor-pointer"
+                                >
+                                  {status}
+                                </Button>
+                              ))}
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      </TableCell>
+                      <TableCell className="px-4 py-3">
+                        <DeleteDialog
+                          triggerButton={
+                            <Button
+                              variant="destructive"
+                              className="text-white hover:opacity-80 px-3 py-1 rounded transition font-semibold text-xs cursor-pointer"
+                            >
+                              <MdDeleteOutline size={19} />
+                            </Button>
+                          }
+                          onConfirm={() => handleDelete(service._id)}
+                        />
                       </TableCell>
                     </TableRow>
                   ))
