@@ -43,11 +43,11 @@ export const deleteAccountingEntry = createAsyncThunk(
 //Async thunk to assign the detail with customerId
 export const assignCustomerToAccounting = createAsyncThunk(
     "accounting/assignCustomerToAccounting",
-    async ({ customerId, accountingId }, { rejectWithValue }) => {
+    async ({ customerId, accountingId, rentalOrderId }, { rejectWithValue }) => {
         try {
             const response = await axios.put(
                 `${import.meta.env.VITE_BACKEND_URL}/api/v1/accounting/assign-customer`,
-                { customerId, accountingId },
+                { customerId, accountingId, rentalOrderId },
                 { withCredentials: true }
             );
             return response.data;
@@ -121,12 +121,15 @@ const accountingSlice = createSlice({
             })
             .addCase(assignCustomerToAccounting.fulfilled, (state, action) => {
                 state.loading = false;
-                const updatedEntry = action.payload.data; 
+                const updatedEntry = action.payload.data;
                 const entryIndex = state.accountingData.findIndex(
                     (entry) => entry._id === updatedEntry._id
                 );
                 if (entryIndex !== -1) {
                     state.accountingData[entryIndex] = updatedEntry;
+                } else {
+                    // If not found, add it (optional, for robustness)
+                    state.accountingData.push(updatedEntry);
                 }
             })
             .addCase(assignCustomerToAccounting.rejected, (state, action) => {

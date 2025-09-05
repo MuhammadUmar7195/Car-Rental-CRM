@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 
 const AccountingSchema = new mongoose.Schema({
   customerId: mongoose.Schema.Types.ObjectId,
+  rentalOrderId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "RentalOrder", 
+  },
   date: String, 
   description: String, 
   amount: Number, 

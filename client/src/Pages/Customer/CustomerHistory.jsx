@@ -6,7 +6,7 @@ import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { PuffLoader } from 'react-spinners';
 
-const CustomerHistory = ({ customerId }) => {
+const CustomerHistory = ({ customerId, setHasRentalOrder }) => {
   const dispatch = useDispatch();
   const { rentals, loading, error } = useSelector((state) => state.rental);
 
@@ -15,6 +15,12 @@ const CustomerHistory = ({ customerId }) => {
       dispatch(getRentalsByCustomerId(customerId));
     }
   }, [dispatch, customerId]);
+
+  useEffect(() => {
+    if (setHasRentalOrder) {
+      setHasRentalOrder(rentals && rentals.length > 0);
+    }
+  }, [rentals, setHasRentalOrder]);
 
   if (loading) {
     return (

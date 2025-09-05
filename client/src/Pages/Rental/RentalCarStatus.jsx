@@ -79,7 +79,7 @@ const RentalCarStatus = ({ onCarSelect }) => {
               onClick={handleRetry}
               variant="outline"
               size="sm"
-              className="mt-2 text-purple-600 border-purple-300 hover:bg-purple-50"
+              className="mt-2 text-purple-600 border-purple-300 hover:bg-purple-50 cursor-pointer"
             >
               <RefreshCw size={14} className="mr-2" />
               Try Again

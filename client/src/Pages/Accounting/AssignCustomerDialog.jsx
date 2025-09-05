@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import axios from "axios";
 import { assignCustomerToAccounting } from "@/store/Slices/accouting.slice";
+import { getRentalsByCustomerId } from "@/store/Slices/rental.slice";
 
 const AssignCustomerDialog = ({ accountingId, onClose }) => {
   const [open, setOpen] = useState(false);
@@ -33,11 +34,15 @@ const AssignCustomerDialog = ({ accountingId, onClose }) => {
   const [confirmCustomerId, setConfirmCustomerId] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [checkingAssignment, setCheckingAssignment] = useState(false);
+  const [selectedRentalOrderId, setSelectedRentalOrderId] = useState(null);
 
   const dispatch = useDispatch();
   const { customers, loading } = useSelector((state) => state?.customer || {});
   const { loading: assignLoading, error: assignError } = useSelector(
     (state) => state?.accounting || {}
+  );
+  const { rentals, loading: rentalsLoading } = useSelector(
+    (state) => state.rental || {}
   );
 
   // Check if accounting entry is already assigned
@@ -71,13 +76,24 @@ const AssignCustomerDialog = ({ accountingId, onClose }) => {
     }
   }, [open, dispatch, customers]);
 
+  useEffect(() => {
+    if (confirmCustomerId) {
+      dispatch(getRentalsByCustomerId(confirmCustomerId));
+    }
+  }, [dispatch, confirmCustomerId]);
+
   const handleAssign = useCallback(
-    (customerId) => {
-      // Updated dispatch to use the correct thunk from accounting slice
-      dispatch(assignCustomerToAccounting({ customerId, accountingId }))
+    (customerId, rentalOrderId) => {
+      if (!rentalOrderId) {
+        toast.error("Please select a rental order.");
+        return;
+      }
+      dispatch(
+        assignCustomerToAccounting({ customerId, accountingId, rentalOrderId })
+      )
         .unwrap()
         .then(() => {
-          toast.success("Customer assigned successfully!");
+          toast.success("Customer and rental order assigned successfully!");
           setAssigned(true);
           setOpen(false);
           onClose?.();
@@ -90,12 +106,15 @@ const AssignCustomerDialog = ({ accountingId, onClose }) => {
   );
 
   const handleConfirmAssign = useCallback(() => {
-    if (confirmCustomerId) {
-      handleAssign(confirmCustomerId);
+    if (confirmCustomerId && selectedRentalOrderId) {
+      handleAssign(confirmCustomerId, selectedRentalOrderId);
       setShowConfirm(false);
       setConfirmCustomerId(null);
+      setSelectedRentalOrderId(null);
+    } else {
+      toast.error("Please select a rental order.");
     }
-  }, [confirmCustomerId, handleAssign]);
+  }, [confirmCustomerId, selectedRentalOrderId, handleAssign]);
 
   const filteredCustomers = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -209,13 +228,52 @@ const AssignCustomerDialog = ({ accountingId, onClose }) => {
               Do you want to assign this customer to the accounting entry?
             </AlertDialogDescription>
           </AlertDialogHeader>
+
+          {/* Rental Order Selection inside the dialog */}
+          <div className="my-3">
+            <label className="block mb-1 text-sm font-medium">
+              Select Rental Order
+            </label>
+            {rentals?.length === 0 && (
+              <div className="text-gray-500 text-center py-2">
+                No rental orders found.
+              </div>
+            )}
+            {rentals?.map((order) => (
+              <div
+                key={order._id}
+                className={`border rounded px-3 py-2 mb-2 cursor-pointer transition ${
+                  selectedRentalOrderId === order._id
+                    ? "border-purple-600 bg-purple-50"
+                    : "border-gray-200 bg-white"
+                }`}
+                onClick={() => setSelectedRentalOrderId(order._id)}
+              >
+                <span className="font-medium text-purple-700">
+                  {order.customer?.name || "N/A"}
+                </span>
+                <span className="text-xs text-gray-500 ml-2">
+                  - {order.purpose} (
+                  {new Date(order.bookingDate).toLocaleDateString()})
+                </span>
+                {selectedRentalOrderId === order._id && (
+                  <span className="ml-2 text-green-600 font-bold">✓</span>
+                )}
+              </div>
+            ))}
+          </div>
+
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowConfirm(false)}>
+            <AlertDialogCancel
+              className="cursor-pointer"
+              onClick={() => setShowConfirm(false)}
+            >
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
               className="bg-red-600 hover:bg-red-700 text-white cursor-pointer"
               onClick={handleConfirmAssign}
+              disabled={!selectedRentalOrderId}
             >
               Yes, Assign
             </AlertDialogAction>

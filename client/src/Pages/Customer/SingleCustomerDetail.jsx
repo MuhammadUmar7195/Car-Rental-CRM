@@ -16,6 +16,7 @@ import { IoChevronBackSharp } from "react-icons/io5";
 import { IoCopyOutline } from "react-icons/io5";
 import { IoIosCheckmark } from "react-icons/io";
 import CustomerHistory from "./CustomerHistory";
+import PaymentHistory from "./PaymentHistory";
 
 const SingleCustomerDetail = () => {
   const { id } = useParams();
@@ -25,6 +26,8 @@ const SingleCustomerDetail = () => {
     useSelector((state) => state.customer) || {};
 
   const [copied, setCopied] = useState(false);
+  //this state is to check if customer has rental order or not
+  const [hasRentalOrder, setHasRentalOrder] = useState(false);
 
   useEffect(() => {
     if (!singleCustomer || singleCustomer._id !== id) {
@@ -151,19 +154,21 @@ const SingleCustomerDetail = () => {
               Edit Customer
             </Button>
             <Button
-              variant="outline"            
+              variant="outline"
               className="px-6 py-2 font-semibold border-black text-black hover:bg-gray-50 hover:border-black cursor-pointer"
-              onClick={() =>
-                navigate(`/dashboard/payments/${customer._id}`)
-              }
+              onClick={() => navigate(`/dashboard/payments/${customer._id}`)}
+              disabled={!hasRentalOrder}
             >
-              Payments 
+              {hasRentalOrder ? "View Payments" : "No Payments"}
             </Button>
           </div>
         </CardContent>
       </Card>
       <div className="w-full max-w-5xl">
-        <CustomerHistory customerId={id} />
+        <CustomerHistory customerId={id} setHasRentalOrder={setHasRentalOrder}/>
+      </div>
+      <div className="w-full max-w-5xl">
+        <PaymentHistory customerId={id} />
       </div>
     </div>
   );

@@ -1,4 +1,6 @@
 import Accounting from "../Model/accounting.model.js";
+import Rental from "../Model/rental.model.js";
+import ErrorHandler from "../Utils/ErrorHandler.js";
 
 //post data to accounting
 export const uploadAccountingFile = async (req, res, next) => {
@@ -60,32 +62,37 @@ export const deleteSingleAccountingData = async (req, res, next) => {
 // Assign a customer to an accounting entry
 export const assignCustomerToAccounting = async (req, res, next) => {
   try {
-    const { customerId, accountingId } = req.body;
+    const { customerId, accountingId, rentalOrderId } = req.body;
 
-    if (!customerId || !accountingId) {
-      return next(new ErrorHandler("customerId and accountingId are required.", 400));
+    if (!customerId || !accountingId || !rentalOrderId) {
+      return next(new ErrorHandler("customerId, accountingId, and rentalOrderId are required.", 400));
     }
 
-    // Check if the accounting entry exists
     const accountingEntry = await Accounting.findById(accountingId);
     if (!accountingEntry) {
       return next(new ErrorHandler("Accounting entry not found.", 404));
     }
 
-    // Check if the customer is already assigned to this accounting entry
-    if (accountingEntry.customerId) {
-      return next(new ErrorHandler("This accounting entry is already assigned to a customer.", 409));
+    const rentalOrder = await Rental.findById(rentalOrderId);
+    if (!rentalOrder) {
+      return next(new ErrorHandler("Rental order not found.", 404));
     }
 
-    // Assign the customer to the accounting entry
+    // Only block if trying to assign to a different customer
+    if (accountingEntry.customerId && accountingEntry.customerId.toString() !== customerId) {
+      return next(new ErrorHandler("This accounting entry is already assigned to a different customer.", 409));
+    }
+
+    // Assign or update
     const updatedEntry = await Accounting.findByIdAndUpdate(
       accountingId,
-      { 
+      {
         customerId: customerId,
+        rentalOrderId: rentalOrderId,
         assignedAt: new Date()
       },
       { new: true, runValidators: true }
-    );
+    ).populate('rentalOrderId');
 
     return res.status(200).json({
       message: "Customer assigned successfully!",
@@ -125,19 +132,19 @@ export const checkIfAssigned = async (req, res, next) => {
 // Get accounting details with single customerId 
 export const getAccountingDetailWithCustomerId = async (req, res, next) => {
   try {
-        const { customerId } = req.params;
+    const { customerId } = req.params;
 
-        if (!customerId) {
-            return next(new ErrorHandler("customerId is required.", 400));
-        }
-
-        const assignments = await Accounting.find({ customerId });
-
-        return res.status(200).json({
-            message: "Assigned payments retrieved successfully!",
-            payments: assignments,
-        });
-    } catch (error) {
-        next(error);
+    if (!customerId) {
+      return next(new ErrorHandler("customerId is required.", 400));
     }
+
+    const assignments = await Accounting.find({ customerId });
+
+    return res.status(200).json({
+      message: "Assigned payments retrieved successfully!",
+      payments: assignments,
+    });
+  } catch (error) {
+    next(error);
+  }
 }
