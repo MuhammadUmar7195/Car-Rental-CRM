@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+/* eslint-disable no-constant-binary-expression */
+import { useEffect, useState } from "react";
 import { IoChevronBackSharp } from "react-icons/io5";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -34,8 +35,9 @@ const SingleFleetDetail = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { singleFleet, loading, error } =
-    useSelector((state) => state.fleet) || {};
+  const singleFleet = useSelector((state) => state.fleet.singleFleet);
+
+  const { loading, error } = singleFleet || {};
 
   const [showReturnDialog, setShowReturnDialog] = useState(false);
   const [inspectionName, setInspectionName] = useState("");
@@ -45,10 +47,8 @@ const SingleFleetDetail = () => {
   const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
-    if (!singleFleet || singleFleet._id !== id) {
-      dispatch(getSingleFleet(id));
-    }
-  }, [dispatch, id, singleFleet]);
+    dispatch(getSingleFleet(id));
+  }, [dispatch, id]);
 
   if (loading) {
     return (
@@ -294,6 +294,7 @@ const SingleFleetDetail = () => {
               variant="outline"
               onClick={() => setShowReturnDialog(true)}
               className="px-6 py-2 font-semibold border-black text-black hover:bg-gray-50 hover:border-black cursor-pointer"
+              disabled={car.status?.toLowerCase() === "available"}
             >
               Return Rental
             </Button>

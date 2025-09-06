@@ -23,9 +23,7 @@ const PaymentHistory = ({ customerId }) => {
   const dispatch = useDispatch();
   const { assignCustomerPayment, loading, error } = useSelector(
     (state) => state.accounting
-  );
-  console.log(assignCustomerPayment);
-  
+  );  
 
   useEffect(() => {
     if (customerId) {
