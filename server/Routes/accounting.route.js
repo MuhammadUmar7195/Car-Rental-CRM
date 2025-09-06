@@ -6,6 +6,7 @@ import {
     assignCustomerToAccounting,
     checkIfAssigned,
     getAccountingDetailWithCustomerId,
+    getAccountingAndRentalsByCustomerId,
 } from '../Controller/accounting.controller.js';
 import { authMiddleware } from '../Middleware/authMiddleware.js';
 const router = express.Router();
@@ -19,6 +20,6 @@ router.delete('/:id', authMiddleware, deleteSingleAccountingData);
 router.put('/assign-customer', assignCustomerToAccounting);
 router.get('/check-assigned/:accountingId', checkIfAssigned);
 router.get('/customer/:customerId', getAccountingDetailWithCustomerId);
-
+router.get('/customer/payment-detail/:customerId', getAccountingAndRentalsByCustomerId);
 
 export default router;

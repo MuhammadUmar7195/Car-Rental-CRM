@@ -4,6 +4,7 @@ import axios from "axios";
 const initialState = {
     accountingData: [],
     assignCustomerAccounting: [],
+    assignCustomerPayment: [],
     loading: false,
     error: null,
 };
@@ -66,8 +67,23 @@ export const getAccountingByCustomerId = createAsyncThunk(
                 `${import.meta.env.VITE_BACKEND_URL}/api/v1/accounting/customer/${customerId}`,
                 { withCredentials: true }
             );    
-            console.log(response?.data?.payments);   
             return response?.data?.payments || []; 
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || "Something went wrong");
+        }
+    }
+);
+
+//Async thunk to get accounting and rentals by customerId
+export const getAccountingAndRentalsByCustomerId = createAsyncThunk(
+    "accounting/getAccountingAndRentalsByCustomerId",
+    async (customerId, { rejectWithValue }) => {
+        try {
+            const response = await axios.get(
+                `${import.meta.env.VITE_BACKEND_URL}/api/v1/accounting/customer/payment-detail/${customerId}`,
+                { withCredentials: true }
+            );    
+            return response?.data || {}; 
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || "Something went wrong");
         }
@@ -146,6 +162,19 @@ const accountingSlice = createSlice({
                 state.assignCustomerAccounting = action.payload;
             })
             .addCase(getAccountingByCustomerId.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            // Get Accounting and Rental Detail by Customer ID
+            .addCase(getAccountingAndRentalsByCustomerId.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getAccountingAndRentalsByCustomerId.fulfilled, (state, action) => {
+                state.loading = false;
+                state.assignCustomerPayment = action.payload;
+            })
+            .addCase(getAccountingAndRentalsByCustomerId.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });

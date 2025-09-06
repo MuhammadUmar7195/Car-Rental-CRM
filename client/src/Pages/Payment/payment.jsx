@@ -115,11 +115,10 @@ const PaymentDetails = () => {
         <Card className="mb-4 sm:mb-6 bg-purple-50 shadow-md">
           <CardHeader className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
             <CardTitle className="text-purple-700 text-lg sm:text-xl font-semibold uppercase text-center sm:text-left">
-              📄{" "}
               <span className="hidden sm:inline">Rental Payment Summary</span>
               <span className="sm:hidden">Payment Summary</span>
             </CardTitle>
-            {rental?.status === "reserved" ? (
+            {rental?.status === "active" || rental?.status === "reserved" ? (
               <Badge className="bg-green-600 text-white animate-pulse w-fit mx-auto sm:mx-0">
                 Active
               </Badge>
@@ -152,7 +151,16 @@ const PaymentDetails = () => {
             />
             <Info
               label="Remaining Amount"
-              value={`$ ${rental?.remainingAmount?.toLocaleString()}`}
+              value={
+                rental?.remainingAmount < 0 ? (
+                  <span className="text-red-600 font-semibold">
+                    $ {Math.abs(rental?.remainingAmount).toLocaleString()}{" "}
+                    (Overpaid)
+                  </span>
+                ) : (
+                  `$ ${rental?.remainingAmount?.toLocaleString()}`
+                )
+              }
             />
             <Info
               label="Return Date"

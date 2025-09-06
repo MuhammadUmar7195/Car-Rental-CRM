@@ -41,7 +41,7 @@ const RentalHistory = () => {
   const { rentals, loading, error } = useSelector(
     (state) => state?.rental || {}
   );
-  
+
   useEffect(() => {
     dispatch(getAllRental());
   }, [dispatch]);
@@ -244,7 +244,15 @@ const RentalHistory = () => {
                         $ {rental?.bond || "N/A"}
                       </TableCell>
                       <TableCell className="px-4 py-3">
-                        $ {rental?.remainingAmount || "N/A"}
+                        {rental?.remainingAmount < 0 ? (
+                          <span className="text-red-600 font-semibold">
+                            ${" "}
+                            {Math.abs(rental?.remainingAmount).toLocaleString()}{" "}
+                            (Overpaid)
+                          </span>
+                        ) : (
+                          `$ ${rental?.remainingAmount?.toLocaleString()}`
+                        )}
                       </TableCell>
                       <TableCell className="px-4 py-3">
                         <Popover>

@@ -180,7 +180,7 @@ export const getCarsByStatus = async (req, res, next) => {
 
         const fleets = await Fleet.find({ status });
         if (!fleets || fleets.length === 0) {
-            return next(new ErrorHandler("No fleets found for the given status", 404));
+            return next(new ErrorHandler("No fleets found for the given available status", 404));
         }
 
         res.status(200).json({ fleets });

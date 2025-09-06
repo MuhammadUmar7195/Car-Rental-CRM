@@ -15,7 +15,7 @@ export const uploadAccountingFile = async (req, res, next) => {
     const cleanedTransactions = transactions.map((t) => ({
       date: t.date || t.Date,
       description: t.description || t.Description,
-      amount: parseFloat(t.amount || t.Amount) || 0,
+      amount: Math.abs(parseFloat(t.amount || t.Amount) || 0),
     }));
 
     // Save to MongoDB
@@ -78,12 +78,32 @@ export const assignCustomerToAccounting = async (req, res, next) => {
       return next(new ErrorHandler("Rental order not found.", 404));
     }
 
-    // Only block if trying to assign to a different customer
-    if (accountingEntry.customerId && accountingEntry.customerId.toString() !== customerId) {
-      return next(new ErrorHandler("This accounting entry is already assigned to a different customer.", 409));
-    }
+    const paidGrandTotal = (rentalOrder.amountPaid || 0) + (accountingEntry.amount || 0);
+    const remainingAmount = (rentalOrder.totalBill || 0) - paidGrandTotal;
 
-    // Assign or update
+    // Save to rentalOrder and/or accounting entry
+    rentalOrder.amountPaid = paidGrandTotal;
+    rentalOrder.remainingAmount = remainingAmount;
+    await rentalOrder.save();
+
+    accountingEntry.remainingAmount = remainingAmount;
+
+    // Prepare snapshot for rental order persistence in backend
+    const rentalOrderSnapshot = {
+      _id: rentalOrder._id,
+      purpose: rentalOrder.purpose,
+      bookingDate: rentalOrder.bookingDate,
+      returnDate: rentalOrder.returnDate,
+      status: rentalOrder.status,
+      totalBill: rentalOrder.totalBill,
+      amountPaid: rentalOrder.amountPaid,
+      remainingAmount: rentalOrder.remainingAmount,
+    };
+
+    accountingEntry.rentalOrderSnapshot = rentalOrderSnapshot;
+    await accountingEntry.save();
+
+    // Assign or update the entry
     const updatedEntry = await Accounting.findByIdAndUpdate(
       accountingId,
       {
@@ -107,13 +127,13 @@ export const assignCustomerToAccounting = async (req, res, next) => {
 export const checkIfAssigned = async (req, res, next) => {
   try {
     const { accountingId } = req.params;
-    
+
     if (!accountingId) {
       return next(new ErrorHandler("accountingId is required.", 400));
     }
 
     const accountingEntry = await Accounting.findById(accountingId);
-    
+
     if (!accountingEntry) {
       return next(new ErrorHandler("Accounting entry not found.", 404));
     }
@@ -148,3 +168,25 @@ export const getAccountingDetailWithCustomerId = async (req, res, next) => {
     next(error);
   }
 }
+
+//Get accounting and rental details by customerId (Basically this is for payment history in customer component)
+export const getAccountingAndRentalsByCustomerId = async (req, res, next) => {
+  try {
+    const { customerId } = req.params;
+
+    if (!customerId) {
+      return next(new ErrorHandler("customerId is required in body.", 400));
+    }
+
+    // Get all accounting entries for this customer, with rentalOrder populated
+    const accountingEntries = await Accounting.find({ customerId })
+      .populate('rentalOrderId');
+
+    return res.status(200).json({
+      success: true,
+      accounting: accountingEntries,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

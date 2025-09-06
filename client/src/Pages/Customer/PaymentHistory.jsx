@@ -1,22 +1,40 @@
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { PuffLoader } from 'react-spinners';
-// import { getPaymentsByCustomerId } from '@/store/Slices/payment.slice';
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { PuffLoader } from "react-spinners";
+import { getAccountingAndRentalsByCustomerId } from "@/store/Slices/accouting.slice";
 
 const PaymentHistory = ({ customerId }) => {
   const dispatch = useDispatch();
-  // const { payments, loading, error } = useSelector((state) => state.payment);
-  const { payments, loading, error } = { payments: [], loading: false, error: null }; // Placeholder state
+  const { assignCustomerPayment, loading, error } = useSelector(
+    (state) => state.accounting
+  );
+  console.log(assignCustomerPayment);
+  
 
   useEffect(() => {
     if (customerId) {
-      console.log("Fetching payments for customerId:", customerId);
-    //   dispatch(getPaymentsByCustomerId(customerId));    
+      dispatch(getAccountingAndRentalsByCustomerId(customerId));
     }
   }, [dispatch, customerId]);
+
+  // Use accounting entries as "payments"
+  const payments = assignCustomerPayment?.accounting || [];
 
   if (loading) {
     return (
@@ -27,11 +45,7 @@ const PaymentHistory = ({ customerId }) => {
   }
 
   if (error) {
-    return (
-      <div className="text-center py-6 text-lg text-red-500">
-        {error}
-      </div>
-    );
+    return <div className="text-center py-6 text-lg text-red-500">{error}</div>;
   }
 
   return (
@@ -42,12 +56,12 @@ const PaymentHistory = ({ customerId }) => {
         </CardTitle>
         <CardDescription>
           <span className="text-gray-500 text-sm">
-            All payment records for this customer
+            All payment/accounting records for this customer
           </span>
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {(!payments || payments.length === 0) ? (
+        {!payments || payments.length === 0 ? (
           <div className="text-center py-6 text-lg text-gray-500">
             No payment history found for this customer.
           </div>
@@ -56,41 +70,65 @@ const PaymentHistory = ({ customerId }) => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-center">Payment ID</TableHead>
-                  <TableHead className="text-center">Rental ID</TableHead>
-                  <TableHead className="text-center">Amount</TableHead>
-                  <TableHead className="text-center">Method</TableHead>
                   <TableHead className="text-center">Date</TableHead>
-                  <TableHead className="text-center">Status</TableHead>
-                  <TableHead className="text-center">Note</TableHead>
+                  <TableHead className="text-center">Assigned Amount</TableHead>
+                  <TableHead className="text-center">Rental Amount</TableHead>
+                  <TableHead className="text-center">Grand Total</TableHead>
+                  <TableHead className="text-center">Rental Purpose</TableHead>
+                  <TableHead className="text-center">Rental Status</TableHead>
+                  <TableHead className="text-center">
+                    Paid Bank Description
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {payments.map((payment) => (
-                  <TableRow key={payment._id} className="hover:bg-purple-50 transition">
-                    <TableCell className="font-mono text-xs">{payment._id}</TableCell>
-                    <TableCell className="font-mono text-xs">{payment.rentalId || "N/A"}</TableCell>
-                    <TableCell>$ {payment.amount || "N/A"}</TableCell>
-                    <TableCell>{payment.method || "N/A"}</TableCell>
+                {payments.map((entry) => (
+                  <TableRow
+                    key={entry._id}
+                    className="hover:bg-purple-50 transition text-center"
+                  >
                     <TableCell>
-                      {payment.date
-                        ? new Date(payment.date).toLocaleDateString()
+                      {entry.date
+                        ? entry.date
+                        : entry.assignedAt
+                        ? new Date(entry.assignedAt).toLocaleDateString()
                         : "N/A"}
+                    </TableCell>
+                    <TableCell>
+                      {entry.amount !== undefined
+                        ? `$ ${Math.abs(entry.amount)}`
+                        : "N/A"}
+                    </TableCell>
+                    <TableCell>
+                      {entry.rentalOrderSnapshot?.amountPaid !== undefined
+                        ? `$ ${Math.abs(entry.rentalOrderSnapshot.amountPaid)}`
+                        : "N/A"}
+                    </TableCell>
+                    <TableCell>
+                      {entry.rentalOrderSnapshot?.amountPaid !== undefined &&
+                      entry.amount !== undefined
+                        ? `$ ${Math.abs(
+                            entry.rentalOrderSnapshot.amountPaid + entry.amount
+                          )}`
+                        : "N/A"}
+                    </TableCell>
+                    <TableCell>
+                      {entry.rentalOrderSnapshot?.purpose || "N/A"}
                     </TableCell>
                     <TableCell>
                       <Badge
                         className={`px-2 py-1 rounded-full text-xs font-medium uppercase ${
-                          payment.status === "pending"
+                          entry.rentalOrderSnapshot?.status === "reserved"
                             ? "bg-yellow-100 text-yellow-800"
-                            : payment.status === "completed"
+                            : entry.rentalOrderSnapshot?.status === "completed"
                             ? "bg-green-100 text-green-800"
                             : "bg-gray-100 text-gray-800"
                         }`}
                       >
-                        {payment.status}
+                        {entry.rentalOrderSnapshot?.status || "N/A"}
                       </Badge>
                     </TableCell>
-                    <TableCell>{payment.note || "—"}</TableCell>
+                    <TableCell>{entry.description || "—"}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

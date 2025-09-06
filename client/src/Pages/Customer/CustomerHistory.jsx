@@ -1,10 +1,23 @@
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { getRentalsByCustomerId } from '@/store/Slices/rental.slice';
-import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
-import { PuffLoader } from 'react-spinners';
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { getRentalsByCustomerId } from "@/store/Slices/rental.slice";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { PuffLoader } from "react-spinners";
 
 const CustomerHistory = ({ customerId, setHasRentalOrder }) => {
   const dispatch = useDispatch();
@@ -31,11 +44,7 @@ const CustomerHistory = ({ customerId, setHasRentalOrder }) => {
   }
 
   if (error) {
-    return (
-      <div className="text-center py-6 text-lg text-red-500">
-        {error}
-      </div>
-    );
+    return <div className="text-center py-6 text-lg text-red-500">{error}</div>;
   }
 
   return (
@@ -51,7 +60,7 @@ const CustomerHistory = ({ customerId, setHasRentalOrder }) => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {(!rentals || rentals.length === 0) ? (
+        {!rentals || rentals.length === 0 ? (
           <div className="text-center py-6 text-lg text-gray-500">
             No rental history found for this customer.
           </div>
@@ -77,8 +86,13 @@ const CustomerHistory = ({ customerId, setHasRentalOrder }) => {
               </TableHeader>
               <TableBody>
                 {rentals.map((rental) => (
-                  <TableRow key={rental._id} className="hover:bg-purple-50 transition">
-                    <TableCell className="font-mono text-xs">{rental._id}</TableCell>
+                  <TableRow
+                    key={rental._id}
+                    className="hover:bg-purple-50 transition"
+                  >
+                    <TableCell className="font-mono text-xs">
+                      {rental._id}
+                    </TableCell>
                     <TableCell>{rental.fleet?.carName || "N/A"}</TableCell>
                     <TableCell>{rental.fleet?.model || "N/A"}</TableCell>
                     <TableCell>{rental.fleet?.registration || "N/A"}</TableCell>
@@ -96,7 +110,16 @@ const CustomerHistory = ({ customerId, setHasRentalOrder }) => {
                     <TableCell>$ {rental.setPrice || "N/A"}</TableCell>
                     <TableCell>$ {rental.advanceRent || "N/A"}</TableCell>
                     <TableCell>$ {rental.bond || "N/A"}</TableCell>
-                    <TableCell>$ {rental.remainingAmount || "N/A"}</TableCell>
+                    <TableCell>
+                      {rental?.remainingAmount < 0 ? (
+                        <span className="text-red-600 font-semibold">
+                          $ {Math.abs(rental?.remainingAmount).toLocaleString()}{" "}
+                          (Overpaid)
+                        </span>
+                      ) : (
+                        `$ ${rental?.remainingAmount?.toLocaleString()}`
+                      )}
+                    </TableCell>
                     <TableCell>
                       <Badge
                         className={`px-2 py-1 rounded-full text-xs font-medium uppercase ${
@@ -136,6 +159,6 @@ const CustomerHistory = ({ customerId, setHasRentalOrder }) => {
       </CardContent>
     </Card>
   );
-}
+};
 
 export default CustomerHistory;

@@ -82,7 +82,6 @@ export const createRentalOrder = async (req, res, next) => {
   }
 }
 
-
 // send rental invoice via email
 export const sendRentalInvoice = async (req, res, next) => {
     try {
