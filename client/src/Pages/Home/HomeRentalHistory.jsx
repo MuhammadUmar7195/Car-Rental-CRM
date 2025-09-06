@@ -203,7 +203,7 @@ const HomeRentalHistory = ({ customerFilter, vehicleFilter }) => {
   };
 
   return (
-    <div className="lg:px-0.5 md:px-10 min-h-screen relative">
+    <div className="lg:px-0.5">
       <Card className="p-8 rounded-2xl shadow-lg bg-white">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-purple-600 text-center uppercase tracking-wide">

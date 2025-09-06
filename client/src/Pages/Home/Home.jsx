@@ -7,6 +7,7 @@ import { FaCarSide } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { Search, RotateCcw } from "lucide-react";
 import axios from "axios";
+import SearchRentalDateFilter from "./SearchRentalDateFilter";
 
 const Home = () => {
   const [customer, setCustomer] = useState("");
@@ -27,7 +28,7 @@ const Home = () => {
           {
             withCredentials: true,
           }
-        );    
+        );
         if (response?.data?.success) {
           setTotalCars(response.data.totalCars || 0);
           setAvailableCars(response.data.availableCars || 0);
@@ -214,6 +215,7 @@ const Home = () => {
         vehicleFilter={vehicleFilter}
         onResetFilters={handleResetFilters}
       />
+      <SearchRentalDateFilter />
     </div>
   );
 };

@@ -6,6 +6,7 @@ import {
     getRentalsByCustomerId,
     getRentalsByFleetId,
     getSingleRental,
+    searchRentalsByDate,
     sendRentalInvoice,
     updateInspectionNameByFleetId,
     updateRentalStatus
@@ -15,6 +16,9 @@ const router = express.Router();
 
 router.post('/add', authMiddleware, createRentalOrder);
 router.post('/send-invoice', sendRentalInvoice);
+
+//get customer and fleet information from rental order start and end date
+router.get('/search-by-date', searchRentalsByDate);
 
 //get routes rental orders
 router.get('/all', authMiddleware, getAllRentals);

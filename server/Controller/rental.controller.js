@@ -7,79 +7,79 @@ import { Buffer } from "buffer";
 
 // Create a new rental order
 export const createRentalOrder = async (req, res, next) => {
-  try {
-    const { customerId, fleetId, bookingDate, rentalData } = req.body;
+    try {
+        const { customerId, fleetId, bookingDate, rentalData } = req.body;
 
-    if (!customerId || !fleetId || !rentalData?.purpose ||
-        !rentalData?.setPrice || !rentalData?.bond || !rentalData?.advanceRent) {
-      return next(new ErrorHandler('Missing required rental data', 400));
+        if (!customerId || !fleetId || !rentalData?.purpose ||
+            !rentalData?.setPrice || !rentalData?.bond || !rentalData?.advanceRent) {
+            return next(new ErrorHandler('Missing required rental data', 400));
+        }
+
+        const customer = await Customer.findById(customerId);
+        const fleet = await Fleet.findById(fleetId);
+
+        if (!customer || !fleet) {
+            return next(new ErrorHandler('Customer or vehicle not found', 404));
+        }
+
+        if (fleet.status === "Rented") {
+            return next(new ErrorHandler('Vehicle is not available for rental', 400));
+        }
+
+        // Return date logic
+        let returnDate;
+        let rentalPeriodSuggestion = null;
+        if (!rentalData.returnDate) {
+            const today = new Date();
+            const endDate = new Date(today);
+            endDate.setDate(today.getDate() + 7);
+
+            returnDate = endDate;
+            rentalPeriodSuggestion = {
+                suggestedStart: today,
+                suggestedEnd: endDate,
+                message: "No return date provided. Suggesting a 7-day rental period."
+            };
+        } else {
+            returnDate = new Date(rentalData.returnDate);
+        }
+
+        const remainingAmount = rentalData.setPrice - (rentalData.advanceRent || 0);
+
+        const rentalOrder = new RentalOrder({
+            customer: customerId,
+            fleet: fleetId,
+            bookingDate: bookingDate ? new Date(bookingDate) : new Date(),
+            returnDate: returnDate, // updated
+            purpose: rentalData.purpose,
+            setPrice: rentalData.setPrice,
+            overdue: rentalData.overdue || 0,
+            bond: rentalData.bond,
+            advanceRent: rentalData.advanceRent,
+            totalBill: rentalData.setPrice,
+            amountPaid: rentalData.advanceRent || 0,
+            remainingAmount: remainingAmount,
+            status: 'reserved',
+            paymentStatus: rentalData.advanceRent > 0 ? 'partial' : 'pending',
+            inspectionName: rentalData.inspectionName || "",
+        });
+
+        await rentalOrder.save();
+        fleet.status = "Rented";
+        await fleet.save();
+
+        return res.status(201).json({
+            success: true,
+            message: "Rental order created successfully",
+            data: rentalOrder,
+            ...(rentalPeriodSuggestion && { rentalPeriodSuggestion })
+        });
+    } catch (error) {
+        if (error.code === 11000) {
+            return next(new ErrorHandler("Duplicate rental order: This vehicle already has a reserved rental.", 409));
+        }
+        next(error);
     }
-
-    const customer = await Customer.findById(customerId);
-    const fleet = await Fleet.findById(fleetId);
-
-    if (!customer || !fleet) {
-      return next(new ErrorHandler('Customer or vehicle not found', 404));
-    }
-
-    if (fleet.status === "Rented") {
-      return next(new ErrorHandler('Vehicle is not available for rental', 400));
-    }
-
-    // Return date logic
-    let returnDate;
-    let rentalPeriodSuggestion = null;
-    if (!rentalData.returnDate) {
-      const today = new Date();
-      const endDate = new Date(today);
-      endDate.setDate(today.getDate() + 7);
-
-      returnDate = endDate;
-      rentalPeriodSuggestion = {
-        suggestedStart: today,
-        suggestedEnd: endDate,
-        message: "No return date provided. Suggesting a 7-day rental period."
-      };
-    } else {
-      returnDate = new Date(rentalData.returnDate);
-    }
-
-    const remainingAmount = rentalData.setPrice - (rentalData.advanceRent || 0);
-
-    const rentalOrder = new RentalOrder({
-      customer: customerId,
-      fleet: fleetId,
-      bookingDate: bookingDate ? new Date(bookingDate) : new Date(),
-      returnDate: returnDate, // updated
-      purpose: rentalData.purpose,
-      setPrice: rentalData.setPrice,
-      overdue: rentalData.overdue || 0,
-      bond: rentalData.bond,
-      advanceRent: rentalData.advanceRent,
-      totalBill: rentalData.setPrice,
-      amountPaid: rentalData.advanceRent || 0,
-      remainingAmount: remainingAmount,
-      status: 'reserved',
-      paymentStatus: rentalData.advanceRent > 0 ? 'partial' : 'pending',
-      inspectionName: rentalData.inspectionName || "",
-    });
-
-    await rentalOrder.save();
-    fleet.status = "Rented";
-    await fleet.save();
-
-    return res.status(201).json({
-      success: true,
-      message: "Rental order created successfully",
-      data: rentalOrder,
-      ...(rentalPeriodSuggestion && { rentalPeriodSuggestion })
-    });
-  } catch (error) {
-    if (error.code === 11000) {
-      return next(new ErrorHandler("Duplicate rental order: This vehicle already has a reserved rental.", 409));
-    }
-    next(error);
-  }
 }
 
 // send rental invoice via email
@@ -281,5 +281,38 @@ export const updateInspectionNameByFleetId = async (req, res, next) => {
         });
     } catch (error) {
         next(error);
+    }
+};
+
+// Now create api where we search customer and fleet information by starting and ending date
+export const searchRentalsByDate = async (req, res, next) => {
+    try {
+        const { startDate, endDate } = req.query;
+
+        if (!startDate || !endDate) {
+            return res.status(400).json({ message: "startDate and endDate are required" });
+        }
+
+        // Convert strings to Date objects
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+
+        if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+            return res.status(400).json({ message: "Invalid startDate or endDate" });
+        }
+
+        // Query rental orders within date range
+        const rentals = await RentalOrder.find({
+            $and: [
+                { bookingDate: { $lte: new Date(end) } },
+                { returnDate: { $gte: new Date(start) } },
+            ]
+        })
+            .populate("customer")
+            .populate("fleet");
+
+        res.status(200).json({ success: true, rentals });
+    } catch (err) {
+        next(err);
     }
 };
