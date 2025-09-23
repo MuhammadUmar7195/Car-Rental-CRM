@@ -23,7 +23,7 @@ const PaymentHistory = ({ customerId }) => {
   const dispatch = useDispatch();
   const { assignCustomerPayment, loading, error } = useSelector(
     (state) => state.accounting
-  );  
+  );
 
   useEffect(() => {
     if (customerId) {
@@ -94,20 +94,22 @@ const PaymentHistory = ({ customerId }) => {
                     </TableCell>
                     <TableCell>
                       {entry.amount !== undefined
-                        ? `$ ${Math.abs(entry.amount)}`
+                        ? `$ ${Math.abs(entry.amount).toFixed(2)}`
                         : "N/A"}
                     </TableCell>
                     <TableCell>
                       {entry.rentalOrderSnapshot?.amountPaid !== undefined
-                        ? `$ ${Math.abs(entry.rentalOrderSnapshot.amountPaid)}`
+                        ? `$ ${Math.abs(
+                            entry.rentalOrderSnapshot.amountPaid
+                          ).toFixed(2)}`
                         : "N/A"}
                     </TableCell>
                     <TableCell>
                       {entry.rentalOrderSnapshot?.amountPaid !== undefined &&
                       entry.amount !== undefined
-                        ? `$ ${Math.abs(
+                        ? `$ ${(
                             entry.rentalOrderSnapshot.amountPaid + entry.amount
-                          )}`
+                          ).toFixed(2)}`
                         : "N/A"}
                     </TableCell>
                     <TableCell>

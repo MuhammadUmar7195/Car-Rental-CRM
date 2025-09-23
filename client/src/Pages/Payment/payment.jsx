@@ -69,7 +69,7 @@ const PaymentDetails = () => {
   }
 
   const customer = singleCustomer;
-  const rental = rentals?.[0];
+  const rental = rentals?.length ? rentals[rentals.length - 1] : null;
   const now = dayjs();
   const returnDate = dayjs(rental?.returnDate);
   const weeksOverdue = returnDate?.isBefore(now)

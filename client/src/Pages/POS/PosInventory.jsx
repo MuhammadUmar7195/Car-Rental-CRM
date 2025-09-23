@@ -183,7 +183,7 @@ const PosInventory = ({ cart, setCart, selectedCar }) => {
                     </div>
 
                     <h3 className="font-semibold text-gray-800 mb-1 text-center truncate">
-                      {item.carName || "No Name"}
+                      {item.inventoryName || "No Name"}
                     </h3>
                     <p className="text-sm text-gray-600 mb-2 text-center truncate">
                       {item.carModel || "No Model"}

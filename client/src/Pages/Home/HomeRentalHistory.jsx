@@ -28,6 +28,7 @@ import { PuffLoader } from "react-spinners";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 const HomeRentalHistory = ({ customerFilter, vehicleFilter }) => {
   const dispatch = useDispatch();
@@ -295,7 +296,17 @@ const HomeRentalHistory = ({ customerFilter, vehicleFilter }) => {
                         />
                       </TableCell>
                       <TableCell className="px-4 py-3 font-medium">
-                        {rental.customer?.name || "N/A"}
+                        {rental.customer?._id ? (
+                          <Link
+                            to={`/dashboard/customer/${rental.customer._id}`}
+                            className="text-purple-700 no-underline hover:text-purple-800"
+                            rel="noopener noreferrer"
+                          >
+                            {rental.customer?.name || "N/A"}
+                          </Link>
+                        ) : (
+                          rental.customer?.name || "N/A"
+                        )}
                       </TableCell>
                       <TableCell className="px-4 py-3">
                         {rental.customer?.licenseNo || "N/A"}
