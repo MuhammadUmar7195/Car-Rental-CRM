@@ -113,7 +113,6 @@ export const logoutUser = createAsyncThunk(
         try {
             await axios.get(
                 `${import.meta.env.VITE_BACKEND_URL}/api/v1/admin/logout`,
-                {},
                 {
                     headers: { "Content-Type": "application/json" },
                     withCredentials: true,
