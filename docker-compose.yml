@@ -1,0 +1,18 @@
+services:
+  server:
+    build: ./server
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./server/.env
+    environment:
+      - PORT=8000
+
+  client:
+    build: ./client
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./client/.env
+    depends_on:
+      - server
