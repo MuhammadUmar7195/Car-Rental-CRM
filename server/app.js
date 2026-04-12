@@ -6,9 +6,13 @@ import env from "dotenv";
 import cors from "cors";
 import mongoSanitize from "express-mongo-sanitize";
 import helmet from "helmet";
+import { loggerMiddleware } from "./Utils/logger.js";
 
 const app = express();
 env.config();
+
+// Custom Logger Middleware
+app.use(loggerMiddleware);
 
 //Third-party middleware
 app.use(helmet({
@@ -60,22 +64,6 @@ app.use(rateLimit({
     message: "Too many requests from this IP, please try again later."
 }));
 
-const port = process.env.PORT || 9000;
-const database = process.env.MONGO_URI;
-
-const start = () => {
-    try {
-        app.listen(port, () => {
-            console.log(`Server is running on port ${port}`);
-        });
-        connect(database);
-    } catch (error) {
-        console.log(`Error starting the server: ${error.message}`);
-    }
-}
-
-start();
-
 //custom api routes
 import AdminRoutes from "./Routes/admin.route.js";
 import UserRoutes from "./Routes/user.route.js";
@@ -110,3 +98,19 @@ app.use(errorMiddleware);
 app.get("/", (req, res) => {
     res.send(`<center>Welcome to KonceptNext Car Management</center>`);
 });
+
+const port = process.env.PORT || 9000;
+const database = process.env.MONGO_URI;
+
+const start = () => {
+    try {
+        app.listen(port, () => {
+            console.log(`Server is running on port ${port}`);
+        });
+        connect(database);
+    } catch (error) {
+        console.log(`Error starting the server: ${error.message}`);
+    }
+}
+
+start();

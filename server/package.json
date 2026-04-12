@@ -27,6 +27,7 @@
     "mongod": "^2.0.0",
     "mongoose": "^8.16.2",
     "multer": "^2.0.2",
+    "node-cron": "^4.2.1",
     "nodemailer": "^7.0.5",
     "streamifier": "^0.1.1"
   }

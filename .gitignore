@@ -8,3 +8,6 @@ client/.env
 server/.env
 
 server/data
+server/.server.log
+server.log
+*.log

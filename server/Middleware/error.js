@@ -2,7 +2,12 @@ const errorMiddleware = (err, req, res, next) => {
   let statusCode = err.statusCode || 500;
   let message = err.message || "Internal Server Error";
 
-  // You can add more logic here for different error types if needed
+  // Detailed error logging for console (prod/dev both)
+  const timestamp = new Date().toISOString();
+  console.error(`[${timestamp}] ERROR: ${statusCode} - ${message}`);
+  if (err.stack) {
+    console.error(`Stack trace:\n${err.stack}`);
+  }
 
   res.status(statusCode).json({
     success: false,

@@ -7,6 +7,10 @@ services:
       - ./server/.env
     environment:
       - PORT=8000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./server/.server.log:/app/.server.log
 
   client:
     build: ./client
