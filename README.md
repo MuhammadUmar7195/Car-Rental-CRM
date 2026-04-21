@@ -25,6 +25,8 @@ A comprehensive, full-stack open-source solution for managing car rental fleets,
 - **Security:** JWT Authentication, Helmet (Security Headers), Express Rate Limit, Mongo Sanitize.
 - **Utilities:** Multer (File Upload), Cloudinary (Image Hosting), Nodemailer (Emails), Node-cron (Scheduled Tasks).
 
+## Architecture Diagram 
+<img width="1408" height="768" alt="architecture_diagram" src="https://github.com/user-attachments/assets/be39c985-d131-476d-aa03-43764c209b9e" />
 
 ## Getting Started
 
