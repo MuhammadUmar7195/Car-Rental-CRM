@@ -1,0 +1,6 @@
+# Pre-launch: Disallow all crawling until the site is ready for production
+User-agent: *
+Disallow: /
+
+# Sitemaps (Update with your real domain after deployment)
+# Sitemap: https://your-production-domain.com/sitemap.xml

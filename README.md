@@ -1,19 +1,21 @@
-# Astro Motors (CRM)
+# Astro Motors (CRM) - Advanced Car Rental Management System
 
-A comprehensive, full-stack solution for managing car rental fleets, customer relationships, and business operations. This system integrates real-time fleet tracking, rental flows, accounting, and workshop management into a single platform.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![React](https://img.shields.io/badge/Frontend-React%2019-blue)](https://react.dev/)
+[![Node.js](https://img.shields.io/badge/Backend-Node.js-green)](https://nodejs.org/)
+[![MongoDB](https://img.shields.io/badge/Database-MongoDB-brightgreen)](https://www.mongodb.com/)
+[![Docker](https://img.shields.io/badge/Deployment-Docker-blue)](https://www.docker.com/)
 
+A comprehensive, full-stack open-source solution for managing car rental fleets, customer relationships, and business operations. Astro Motors (CRM) integrates real-time fleet tracking, rental flows, accounting, and workshop management into a single, high-performance platform.
 
-## Project Scope & Overview
+## Key Features
 
-The **Astro Motors (CRM)** is designed to streamline the operations of car rental businesses. It provides a centralized dashboard for administrators to oversee the entire lifecycle of a rental—from fleet acquisition and maintenance to customer booking, payment processing, and service history.
-
-### Key Modules
-- **Fleet Management:** Track vehicle status, maintenance history, and detailed specifications.
-- **Customer Management:** Maintain comprehensive customer profiles, including rental history and payment records.
-- **Rental Operations:** Manage the entire rental flow, including bookings, status tracking, and automated invoice generation.
-- **Accounting & POS:** Real-time point-of-sale for services, payment tracking, and financial reporting.
-- **Inventory & Service:** Manage spare parts inventory and workshop appointments for fleet maintenance.
-- **Reporting & Analytics:** Integrated logging and history tracking for all system activities.
+- **Fleet Management:** Complete vehicle lifecycle tracking, maintenance logs, and real-time status updates.
+- **Customer CRM:** Comprehensive profiles with rental history, payment records, and personalized management.
+- **Rental Flow Operations:** End-to-end booking management, automated invoice generation, and status tracking.
+- **Accounting & POS:** Integrated point-of-sale for services, real-time financial tracking, and detailed reporting.
+- **Inventory & Workshop:** Manage spare parts inventory and schedule workshop appointments for fleet maintenance.
+- **Analytics Dashboard:** Data-driven insights into business performance and operational efficiency.
 
 
 ## Tech Stack
@@ -70,5 +72,5 @@ The system includes a custom logging middleware.
 - **File Logs:** Persistent logs are stored in `server/.server.log` and are automatically rotated every 10 days via a cron job.
 
 
-## License
-No license.
+## License 
+Code released under the MIT License.
