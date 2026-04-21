@@ -8,6 +8,8 @@
 
 A comprehensive, full-stack open-source solution for managing car rental fleets, customer relationships, and business operations. Astro Motors (CRM) integrates real-time fleet tracking, rental flows, accounting, and workshop management into a single, high-performance platform.
 
+https://github.com/user-attachments/assets/7f18ce39-1564-4864-8923-4eacfd1fd04e
+
 ## Key Features
 
 - **Fleet Management:** Complete vehicle lifecycle tracking, maintenance logs, and real-time status updates.
@@ -27,6 +29,38 @@ A comprehensive, full-stack open-source solution for managing car rental fleets,
 
 ## Architecture Diagram 
 <img width="1408" height="768" alt="architecture_diagram" src="https://github.com/user-attachments/assets/be39c985-d131-476d-aa03-43764c209b9e" />
+
+## Environment Variables
+
+Before running the application, you need to configure the environment variables for both the server and the client. Create a `.env` file in each respective directory based on the templates below.
+
+### 1. Server Configuration (`server/.env`)
+```env
+PORT=9000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
+NODE_ENV=development
+
+# Frontend URLs for CORS and CSP
+FRONTEND_URL=http://localhost:5173
+CUSTOMER_PORTAL_URL=http://localhost:5174
+
+# Cloudinary Configuration (for image uploads)
+CLOUDINARY_NAME=your_cloudinary_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+
+# Email Configuration (for notifications)
+EMAIL_SERVICE=gmail
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASSWORD=your_email_app_password
+```
+
+### 2. Client Configuration (`client/.env`)
+```env
+VITE_BACKEND_URL=http://localhost:9000
+VITE_APP_VERSION=1.0.0
+```
 
 ## Getting Started
 
@@ -71,7 +105,7 @@ npm run dev
 ## Logging & Monitoring
 The system includes a custom logging middleware.
 - **Console Logs:** Real-time request/response tracking with color-coded status.
-- **File Logs:** Persistent logs are stored in `server/.server.log` and are automatically rotated every 10 days via a cron job.
+- **File Logs:** Persistent logs are stored in `server/.server.log` and are automatically rotated every 5 days via a cron job.
 
 
 ## License 
