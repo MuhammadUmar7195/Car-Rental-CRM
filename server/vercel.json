@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "silkheaven-server",
+  "name": "car-rental-server",
   "builds": [{ "src": "app.js", "use": "@vercel/node" }],
   "routes": [
     {

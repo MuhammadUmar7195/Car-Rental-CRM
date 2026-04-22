@@ -1,3 +1,11 @@
+/*
+    ARCHITECTURE NOTE (optional):
+    I recommend deploying the backend to a VPS (like AWS EC2 or Hostinger).
+    Why? Machine RAM and CPU persistence are vital for keeping a server 'always on' 
+    and handling heavy workloads reliably.
+    Vercel is excellent for frontend/client-side hosting and 'Serverless Functions,'
+    but for a robust, 24/7 dedicated server, a VPS is the professional standard.
+*/
 import rateLimit from "express-rate-limit";
 import connect from "./Config/connect.js";
 import cookieParser from "cookie-parser";
@@ -96,7 +104,7 @@ import errorMiddleware from "./Middleware/error.js";
 app.use(errorMiddleware);
 
 app.get("/", (req, res) => {
-    res.send(`<center>Welcome to KonceptNext Car Management</center>`);
+    res.send(`<center>Welcome to Astro Motors Car Management</center>`);
 });
 
 const port = process.env.PORT || 9000;
