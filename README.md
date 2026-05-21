@@ -28,7 +28,7 @@ A comprehensive, full-stack open-source solution for managing car rental fleets,
 
 ## Architecture Diagram
 
-![architecture_diagram](https://github.com/user-attachments/assets/be39c985-d131-476d-aa03-43764c209b9e)
+<img width="2752" height="1536" alt="Car-Rental-CRM(Arch)" src="https://github.com/user-attachments/assets/ad7076fc-c492-4541-8b0b-72ab937a1924" />
 
 ## Environment Variables
 
